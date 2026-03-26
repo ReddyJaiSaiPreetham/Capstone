@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+
+    <!-- ================= Backend : Registration & Login ================= -->
+
+    <property name="testRegisterPatient"
+              value="Patient should be registered successfully"/>
+
+    <property name="testRegisterDoctor"
+              value="Doctor should be registered successfully"/>
+
+    <property name="testRegisterReceptionist"
+              value="Receptionist should be registered successfully"/>
+
+    <property name="testLoginUser"
+              value="User should be able to login with valid credentials"/>
+
+    <property name="testLoginWithWrongUsernameOrPassword"
+              value="Login should fail for invalid username or password"/>
+
+    <!-- ================= Backend : Patient APIs ================= -->
+
+    <property name="testPatientCanGetDoctors"
+              value="Patient should be able to retrieve doctors list"/>
+
+    <property name="testPatientCanScheduleAppointment"
+              value="Patient should be able to schedule an appointment"/>
+
+    <property name="testGetAppointmentsByPatientId"
+              value="Patient should be able to view appointments by patient ID"/>
+
+    <!-- ================= Backend : Doctor APIs ================= -->
+
+    <property name="testGetAppointmentsByDoctorId"
+              value="Doctor should be able to view appointments by doctor ID"/>
+
+    <property name="testManageDoctorAvailability"
+              value="Doctor should be able to update availability"/>
+
+    <!-- ================= Backend : Receptionist APIs ================= -->
+
+    <property name="testReceptionistCanGetAllAppointments"
+              value="Receptionist should be able to retrieve all appointments"/>
+
+    <property name="testScheduleAppointmentByReceptionist"
+              value="Receptionist should be able to schedule an appointment"/>
+
+    <property name="testRescheduleAppointment"
+              value="Receptionist should be able to reschedule an appointment"/>
+
+    <!-- ================= Backend : Security & Authorization ================= -->
+
+    <property name="testReceptionistAndDoctorShouldNotAccessPatientApi"
+              value="Receptionist and Doctor should not access patient APIs"/>
+
+    <property name="testReceptionistAndPatientShouldNotAccessDoctorApi"
+              value="Receptionist and Patient should not access doctor APIs"/>
+
+    <property name="testPatientAndDoctorShouldNotAccessReceptionistApi"
+              value="Doctor and Patient should not access receptionist APIs"/>
+
+    <!-- ================= Frontend : DoctorAppointmentComponent ================= -->
+
+    <property name="doctorAppointmentCreate"
+              value="DoctorAppointmentComponent should create"/>
+
+    <!-- ================= Frontend : DoctorAvailabilityComponent ================= -->
+
+    <property name="doctorAvailabilityCreate"
+              value="DoctorAvailabilityComponent should create"/>
+
+    <!-- ================= Frontend : HttpService ================= -->
+
+    <property name="httpServiceCreate"
+              value="HttpService should be created"/>
+
+    <property name="httpRegisterPatient"
+              value="HttpService should register a patient"/>
+
+    <property name="httpRegisterDoctor"
+              value="HttpService should register a doctor"/>
+
+    <property name="httpRegisterReceptionist"
+              value="HttpService should register a receptionist"/>
+
+    <property name="httpGetDoctors"
+              value="HttpService should retrieve doctors"/>
+
+    <property name="httpScheduleAppointment"
+              value="HttpService should schedule an appointment"/>
+
+    <property name="httpScheduleAppointmentByReceptionist"
+              value="HttpService should schedule an appointment by receptionist"/>
+
+    <property name="httpRescheduleAppointment"
+              value="HttpService should reschedule an appointment"/>
+
+    <property name="httpGetAllAppointments"
+              value="HttpService should get all appointments"/>
+
+    <property name="httpGetAppointmentsByDoctor"
+              value="HttpService should get appointments by doctor"/>
+
+    <property name="httpGetAppointmentsByPatient"
+              value="HttpService should get appointments by patient"/>
+
+    <property name="httpUpdateDoctorAvailability"
+              value="HttpService should update doctor availability"/>
+
+    <property name="httpLoginUser"
+              value="HttpService should login user"/>
+
+    <!-- ================= Frontend : LoginComponent ================= -->
+
+    <property name="loginFormInvalidEmpty"
+              value="LoginComponent should have invalid form if username and password are empty"/>
+
+    <property name="loginFormInvalidPartial"
+              value="LoginComponent should have invalid form if username or password is empty"/>
+
+    <property name="loginFormValid"
+              value="LoginComponent should have valid form if username and password are provided"/>
+
+    <!-- ================= Frontend : PatientAppointmentComponent ================= -->
+
+    <property name="patientAppointmentCreate"
+              value="PatientAppointmentComponent should create"/>
+
+    <!-- ================= Frontend : ReceptionistAppointmentsComponent ================= -->
+
+    <property name="receptionistAppointmentsCreate"
+              value="ReceptionistAppointmentsComponent should create"/>
+
+    <property name="receptionistAppointmentsFormInvalid"
+              value="ReceptionistAppointmentsComponent should have an invalid form when empty"/>
+
+    <property name="receptionistAppointmentsFormValid"
+              value="ReceptionistAppointmentsComponent should validate form when id and time are provided"/>
+
+    <!-- ================= Frontend : ReceptionistScheduleAppointmentsComponent ================= -->
+
+    <property name="receptionistScheduleAppointmentsCreate"
+              value="ReceptionistScheduleAppointmentsComponent should create"/>
+
+    <property name="receptionistScheduleAppointmentsFormInvalid"
+              value="ReceptionistScheduleAppointmentsComponent should have an invalid form when empty"/>
+
+    <property name="receptionistScheduleAppointmentsFormValid"
+              value="ReceptionistScheduleAppointmentsComponent should validate form when all fields are provided"/>
+
+    <!-- ================= Frontend : RegistrationComponent ================= -->
+
+    <property name="registrationFormInvalid"
+              value="RegistrationComponent should have invalid form if any field is empty"/>
+
+    <property name="registrationInvalidEmail"
+              value="RegistrationComponent should have invalid form if email is invalid"/>
+
+    <property name="registrationFormValid"
+              value="RegistrationComponent should have valid form if all fields are filled correctly"/>
+
+    <property name="registrationDoctorValidators"
+              value="RegistrationComponent should set specialty and availability validators when role is DOCTOR"/>
+
+    <property name="registrationNonDoctorValidators"
+              value="RegistrationComponent should clear specialty and availability validators when role is not DOCTOR"/>
+
+    <!-- ================= Frontend : ScheduleAppointmentComponent ================= -->
+
+    <property name="scheduleAppointmentCreate"
+              value="ScheduleAppointmentComponent should create"/>
+
+    <property name="scheduleAppointmentFormInvalid"
+              value="ScheduleAppointmentComponent should have an invalid form when empty"/>
+
+    <property name="scheduleAppointmentPatientIdRequired"
+              value="ScheduleAppointmentComponent should validate patientId as required"/>
+
+    <property name="scheduleAppointmentDoctorIdRequired"
+              value="ScheduleAppointmentComponent should validate doctorId as required"/>
+
+    <property name="scheduleAppointmentTimeRequired"
+              value="ScheduleAppointmentComponent should validate time as required"/>
+
+    <property name="scheduleAppointmentFormValid"
+              value="ScheduleAppointmentComponent should have a valid form when all fields are filled"/>
+
+</properties>
