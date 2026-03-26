@@ -7,5 +7,5 @@ import com.edutech.healthcare_appointment_management_system.entity.Patient;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient,Long> {
-    
+    boolean existsById(Long id);
 }
