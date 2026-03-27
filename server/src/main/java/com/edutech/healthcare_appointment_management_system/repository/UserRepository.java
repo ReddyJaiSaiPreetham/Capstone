@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.edutech.healthcare_appointment_management_system.entity.User;
 
 @Repository
-public interface UserRepository  {
+public interface UserRepository extends JpaRepository<User,Long>  {
 
 Optional<User> findByUsername(String username);
 

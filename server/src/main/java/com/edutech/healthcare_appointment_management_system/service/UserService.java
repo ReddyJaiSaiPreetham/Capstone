@@ -1,26 +1,63 @@
 package com.edutech.healthcare_appointment_management_system.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.edutech.healthcare_appointment_management_system.entity.Doctor;
-import com.edutech.healthcare_appointment_management_system.entity.Patient;
-import com.edutech.healthcare_appointment_management_system.entity.Receptionist;
 import com.edutech.healthcare_appointment_management_system.entity.User;
-import com.edutech.healthcare_appointment_management_system.repository.DoctorRepository;
-import com.edutech.healthcare_appointment_management_system.repository.PatientRepository;
-import com.edutech.healthcare_appointment_management_system.repository.ReceptionistRepository;
 import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 
-import java.util.ArrayList;
+import java.util.Collections;
 
+@Service
+public class UserService implements UserDetailsService {
 
-public class UserService {
-//implement the required code here
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-   
+    @Autowired
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // ✅ Register new user
+    public User registerUser(User user) {
+
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists!");
+        }
+
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already exists!");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
+    }
+
+    // ✅ Get user by username
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElse(null);
+    }
+
+    // ✅ Load user for authentication (Spring Security)
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(
+                        () -> new UsernameNotFoundException("User not found: " + username)
+                );
+
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.singleton(() -> user.getRole())
+        );
+    }
 }
