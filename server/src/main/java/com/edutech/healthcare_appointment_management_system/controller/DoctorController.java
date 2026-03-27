@@ -17,9 +17,5 @@ import java.util.List;
 @RestController
 public class DoctorController {
 
-   //implement the required code here
-   DoctorController(){
-      
-   }
 
 }

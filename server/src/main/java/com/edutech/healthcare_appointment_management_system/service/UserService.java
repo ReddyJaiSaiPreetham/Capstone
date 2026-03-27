@@ -20,7 +20,16 @@ import java.util.ArrayList;
 
 
 public class UserService {
-//implement the required code here
+
+    public User registerUser(Patient patient) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerUser'");
+    }
+
+    public User registerUser(Doctor doctor) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'registerUser'");
+    }
 
    
 }

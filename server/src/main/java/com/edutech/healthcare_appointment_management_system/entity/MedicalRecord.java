@@ -1,5 +1,8 @@
 package com.edutech.healthcare_appointment_management_system.entity;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,6 +13,7 @@ public class MedicalRecord {
 
    private String diagnosis;
    private String treatment;
+   private LocalDateTime recordDate;
 
    @ManyToOne
    private Patient patient;
@@ -59,6 +63,13 @@ public class MedicalRecord {
     this.doctor = doctor;
    }
 
+   public LocalDateTime getRecordDate() {
+      return recordDate;
+   }
+
+   public void setRecordDate(LocalDateTime recordDate) {
+      this.recordDate = recordDate;
+   }
    
 
 
