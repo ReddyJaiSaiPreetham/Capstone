@@ -1,23 +1,47 @@
 package com.edutech.healthcare_appointment_management_system.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.edutech.healthcare_appointment_management_system.entity.Appointment;
 import com.edutech.healthcare_appointment_management_system.entity.Doctor;
 import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
 import com.edutech.healthcare_appointment_management_system.service.DoctorService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class DoctorController {
 
-   //implement the required code here
-   
+    @Autowired
+    private AppointmentService appointmentService;
 
+    @Autowired
+    private DoctorService doctorService;
+
+    // UPDATE DOCTOR AVAILABILITY
+    @PostMapping("/api/doctor/availability")
+    public ResponseEntity<Doctor> updateAvailability(
+            @RequestParam Long doctorId,
+            @RequestParam String availability) {
+
+        Doctor updatedDoctor =
+                doctorService.updateAvailability(doctorId, availability);
+
+        return new ResponseEntity<>(updatedDoctor, HttpStatus.OK);
+    }
+
+    // VIEW DOCTOR APPOINTMENTS
+    @GetMapping("/api/doctor/appointments")
+    public ResponseEntity<List<Appointment>> getDoctorAppointments(
+            @RequestParam Long doctorId) {
+
+        Doctor doctor = doctorService.getDoctorById(doctorId);
+        List<Appointment> appointments =
+                appointmentService.getAppointmentsByDoctor(doctor);
+
+        return new ResponseEntity<>(appointments, HttpStatus.OK);
+    }
 }

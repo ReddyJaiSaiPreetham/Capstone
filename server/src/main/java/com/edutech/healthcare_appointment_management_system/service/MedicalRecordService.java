@@ -31,4 +31,9 @@ public class MedicalRecordService {
 
         return medicalRecordRepository.findByPatient(patient);
     }
+
+    public List<MedicalRecord> getMedicalRecordsByPatient(Patient patient) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getMedicalRecordsByPatient'");
+    }
 }

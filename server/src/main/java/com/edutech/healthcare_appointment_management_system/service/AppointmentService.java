@@ -104,4 +104,34 @@ public class AppointmentService {
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
+
+
+
+    // ✅ GET APPOINTMENTS BY DOCTOR
+    public List<Appointment> getAppointmentsByDoctor(Doctor doctor) {
+        return appointmentRepository.findByDoctor(doctor);
+    }
+
+    // ✅ SCHEDULE APPOINTMENT
+    public Appointment scheduleAppointment(Patient patient, Doctor doctor, Date time) {
+
+        // Optional validation (recommended)
+        if (appointmentRepository.existsByDoctorAndAppointmentTime(doctor, time)) {
+            throw new RuntimeException("Doctor already has an appointment at this time");
+        }
+
+        Appointment appointment = new Appointment();
+        appointment.setPatient(patient);
+        appointment.setDoctor(doctor);
+        appointment.setAppointmentTime(time);
+        appointment.setStatus("SCHEDULED");
+
+        return appointmentRepository.save(appointment);
+    }
+
+    // ✅ GET APPOINTMENTS BY PATIENT
+    public List<Appointment> getAppointmentsByPatient(Patient patient) {
+        return appointmentRepository.findByPatient(patient);
+    }
+
 }

@@ -1,24 +1,40 @@
 package com.edutech.healthcare_appointment_management_system.controller;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.edutech.healthcare_appointment_management_system.dto.TimeDto;
-import com.edutech.healthcare_appointment_management_system.entity.Appointment;
+import com.edutech.healthcare_appointment_management_system.entity.*;
 import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
 
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class ReceptionistController {
 
-   //implement the required code here
- 
+    @Autowired
+    private AppointmentService appointmentService;
+
+    // VIEW ALL APPOINTMENTS
+    @GetMapping("/api/receptionist/appointments")
+    public List<Appointment> getAllAppointments() {
+        return appointmentService.getAllAppointments();
+    }
+
+    // SCHEDULE APPOINTMENT
+    @PostMapping("/api/receptionist/appointment")
+    public Appointment scheduleAppointment(
+            @RequestParam Long patientId,
+            @RequestParam Long doctorId,
+            @RequestBody TimeDto timeDto) {
+
+        Patient patient = new Patient();
+        patient.setId(patientId);
+
+        Doctor doctor = new Doctor();
+        doctor.setId(doctorId);
+
+        return appointmentService.scheduleAppointment(
+                patient, doctor, timeDto.getTime());
+    }
 }
