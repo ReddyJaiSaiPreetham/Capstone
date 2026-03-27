@@ -18,5 +18,8 @@ import java.util.List;
 public class DoctorController {
 
    //implement the required code here
+   DoctorController(){
+      
+   }
 
 }
