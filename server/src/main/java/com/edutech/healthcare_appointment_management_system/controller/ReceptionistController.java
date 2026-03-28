@@ -26,8 +26,6 @@ public class ReceptionistController {
     @Autowired
     private DoctorRepository doctorRepository;
 
-    @Autowired
-    private UserService userService;
 
     // ✅ VIEW ALL APPOINTMENTS
     @GetMapping("/api/receptionist/appointments")
@@ -50,13 +48,6 @@ public class ReceptionistController {
 
         return appointmentService.scheduleAppointment(
                 patient, doctor, timeDto.getTime());
-    }
-
-    @PostMapping("/api/receptionist/register")
-    public ResponseEntity<User> registerReceptionist(@RequestBody User receptionist) {
-        receptionist.setRole("RECEPTIONIST");
-        User savedUser = userService.registerUser(receptionist);
-        return ResponseEntity.ok(savedUser);
     }
 
 

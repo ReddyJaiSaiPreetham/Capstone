@@ -22,9 +22,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtRequestFilter jwtRequestFilter;
     private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(UserDetailsService userDetailsService,
-                          JwtRequestFilter jwtRequestFilter,
-                          PasswordEncoder passwordEncoder) {
+    public SecurityConfig(
+            UserDetailsService userDetailsService,
+            JwtRequestFilter jwtRequestFilter,
+            PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.jwtRequestFilter = jwtRequestFilter;
         this.passwordEncoder = passwordEncoder;
@@ -33,7 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder);
+            .passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -42,27 +43,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
 
-            // PUBLIC APIs
+            // ✅ PUBLIC APIs (VERY IMPORTANT)
             .antMatchers(
+                "/api/user/login",
                 "/api/patient/register",
                 "/api/doctors/register",
-                "/api/receptionist/register",
-                "/api/user/login"
+                "/api/receptionist/register"
             ).permitAll()
 
-            // DOCTOR
-            .antMatchers("/api/doctor/availability").hasAuthority("DOCTOR")
-            .antMatchers("/api/doctor/appointments").hasAuthority("DOCTOR")
-
-            // PATIENT
+            // ✅ PATIENT APIs
             .antMatchers(
                 "/api/patient/doctors",
                 "/api/patient/appointments",
-                "/api/patient/medicalrecords",
-                "/api/patient/appointment"
+                "/api/patient/appointment",
+                "/api/patient/medicalrecords"
             ).hasAuthority("PATIENT")
 
-            // RECEPTIONIST
+            // ✅ DOCTOR APIs
+            .antMatchers(
+                "/api/doctor/appointments",
+                "/api/doctor/availability"
+            ).hasAuthority("DOCTOR")
+
+            // ✅ RECEPTIONIST APIs
             .antMatchers(
                 "/api/receptionist/appointments",
                 "/api/receptionist/appointment",
@@ -71,15 +74,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
             .anyRequest().authenticated()
             .and()
-
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        // ✅ JWT filter (after public URLs are permitted)
         http.addFilterBefore(jwtRequestFilter,
                 UsernamePasswordAuthenticationFilter.class);
     }
 
-    
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

@@ -31,6 +31,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+        // ✅ IMPORTANT: Skip JWT filter for LOGIN & REGISTER endpoints
+        String path = request.getServletPath();
+        if (path.equals("/api/user/login") ||
+            path.equals("/api/patient/register") ||
+            path.equals("/api/doctor/register") ||
+            path.equals("/api/receptionist/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
 
         String username = null;
@@ -38,7 +48,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             jwt = authHeader.substring(7);
-            username = jwtUtil.extractUsername(jwt);
+            try {
+                username = jwtUtil.extractUsername(jwt);
+            } catch (Exception e) {
+                // Invalid token – continue without authentication
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         if (username != null &&
@@ -51,7 +67,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities());
 
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));

@@ -18,6 +18,7 @@ import com.edutech.healthcare_appointment_management_system.entity.Doctor;
 import com.edutech.healthcare_appointment_management_system.entity.Patient;
 import com.edutech.healthcare_appointment_management_system.entity.User;
 import com.edutech.healthcare_appointment_management_system.jwt.JwtUtil;
+import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 import com.edutech.healthcare_appointment_management_system.service.UserService;
 @RestController
 @RequestMapping
@@ -25,6 +26,9 @@ public class RegisterAndLoginController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -46,32 +50,14 @@ public class RegisterAndLoginController {
         return ResponseEntity.ok(userService.registerUser(doctor));
     }
 
-//     @PostMapping("/api/user/login")
-// public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-//     try {
-//         authenticationManager.authenticate(
-//             new UsernamePasswordAuthenticationToken(
-//                 request.getUsername(),
-//                 request.getPassword()
-//             )
-//         );
+    @PostMapping("/api/receptionist/register")
+public ResponseEntity<User> registerReceptionist(@RequestBody User receptionist) {
+    receptionist.setRole("RECEPTIONIST");
+    User savedUser = userService.registerUser(receptionist);
+    return ResponseEntity.ok(savedUser);
+}
 
-//         User user = userService.getUserByUsername(request.getUsername());
 
-//         LoginResponse response = new LoginResponse(
-//             user.getId(),
-//             jwtUtil.generateToken(user.getUsername()),
-//             user.getUsername(),
-//             user.getEmail(),
-//             user.getRole()
-//         );
-
-//         return ResponseEntity.ok(response);
-
-//     } catch (AuthenticationException ex) {
-//         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//     }
-// }
    @PostMapping("/api/user/login")
 public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
 
