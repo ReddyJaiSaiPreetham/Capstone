@@ -6,6 +6,7 @@ import com.edutech.healthcare_appointment_management_system.repository.DoctorRep
 import com.edutech.healthcare_appointment_management_system.repository.PatientRepository;
 import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
+import com.edutech.healthcare_appointment_management_system.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +27,7 @@ public class ReceptionistController {
     private DoctorRepository doctorRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     // ✅ VIEW ALL APPOINTMENTS
     @GetMapping("/api/receptionist/appointments")
@@ -51,11 +52,20 @@ public class ReceptionistController {
                 patient, doctor, timeDto.getTime());
     }
 
-    // ✅ RECEPTIONIST REGISTER (ONLY HERE)
     @PostMapping("/api/receptionist/register")
     public ResponseEntity<User> registerReceptionist(@RequestBody User receptionist) {
         receptionist.setRole("RECEPTIONIST");
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userRepository.save(receptionist));
+        User savedUser = userService.registerUser(receptionist);
+        return ResponseEntity.ok(savedUser);
+    }
+
+
+    @PutMapping("/api/receptionist/appointment-reschedule/{appointmentId}")
+    public Appointment rescheduleAppointment(
+            @PathVariable Long appointmentId,
+            @RequestBody TimeDto timeDto) {
+
+        return appointmentService.rescheduleAppointment(
+                appointmentId, timeDto.getTime());
     }
 }

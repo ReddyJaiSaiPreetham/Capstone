@@ -46,10 +46,36 @@ public class RegisterAndLoginController {
         return ResponseEntity.ok(userService.registerUser(doctor));
     }
 
-    // ✅ LOGIN (MUST EXIST)
-    @PostMapping("/api/user/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+//     @PostMapping("/api/user/login")
+// public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+//     try {
+//         authenticationManager.authenticate(
+//             new UsernamePasswordAuthenticationToken(
+//                 request.getUsername(),
+//                 request.getPassword()
+//             )
+//         );
 
+//         User user = userService.getUserByUsername(request.getUsername());
+
+//         LoginResponse response = new LoginResponse(
+//             user.getId(),
+//             jwtUtil.generateToken(user.getUsername()),
+//             user.getUsername(),
+//             user.getEmail(),
+//             user.getRole()
+//         );
+
+//         return ResponseEntity.ok(response);
+
+//     } catch (AuthenticationException ex) {
+//         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+//     }
+// }
+   @PostMapping("/api/user/login")
+public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+
+    try {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.getUsername(),
@@ -68,5 +94,10 @@ public class RegisterAndLoginController {
         );
 
         return ResponseEntity.ok(response);
+
+    } catch (AuthenticationException ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+}
+
 }
