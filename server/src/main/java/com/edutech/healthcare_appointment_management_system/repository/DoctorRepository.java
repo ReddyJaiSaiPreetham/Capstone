@@ -10,8 +10,8 @@ import com.edutech.healthcare_appointment_management_system.entity.Patient;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor,Long>{
-    List<Patient> findByPatientId(Long patientId);
-    List<Doctor> findByDoctorId(Long doctorId);
+    // List<Patient> findByPatientId(Long patientId);
+    // List<Doctor> findByDoctorId(Long doctorId);
     
     List<Doctor> findByAvailability(String availability);
     List<Doctor> findBySpecialty(String specialty);
