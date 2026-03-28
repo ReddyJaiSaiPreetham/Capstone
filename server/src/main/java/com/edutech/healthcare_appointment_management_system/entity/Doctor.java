@@ -13,9 +13,11 @@ public class Doctor extends User {
     private String availability;
 
     @OneToMany(mappedBy = "doctor" , cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<Appointment> appointments;
 
     @OneToMany(mappedBy = "doctor" , cascade = CascadeType.ALL)
+    @JsonIgnore
     private Set<MedicalRecord> medicalRecords;
 
     public Doctor(){}

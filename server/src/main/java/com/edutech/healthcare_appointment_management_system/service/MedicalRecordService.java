@@ -33,7 +33,6 @@ public class MedicalRecordService {
     }
 
     public List<MedicalRecord> getMedicalRecordsByPatient(Patient patient) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getMedicalRecordsByPatient'");
-    }
+    return medicalRecordRepository.findByPatient(patient);
+}
 }

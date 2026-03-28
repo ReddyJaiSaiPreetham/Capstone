@@ -37,4 +37,6 @@ public class DoctorService {
         doctor.setAvailability(availability);
         return doctorRepository.save(doctor);
     }
+
+
 }
