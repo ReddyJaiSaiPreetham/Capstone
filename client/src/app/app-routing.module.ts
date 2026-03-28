@@ -26,8 +26,11 @@ const routes: Routes = [
   { path: 'receptionist-schedule-appointments', component: ReceptionistScheduleAppointmentsComponent },
   
   
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: '/dashboard', pathMatch: 'full' },
+  // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  // { path: '**', redirectTo: '/dashboard', pathMatch: 'full' },
+
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '**', redirectTo: '/login', pathMatch: 'full' },
 ];
 
 @NgModule({

@@ -16,6 +16,7 @@ import com.edutech.healthcare_appointment_management_system.dto.LoginRequest;
 import com.edutech.healthcare_appointment_management_system.dto.LoginResponse;
 import com.edutech.healthcare_appointment_management_system.entity.Doctor;
 import com.edutech.healthcare_appointment_management_system.entity.Patient;
+import com.edutech.healthcare_appointment_management_system.entity.Receptionist;
 import com.edutech.healthcare_appointment_management_system.entity.User;
 import com.edutech.healthcare_appointment_management_system.jwt.JwtUtil;
 import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
@@ -51,10 +52,10 @@ public class RegisterAndLoginController {
     }
 
     @PostMapping("/api/receptionist/register")
-public ResponseEntity<User> registerReceptionist(@RequestBody User receptionist) {
+public ResponseEntity<User> registerReceptionist(@RequestBody Receptionist receptionist) {
     receptionist.setRole("RECEPTIONIST");
-    User savedUser = userService.registerUser(receptionist);
-    return ResponseEntity.ok(savedUser);
+    //User savedUser = userService.registerUser(receptionist);
+    return ResponseEntity.ok(userService.registerUser(receptionist));
 }
 
 

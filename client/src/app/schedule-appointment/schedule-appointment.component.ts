@@ -7,6 +7,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   templateUrl: './schedule-appointment.component.html',
   styleUrls: ['./schedule-appointment.component.scss']
 })
-export class ScheduleAppointmentComponent //todo: complete missing code..
+export class ScheduleAppointmentComponent {
+  //todo: complete missing code..
+  }
 
 

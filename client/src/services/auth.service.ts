@@ -23,16 +23,19 @@ export class AuthService {
   {
     localStorage.setItem('role',role);
   }
+
   get getRole ():string|null
   {
     return localStorage.getItem('role');
   }
+
   // Method to retrieve login status
   get getLoginStatus(): boolean {
   
       return !!localStorage.getItem('token');
    
   }
+  
   getToken(): string | null {
    this.token= localStorage.getItem('token');
     return this.token;

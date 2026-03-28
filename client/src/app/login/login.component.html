@@ -1,1 +1,68 @@
-//todo: complete missing code..
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5">
+
+    <div class="card p-4 shadow">
+      <h3 class="text-center mb-3">
+        HEALTHCARE APPOINTMENT MANAGEMENT SYSTEM
+      </h3>
+
+      <p class="text-center text-muted">
+        Please enter your login credentials
+      </p>
+
+      <form [formGroup]="itemForm" (ngSubmit)="onLogin()">
+
+        <!-- USERNAME -->
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="username"
+            placeholder="Enter username"
+          />
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.invalid">
+            Username is required
+          </small>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Enter password"
+          />
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.invalid">
+            Password is required
+          </small>
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div *ngIf="showError" class="alert alert-danger text-center">
+          {{ errorMessage }}
+        </div>
+
+        <!-- LOGIN BUTTON -->
+        <div class="d-grid mt-3">
+          <button class="btn btn-dark" type="submit">
+            LOGIN
+          </button>
+        </div>
+      </form>
+
+      <!-- REGISTER LINK -->
+      <div class="text-center mt-3">
+        <span>Don’t have an account?</span>
+        <a class="ms-1 text-decoration-none" routerLink="/registration">
+          Register here
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
