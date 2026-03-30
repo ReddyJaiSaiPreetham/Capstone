@@ -1,0 +1,96 @@
+/* ===== Top Navigation Bar ===== */
+.navbar {
+  width: 100%;
+  background-color: #1e1e1e;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  color: #ffffff;
+  font-weight: 600;
+  margin-right: 20px;
+}
+
+.nav-link {
+  color: #cfcfcf;
+  margin-right: 18px;
+  font-size: 14px;
+  text-decoration: none;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.nav-link.active {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.logout {
+  color: #cfcfcf;
+  text-decoration: none;
+  font-size: 14px;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+/* ===== Form Container ===== */
+.container {
+  padding: 25px 30px;
+  background-color: #ffffff;
+  width: 400px;
+}
+
+h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* ===== Form Styling ===== */
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+select {
+  width: 100%;
+  padding: 6px;
+  font-size: 14px;
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #1e1e1e;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+}
+
+.success {
+  margin-top: 12px;
+  color: green;
+  font-size: 14px;
+}
