@@ -1,1 +1,95 @@
-//todo: complete missing code..
+<div class="container mt-4">
+
+  <h2 class="text-center mb-4">Receptionist Appointments</h2>
+
+  <!-- Appointment List -->
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Patient Name</th>
+        <th>Doctor Name</th>
+        <th>Appointment Time</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of appointmentList">
+        <td>{{ item.id }}</td>
+        <td>{{ item.patientName }}</td>
+        <td>{{ item.doctorName }}</td>
+        <td>{{ item.time | date:'medium' }}</td>
+        <td>
+          <button 
+            class="btn btn-primary btn-sm"
+            (click)="editAppointment(item)">
+            Edit
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="appointmentList.length === 0">
+        <td colspan="5" class="text-center">
+          No appointments available
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Edit / Reschedule Form -->
+  <div *ngIf="isAdded" class="card mt-4">
+    <div class="card-header bg-primary text-white">
+      Reschedule Appointment
+    </div>
+
+    <div class="card-body">
+      <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+
+        <!-- Hidden ID Field -->
+        <input type="hidden" formControlName="id">
+
+        <!-- Time Field -->
+        <div class="mb-3">
+          <label for="time" class="form-label">New Appointment Time</label>
+          <input 
+            type="datetime-local"
+            id="time"
+            class="form-control"
+            formControlName="time"
+          >
+
+          <div 
+            class="text-danger"
+            *ngIf="itemForm.controls['time'].invalid && itemForm.controls['time'].touched">
+            Appointment time is required
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <button 
+          type="submit"
+          class="btn btn-success"
+          [disabled]="itemForm.invalid">
+          Update
+        </button>
+
+        <button 
+          type="button"
+          class="btn btn-secondary ms-2"
+          (click)="isAdded = false; itemForm.reset()">
+          Cancel
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Response Message -->
+  <div 
+    *ngIf="responseMessage"
+    class="alert alert-info mt-3">
+    {{ responseMessage }}
+  </div>
+
+</div>
