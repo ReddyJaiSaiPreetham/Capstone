@@ -1,0 +1,68 @@
+/* Header */
+.app-header {
+  background-color: #222;
+  color: #fff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header .title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.app-header .menu a {
+  color: #fff;
+  margin-left: 15px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.app-header .menu a:hover {
+  text-decoration: underline;
+}
+
+/* Content */
+.container {
+  padding: 20px;
+}
+
+.page-title {
+  margin-bottom: 15px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Table */
+.appointments-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f9f9f9;
+}
+
+.appointments-table thead {
+  background-color: #333;
+  color: #fff;
+}
+
+.appointments-table th,
+.appointments-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.appointments-table tbody tr:nth-child(even) {
+  background-color: #eee;
+}
+
+/* No data */
+.no-data {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #777;
+  text-align: center;
+}

@@ -1,1 +1,71 @@
-//todo: complete missing code..
+<!-- Header -->
+<div class="app-header">
+  <span class="title">HAM System</span>
+  <div class="menu">
+    <a routerLink="/patient-appointments">Patient Appointments</a>
+    <a routerLink="/schedule-appointment">Schedule Appointment</a>
+    <a routerLink="/logout">Logout</a>
+  </div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+
+  <!-- Add Appointment Section -->
+  <div class="add-appointment">
+    <h3>Add Appointment</h3>
+
+    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+      <label>Appointment Time</label>
+      <input
+        type="datetime-local"
+        formControlName="appointmentTime"
+        required
+      />
+
+      <br /><br />
+
+      <button type="submit" [disabled]="!appointmentForm.valid">
+        Submit
+      </button>
+    </form>
+  </div>
+
+  <br />
+
+  <!-- Doctors List -->
+  <div class="doctors-section">
+    <h3>Doctors</h3>
+
+    <table class="doctors-table">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Name</th>
+          <th>Specialty</th>
+          <th>Availability</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let doctor of doctorList">
+          <td>{{ doctor.id }}</td>
+          <td>{{ doctor.name }}</td>
+          <td>{{ doctor.specialty }}</td>
+          <td>{{ doctor.availability }}</td>
+          <td>
+            <button
+              class="btn-appointment"
+              (click)="addAppointment(doctor)"
+              [disabled]="doctor.availability !== 'Yes'"
+            >
+              Appointment
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
