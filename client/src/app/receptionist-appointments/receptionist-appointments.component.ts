@@ -33,7 +33,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   ) {
     // Initialize reactive form
     this.itemForm = this.formBuilder.group({
-      id: [''],
+      id: ['', Validators.required],
       time: ['', Validators.required]
     });
   }
