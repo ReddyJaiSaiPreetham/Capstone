@@ -1,4 +1,29 @@
-<div class="row text-center">
-<h1 class="text-capitalize">Healthcare Appointment Management System
-</h1>
+<div class="dashbaord-container">
+  <h2>Healthcare Appointment Management System</h2>
+
+  <!-- Patient Dashboard -->
+  <div *ngIf="roleName === 'PATIENT'" class="card">
+    <h3>Patient Dashboard</h3>
+    <a routerLink="/schedule-appointment" class="btn">Schedule Appointment</a>
+    <a routerLink="/patient-appointment" class="btn">View Appointments</a>
+  </div>
+
+  <!-- Doctor Dashboard -->
+  <div *ngIf="roleName === 'DOCTOR'" class="card">
+    <h3>Doctor Dashboard</h3>
+    <a routerLink="/doctor-availability" class="btn">Update Availability</a>
+    <a routerLink="/doctor-appointment" class="btn">View Appointments</a>
+  </div>
+
+  <!-- Receptionist Dashboard -->
+  <div *ngIf="roleName === 'RECEPTIONIST'" class="card">
+    <h3>Receptionist Dashboard</h3>
+    <a routerLink="/receptionist-schedule-appointments" class="btn">
+      Schedule Appointment
+    </a>
+    <a routerLink="/receptionist-appointments" class="btn">
+      View / Reschedule Appointments
+    </a>
+  </div>
 </div>
+``

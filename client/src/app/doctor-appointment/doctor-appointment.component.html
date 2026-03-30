@@ -1,1 +1,53 @@
-//todo: complete missing code..
+<!-- Top Navigation Bar -->
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/doctor-appointment" class="nav-link active">
+      Doctor Appointment
+    </a>
+    <a routerLink="/doctor-availability" class="nav-link">
+      Doctor Availability
+    </a>
+  </div>
+
+  <div class="navbar-right">
+    <a routerLink="/login" class="nav-link logout">Logout</a>
+  </div>
+</nav>
+
+<!-- Appointment Table -->
+<div class="container">
+  <h3>Appointments</h3>
+
+  <table *ngIf="appointmentList.length > 0; else noData">
+    <thead>
+      <tr>
+        <th>Appointment Id</th>
+        <th>Appointment Time</th>
+        <th>Status</th>
+        <th>Doctor</th>
+        <th>Patient</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let app of appointmentList">
+        <td>{{ app.id }}</td>
+        <td>{{ app.appointmentTime }}</td>
+        <td>{{ app.status }}</td>
+        <td>
+          {{ app.doctor?.username }} <br />
+          <small>{{ app.doctor?.email }}</small>
+        </td>
+        <td>
+          {{ app.patient?.username }} <br />
+          <small>{{ app.patient?.email }}</small>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noData>
+    <p class="no-data">No appointments available</p>
+  </ng-template>
+</div>

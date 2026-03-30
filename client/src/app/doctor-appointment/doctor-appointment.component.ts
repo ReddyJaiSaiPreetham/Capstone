@@ -6,7 +6,25 @@ import { HttpService } from '../../services/http.service';
   templateUrl: './doctor-appointment.component.html',
   styleUrls: ['./doctor-appointment.component.scss']
 })
-export class DoctorAppointmentComponent {
 
-//todo: complete missing code..
+export class DoctorAppointmentComponent implements OnInit {
+
+  appointmentList: any[] = [];
+
+  constructor(public httpService: HttpService) {}
+
+  ngOnInit(): void {
+    this.getAppointments();
+  }
+
+  getAppointments(): void {
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      const doctorId = parseInt(userId, 10);
+      this.httpService.getAppointmentByDoctor(doctorId).subscribe((res: any) => {
+        this.appointmentList = res;
+        console.log(this.appointmentList);
+      });
+    }
+  }
 }
