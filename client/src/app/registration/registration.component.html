@@ -1,124 +1,136 @@
-<div class="row justify-content-center mt-5">
-  <div class="col-md-6">
+<div class="container mt-5">
 
-    <div class="card shadow p-4">
-      <h3 class="text-center mb-3">
-        HEALTHCARE APPOINTMENT MANAGEMENT SYSTEM
-      </h3>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
 
-      <p class="text-center text-muted">
-        Please enter your registration details
-      </p>
+      <div class="card shadow p-4">
 
-      <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
+        <!-- Title -->
+        <h3 class="text-center mb-3">
+          Healthcare Appointment Management System
+        </h3>
 
-        <!-- USERNAME -->
-        <div class="mb-3">
-          <label class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="username"
-          />
-          <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.invalid">
-            Username is required
-          </small>
-        </div>
+        <p class="text-center text-muted">
+          Please enter your registration details
+        </p>
 
-        <!-- EMAIL -->
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input
-            type="email"
-            class="form-control"
-            formControlName="email"
-          />
-          <small class="text-danger"
-            *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
-            Valid email is required
-          </small>
-        </div>
+        <!-- Form -->
+        <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
 
-        <!-- PASSWORD -->
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="password"
-          />
-          <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.invalid">
-            Password is required
-          </small>
-        </div>
-
-        <!-- ROLE -->
-        <div class="mb-3">
-          <label class="form-label">Role</label>
-          <select class="form-control" formControlName="role">
-            <option value="">Select Role</option>
-            <option value="PATIENT">PATIENT</option>
-            <option value="DOCTOR">DOCTOR</option>
-            <option value="RECEPTIONIST">RECEPTIONIST</option>
-          </select>
-          <small class="text-danger"
-            *ngIf="itemForm.get('role')?.touched && itemForm.get('role')?.invalid">
-            Role is required
-          </small>
-        </div>
-
-        <!-- DOCTOR SPECIFIC FIELDS -->
-        <div *ngIf="itemForm.get('role')?.value === 'DOCTOR'">
-
+          <!-- USERNAME -->
           <div class="mb-3">
-            <label class="form-label">Specialty</label>
+            <label class="form-label">Username</label>
             <input
               type="text"
               class="form-control"
-              formControlName="specialty"
+              formControlName="username"
             />
             <small class="text-danger"
-              *ngIf="itemForm.get('specialty')?.touched && itemForm.get('specialty')?.invalid">
-              Specialty is required for doctor
+              *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.invalid">
+              Username is required
             </small>
           </div>
 
+          <!-- EMAIL -->
           <div class="mb-3">
-            <label class="form-label">Availability</label>
+            <label class="form-label">Email</label>
             <input
-              type="text"
+              type="email"
               class="form-control"
-              formControlName="availability"
+              formControlName="email"
             />
             <small class="text-danger"
-              *ngIf="itemForm.get('availability')?.touched && itemForm.get('availability')?.invalid">
-              Availability is required for doctor
+              *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
+              Valid email is required
             </small>
           </div>
 
+          <!-- PASSWORD -->
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              formControlName="password"
+            />
+            <small class="text-danger"
+              *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.invalid">
+              Password is required
+            </small>
+          </div>
+
+          <!-- ROLE -->
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select class="form-control" formControlName="role">
+              <option value="">Select Role</option>
+              <option value="PATIENT">PATIENT</option>
+              <option value="DOCTOR">DOCTOR</option>
+              <option value="RECEPTIONIST">RECEPTIONIST</option>
+            </select>
+            <small class="text-danger"
+              *ngIf="itemForm.get('role')?.touched && itemForm.get('role')?.invalid">
+              Role is required
+            </small>
+          </div>
+
+          <!-- DOCTOR SPECIFIC FIELDS -->
+          <div *ngIf="itemForm.get('role')?.value === 'DOCTOR'">
+
+            <!-- Specialty -->
+            <div class="mb-3">
+              <label class="form-label">Specialty</label>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="specialty"
+              />
+              <small class="text-danger"
+                *ngIf="itemForm.get('specialty')?.touched && itemForm.get('specialty')?.invalid">
+                Specialty is required for doctor
+              </small>
+            </div>
+
+            <!-- Availability -->
+            <div class="mb-3">
+              <label class="form-label">Availability</label>
+
+              <select class="form-control" formControlName="availability">
+                <option value="">Select Availability</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+
+              <small class="text-danger"
+                *ngIf="itemForm.get('availability')?.touched && itemForm.get('availability')?.invalid">
+                Availability is required for doctor
+              </small>
+            </div>
+
+          </div>
+
+          <!-- SUBMIT BUTTON -->
+          <div class="d-grid mt-4">
+            <button class="btn btn-dark" type="submit">
+              Register
+            </button>
+          </div>
+
+        </form>
+
+        <!-- SUCCESS MESSAGE -->
+        <div class="alert alert-success mt-3 text-center" *ngIf="showMessage">
+          {{ responseMessage }}
         </div>
 
-        <!-- SUBMIT BUTTON -->
-        <div class="d-grid mt-4">
-          <button class="btn btn-dark" type="submit">
-            REGISTER
-          </button>
+        <!-- LOGIN LINK -->
+        <div class="text-center mt-3">
+          <a routerLink="/login">Already have an account? Login</a>
         </div>
 
-      </form>
-
-      <!-- SUCCESS MESSAGE -->
-      <div class="alert alert-success mt-3" *ngIf="showMessage">
-        {{ responseMessage }}
       </div>
 
-      <!-- LOGIN LINK -->
-      <div class="text-center mt-3">
-        <a routerLink="/login">Already have an account? Login</a>
-      </div>
     </div>
-
   </div>
+
 </div>

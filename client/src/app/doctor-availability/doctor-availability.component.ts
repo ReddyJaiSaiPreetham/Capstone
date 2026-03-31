@@ -7,7 +7,6 @@ import { HttpService } from '../../services/http.service';
   templateUrl: './doctor-availability.component.html',
   styleUrls: ['./doctor-availability.component.scss']
 })
-
 export class DoctorAvailabilityComponent implements OnInit {
 
   itemForm: FormGroup;
@@ -19,18 +18,33 @@ export class DoctorAvailabilityComponent implements OnInit {
     public httpService: HttpService,
     private formBuilder: FormBuilder
   ) {
+    // DO NOT change structure (test dependent)
     this.itemForm = this.formBuilder.group({
       doctorId: ['', Validators.required],
       availability: ['', Validators.required]
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // ✅ Fix: Set doctorId initially so form becomes valid
+    const userId = localStorage.getItem('userId');
+
+    if (userId) {
+      const doctorId = parseInt(userId, 10);
+
+      this.itemForm.patchValue({
+        doctorId: doctorId
+      });
+    }
+  }
 
   onSubmit(): void {
     const userId = localStorage.getItem('userId');
+
     if (userId) {
       const doctorId = parseInt(userId, 10);
+
+      // Keep this (test safe)
       this.itemForm.controls['doctorId'].setValue(doctorId);
 
       this.httpService
@@ -38,9 +52,12 @@ export class DoctorAvailabilityComponent implements OnInit {
         .subscribe(() => {
           this.responseMessage = 'Doctor availability updated successfully';
           this.isAdded = true;
-          this.itemForm.reset();
+
+          // Reset only availability, keep doctorId
+          this.itemForm.patchValue({
+            availability: ''
+          });
         });
     }
   }
 }
-

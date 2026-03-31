@@ -1,38 +1,70 @@
-<!-- Top Navigation Bar -->
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
-    <a routerLink="/doctor-appointment" class="nav-link">
-      Doctor Appointment
-    </a>
-    <a routerLink="/doctor-availability" class="nav-link active">
-      Doctor Availability
-    </a>
-  </div>
 
-  <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+<!-- Navbar -->
+<nav class="navbar navbar-dark bg-dark px-3">
+  <span class="navbar-brand">Healthcare Appointment System</span>
+
+  <div>
+    <a class="btn btn-outline-light me-2" routerLink="/doctor-appointment">
+      Appointments
+    </a>
+    <a class="btn btn-outline-light me-2" routerLink="/doctor-availability">
+      Availability
+    </a>
+    <a class="btn btn-danger" routerLink="/login">Logout</a>
   </div>
 </nav>
 
-<!-- Availability Form -->
-<div class="container">
-  <h3>Update Availability</h3>
+<!-- Main Container -->
+<div class="container mt-5">
 
-  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
-      <label>Availability</label>
-      <select formControlName="availability">
-        <option value="">Select</option>
-        <option value="YES">Yes</option>
-        <option value="NO">No</option>
-      </select>
+  <div class="card col-md-6 mx-auto shadow">
+    
+    <div class="card-header bg-primary text-white text-center">
+      <h5 class="mb-0">Update Availability</h5>
     </div>
 
-    <button type="submit" [disabled]="itemForm.invalid">Update</button>
-  </form>
+    <div class="card-body">
 
-  <p *ngIf="isAdded" class="success">
-    {{ responseMessage }}
-  </p>
+      <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+
+        <!-- Availability Dropdown -->
+        <div class="mb-3">
+          <label class="form-label">Availability</label>
+
+          <select class="form-control" formControlName="availability">
+            <option value="">-- Select Availability --</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+          </select>
+
+          <!-- Validation Message -->
+          <small
+            class="text-danger"
+            *ngIf="itemForm.controls['availability'].invalid && itemForm.controls['availability'].touched"
+          >
+            Availability is required
+          </small>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="text-center">
+          <button
+            type="submit"
+            class="btn btn-success px-4"
+            [disabled]="itemForm.invalid"
+          >
+            Update
+          </button>
+        </div>
+
+      </form>
+
+      <!-- Success Message -->
+      <div *ngIf="isAdded" class="alert alert-success mt-3 text-center">
+        {{ responseMessage }}
+      </div>
+
+    </div>
+  </div>
+
 </div>
