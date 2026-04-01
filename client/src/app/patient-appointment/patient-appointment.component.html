@@ -1,40 +1,67 @@
-<div class="card mt-4">
-  <div class="card-header">
-    <h4>Appointments</h4>
+<!-- ✅ Top Navigation Bar -->
+<nav class="navbar navbar-dark bg-dark px-3">
+  <span class="navbar-brand mb-0 h1">
+    Healthcare Appointment System
+  </span>
+
+  <button
+    routerLink="/logout"
+    class="btn btn-outline-light btn-sm">
+    Logout
+  </button>
+</nav>
+
+<!-- ✅ Appointments Card -->
+<div class="container mt-4">
+
+  <div class="card">
+    <div class="card-header text-center">
+      <h4>Appointments</h4>
+    </div>
+
+    <div class="card-body">
+
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Appointment Id</th>
+            <th>Appointment Time</th>
+            <th>Status</th>
+            <th>Doctor</th>
+            <th>Patient</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let val of appointmentList">
+            <td>{{ val.id }}</td>
+
+            <!-- ✅ Safe formatted time (no timezone shift) -->
+            <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+
+            <td>{{ val.status }}</td>
+
+            <td>
+              <strong>{{ val.doctor.username }}</strong><br>
+              <small>{{ val.doctor.email }}</small>
+            </td>
+
+            <td>
+              <strong>{{ val.patient.username }}</strong><br>
+              <small>{{ val.patient.email }}</small>
+            </td>
+          </tr>
+
+          <tr *ngIf="appointmentList.length === 0">
+            <td colspan="5" class="text-center">
+              No appointments available
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
   </div>
 
-  <div class="card-body">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Appointment Id</th>
-          <th>Appointment Time</th>
-          <th>Status</th>
-          <th>Doctor</th>
-          <th>Patient</th>
-        </tr>
-      </thead>
-
-      <tbody *ngFor="let val of appointmentList">
-        <tr>
-          <td>{{ val.id }}</td>
-
-          <!-- ✅ FIXED TIME DISPLAY -->
-          <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
-
-          <td>{{ val.status }}</td>
-
-          <td>
-            <strong>{{ val.doctor.username }}</strong><br>
-            <small>{{ val.doctor.email }}</small>
-          </td>
-
-          <td>
-            <strong>{{ val.patient.username }}</strong><br>
-            <small>{{ val.patient.email }}</small>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 </div>

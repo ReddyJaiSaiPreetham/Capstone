@@ -85,18 +85,25 @@
             </small>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Availability</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="availability"
-            />
-            <small class="text-danger"
-              *ngIf="itemForm.get('availability')?.touched && itemForm.get('availability')?.invalid">
-              Availability is required for doctor
-            </small>
-          </div>
+         <div class="mb-3">
+  <label class="form-label">Availability</label>
+
+  <select
+    class="form-control"
+    formControlName="availability">
+
+    <option value="">-- Select Availability --</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+
+  </select>
+
+  <small
+    class="text-danger"
+    *ngIf="itemForm.get('availability')?.touched && itemForm.get('availability')?.invalid">
+    Availability is required for doctor
+  </small>
+</div>
 
         </div>
 

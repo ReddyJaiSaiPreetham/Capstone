@@ -11,14 +11,10 @@ import { DatePipe } from '@angular/common';
 })
 export class ReceptionistScheduleAppointmentsComponent implements OnInit {
 
-  // ✅ Single form used in HTML
   itemForm: FormGroup;
-
-  // ✅ Dropdown data
   patientList: any[] = [];
   doctorList: any[] = [];
 
-  // ✅ UI message
   responseMessage: string = '';
 
   constructor(
@@ -38,7 +34,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     this.loadDoctors();
   }
 
-  // ✅ Load patients (derived from existing appointments – security safe)
   loadPatients(): void {
     this.httpService.getAllAppointments().subscribe({
       next: (data: any[]) => {
@@ -56,7 +51,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
-  // ✅ Load doctors from DB
   loadDoctors(): void {
   this.httpService.getAllAppointments().subscribe({
     next: (data: any[]) => {
@@ -76,7 +70,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   });
 }
 
-  // ✅ Submit appointment
   onSubmit(): void {
 
     if (this.itemForm.invalid) {

@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
+ 
 export class HttpService {
 
   // Stores base API URL

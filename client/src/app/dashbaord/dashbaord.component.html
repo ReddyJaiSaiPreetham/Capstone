@@ -1,11 +1,12 @@
 <div class="dashbaord-container">
-  <h2>Healthcare Appointment Management System</h2>
-
+  
   <!-- Patient Dashboard -->
   <div *ngIf="roleName === 'PATIENT'" class="card">
     <h3>Patient Dashboard</h3>
     <a routerLink="/schedule-appointment" class="btn">Schedule Appointment</a>
     <a routerLink="/patient-appointment" class="btn">View Appointments</a>
+    <a routerLink="/login" class="nav-link logout">Logout</a>
+
   </div>
 
   <!-- Doctor Dashboard -->
@@ -13,6 +14,7 @@
     <h3>Doctor Dashboard</h3>
     <a routerLink="/doctor-availability" class="btn">Update Availability</a>
     <a routerLink="/doctor-appointment" class="btn">View Appointments</a>
+    <a routerLink="/login" class="nav-link logout">Logout</a>
   </div>
 
   <!-- Receptionist Dashboard -->
@@ -24,6 +26,6 @@
     <a routerLink="/receptionist-appointments" class="btn">
       View / Reschedule Appointments
     </a>
+    <a routerLink="/login" class="nav-link logout">Logout</a>
   </div>
 </div>
-``
