@@ -155,4 +155,19 @@ ScheduleAppointmentByReceptionist(details: any): Observable<any> {
       { headers }
     );
   }
+
+  // ✅ Fetch CAPTCHA
+  getCaptcha() {
+    return this.http.get<any>(`${this.serverName}/api/captcha`);
+  }
+
+
+getAllPatients() {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/receptionist/patients`,
+    { headers }
+  );
+}
+
 } 

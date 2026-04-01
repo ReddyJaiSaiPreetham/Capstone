@@ -47,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/user/login",
                 "/api/patient/register",
                 "/api/doctors/register",
-                "/api/receptionist/register"
+                "/api/receptionist/register",
+                "/api/captcha"
             ).permitAll()
 
             .antMatchers(
@@ -65,9 +66,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(
                 "/api/receptionist/appointments",
                 "/api/receptionist/appointment",
+                "/api/receptionist/patients",
                 "/api/receptionist/appointment-reschedule/**"
             ).hasAuthority("RECEPTIONIST")
 
+            
             .anyRequest().authenticated()
             .and()
             .sessionManagement()

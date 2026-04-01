@@ -14,6 +14,13 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   appointmentList: any[] = [];
   isAdded: boolean = false;
 
+  
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 0;
+
+  minDateTime: string = '';
+
   constructor(
     public httpService: HttpService,
     private formBuilder: FormBuilder
@@ -24,30 +31,55 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     });
   }
 
-  minDateTime: string = '';
-
   ngOnInit(): void {
     const now = new Date();
     this.minDateTime = now.toISOString().slice(0, 16);
-
     this.getAppointments();
   }
-
-  
 
   getAppointments(): void {
     this.httpService.getAllAppointments().subscribe((data: any[]) => {
       this.appointmentList = data;
+      this.totalPages = Math.ceil(this.appointmentList.length / this.itemsPerPage);
+      this.currentPage = 1;
     });
   }
 
+  
+  get paginatedAppointments(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.appointmentList.slice(startIndex, endIndex);
+  }
+
+  
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  
   editAppointment(item: any): void {
     this.itemForm.patchValue({
       id: item.id,
-      time: item.appointmentTime.substring(0, 16) 
+      time: item.appointmentTime.substring(0, 16)
     });
     this.isAdded = true;
   }
+
 
   onSubmit(): void {
 
@@ -55,7 +87,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       return;
     }
 
-    const rawTime = this.itemForm.value.time; 
+    const rawTime = this.itemForm.value.time;
     const formattedTime = rawTime.replace('T', ' ') + ':00';
 
     this.httpService
@@ -73,12 +105,11 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       });
   }
 
+  
   formatTime(time: string): string {
-    if (!time) {
-      return '';
-    }
+    if (!time) return '';
 
-    const clean = time.substring(0, 19); 
+    const clean = time.substring(0, 19);
     const [datePart, timePart] = clean.split('T');
     const [year, month, day] = datePart.split('-');
     const [hh, mm] = timePart.split(':');

@@ -76,4 +76,6 @@ public class PatientController {
 
         return medicalRecordService.getMedicalRecordsByPatient(patient);
     }
+
+ 
 }

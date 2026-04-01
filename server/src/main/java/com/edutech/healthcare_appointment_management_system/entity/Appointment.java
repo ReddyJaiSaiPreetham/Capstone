@@ -19,6 +19,8 @@ public class Appointment {
 
     private String status;
 
+    
+
     public Appointment(){}
 
     public Long getId() {

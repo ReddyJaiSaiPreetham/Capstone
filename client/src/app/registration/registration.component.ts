@@ -23,17 +23,17 @@ export class RegistrationComponent implements OnInit {
     public router: Router,
     private bookService: HttpService,
     private formBuilder: FormBuilder
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
     this.itemForm = this.formBuilder.group({
-      username: ['', Validators.required],
+      username: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(20),Validators.pattern('^[a-zA-Z0-9_]+$')]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', [Validators.required,Validators.minLength(6),]],
       role: ['', Validators.required],
-      specialty: [''],
-      availability: ['']
+      specialty: ['', [Validators.required]],
+      availability: ['', [Validators.required]]
     });
 
     this.onRoleChange();

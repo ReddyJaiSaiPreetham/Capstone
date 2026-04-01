@@ -5,10 +5,12 @@ import com.edutech.healthcare_appointment_management_system.entity.*;
 import com.edutech.healthcare_appointment_management_system.repository.DoctorRepository;
 import com.edutech.healthcare_appointment_management_system.repository.PatientRepository;
 import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 public class ReceptionistController {
 
@@ -21,12 +23,19 @@ public class ReceptionistController {
     @Autowired
     private DoctorRepository doctorRepository;
 
-
+    // ✅ FETCH ALL APPOINTMENTS
     @GetMapping("/api/receptionist/appointments")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
     }
 
+    // ✅ FETCH ALL PATIENTS (CRITICAL FIX ✅)
+    @GetMapping("/api/receptionist/patients")
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
+    }
+
+    // ✅ SCHEDULE APPOINTMENT
     @PostMapping("/api/receptionist/appointment")
     public Appointment scheduleAppointment(
             @RequestParam Long patientId,
@@ -43,7 +52,7 @@ public class ReceptionistController {
                 patient, doctor, timeDto.getTime());
     }
 
-
+    // ✅ RESCHEDULE APPOINTMENT
     @PutMapping("/api/receptionist/appointment-reschedule/{appointmentId}")
     public Appointment rescheduleAppointment(
             @PathVariable Long appointmentId,

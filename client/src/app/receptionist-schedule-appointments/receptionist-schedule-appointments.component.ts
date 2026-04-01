@@ -16,6 +16,7 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   doctorList: any[] = [];
 
   responseMessage: string = '';
+   minDateTime: string = '';
 
   constructor(
     public httpService: HttpService,
@@ -29,7 +30,7 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
- minDateTime: string = '';
+
 
 ngOnInit(): void {
   const now = new Date();
@@ -38,23 +39,18 @@ ngOnInit(): void {
   this.loadPatients();
   this.loadDoctors();
 }
-
-  loadPatients(): void {
-    this.httpService.getAllAppointments().subscribe({
-      next: (data: any[]) => {
-        const map = new Map<number, any>();
-        data.forEach(appt => {
-          if (appt.patient && !map.has(appt.patient.id)) {
-            map.set(appt.patient.id, appt.patient);
-          }
-        });
-        this.patientList = Array.from(map.values());
-      },
-      error: () => {
-        this.patientList = [];
-      }
-    });
-  }
+loadPatients(): void {
+  this.httpService.getAllPatients().subscribe({
+    next: (data: any[]) => {
+      this.patientList = data;
+      console.log('Patients loaded:', this.patientList);
+    },
+    error: (err) => {
+      console.error('Failed to load patients', err);
+      this.patientList = [];
+    }
+  });
+}
 
   loadDoctors(): void {
   this.httpService.getAllAppointments().subscribe({

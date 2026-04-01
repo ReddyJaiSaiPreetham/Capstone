@@ -4,18 +4,18 @@ import { Router } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { AuthService } from '../../services/auth.service';
 
-
-
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
+
   itemForm!: FormGroup;
-  formModel: any = {};
+
+  captcha: string = '';
   showError: boolean = false;
-  errorMessage: any;
+  errorMessage: string = '';
 
   constructor(
     public router: Router,
@@ -25,39 +25,57 @@ export class LoginComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
+
     this.itemForm = this.formBuilder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required]
+      username: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(20),Validators.pattern('^[a-zA-Z0-9_]+$')]],
+      password: ['', [Validators.required,Validators.minLength(6),]],
+      captcha: ['', Validators.required]
+    });
+
+    this.loadCaptcha();
+  }
+
+  loadCaptcha(): void {
+    this.httpService.getCaptcha().subscribe({
+      next: (data: any) => {
+        this.captcha = data.captcha;
+        this.itemForm.get('captcha')?.reset();
+      },
+      error: () => {
+        this.showError = true;
+        this.errorMessage = 'Unable to load captcha';
+      }
     });
   }
 
   onLogin(): void {
 
-    if (this.itemForm.invalid) {
-      return;
-    }
+  console.log('Form validity:', this.itemForm.valid);
+  console.log('Form value:', this.itemForm.value);
 
-    this.httpService.Login(this.itemForm.value).subscribe(
-      (res: any) => {
-
-        this.authService.saveToken(res.token);
-        this.authService.SetRole(res.role);
-        this.authService.saveUserId(res.userId.toString());
-        this.router.navigate(['/dashboard']);
-        setTimeout(() => {
-          window.location.reload();
-        }, 300);
-      },
-      error => {
-        this.showError = true;
-        this.errorMessage = 'Invalid username or password';
-      }
-    );
+  if (this.itemForm.invalid) {
+    this.itemForm.markAllAsTouched(); // ✅ SHOW ERRORS
+    return;
   }
 
-  
-  registration(): void {
+  this.httpService.Login(this.itemForm.value).subscribe(
+    (res: any) => {
+
+      this.authService.saveToken(res.token);
+      this.authService.SetRole(res.role);
+      this.authService.saveUserId(res.userId.toString());
+
+      this.router.navigate(['/dashboard']);
+      setTimeout(() => window.location.reload(), 300);
+    },
+    error => {
+      this.showError = true;
+      this.errorMessage = 'Invalid username, password, or captcha';
+      this.loadCaptcha();
+    }
+  );
+} 
+registration(): void {
     this.router.navigate(['/registration']);
   }
 }
-
