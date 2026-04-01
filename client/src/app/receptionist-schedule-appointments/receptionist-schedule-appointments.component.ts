@@ -29,10 +29,15 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.loadPatients();
-    this.loadDoctors();
-  }
+ minDateTime: string = '';
+
+ngOnInit(): void {
+  const now = new Date();
+  this.minDateTime = now.toISOString().slice(0, 16);
+
+  this.loadPatients();
+  this.loadDoctors();
+}
 
   loadPatients(): void {
     this.httpService.getAllAppointments().subscribe({

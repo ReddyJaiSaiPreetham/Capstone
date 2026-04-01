@@ -13,8 +13,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY =
-            "YmFja2VuZF9oZWFsdGhjYXJlX2FwcA==";
+    private static final String SECRET_KEY = "YmFja2VuZF9oZWFsdGhjYXJlX2FwcA==";
 
     public String generateToken(String username) {
         return Jwts.builder()

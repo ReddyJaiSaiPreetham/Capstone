@@ -22,6 +22,11 @@ public class AppointmentService {
             Doctor doctor,
             Date time) {
 
+        Date now = new Date();
+        if (time.before(now)) {
+            throw new RuntimeException("Appointment time cannot be in the past");
+        }
+
         Appointment appointment = new Appointment();
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
@@ -38,9 +43,28 @@ public class AppointmentService {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
+        Date now = new Date();
+        if (newTime.before(now)) {
+            throw new RuntimeException("Cannot reschedule appointment to past time");
+        }
+
         appointment.setAppointmentTime(newTime);
         appointment.setStatus("RESCHEDULED");
 
+        return appointmentRepository.save(appointment);
+    }
+
+    public Appointment cancelAppointment(Long appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        Date now = new Date();
+        if (appointment.getAppointmentTime().before(now)) {
+            throw new RuntimeException("Cannot cancel past appointment");
+        }
+
+        appointment.setStatus("CANCELLED");
         return appointmentRepository.save(appointment);
     }
 

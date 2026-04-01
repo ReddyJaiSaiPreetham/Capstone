@@ -4,13 +4,8 @@ import com.edutech.healthcare_appointment_management_system.dto.TimeDto;
 import com.edutech.healthcare_appointment_management_system.entity.*;
 import com.edutech.healthcare_appointment_management_system.repository.DoctorRepository;
 import com.edutech.healthcare_appointment_management_system.repository.PatientRepository;
-import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
-import com.edutech.healthcare_appointment_management_system.service.UserService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

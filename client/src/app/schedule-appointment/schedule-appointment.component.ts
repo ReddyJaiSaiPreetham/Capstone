@@ -31,16 +31,21 @@ export class ScheduleAppointmentComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
+ minDateTime: string = '';
 
-    this.itemForm = this.formBuilder.group({
-      patientId: ['', Validators.required],
-      doctorId: ['', Validators.required],
-      time: ['', Validators.required]
-    });
+ngOnInit(): void {
+  this.itemForm = this.formBuilder.group({
+    patientId: ['', Validators.required],
+    doctorId: ['', Validators.required],
+    time: ['', Validators.required]
+  });
 
-    this.getDoctors();
-  }
+  // ✅ Prevent past date selection
+  const now = new Date();
+  this.minDateTime = now.toISOString().slice(0, 16);
+
+  this.getDoctors();
+}
 
   getDoctors(): void {
     this.httpService.getDoctors().subscribe({

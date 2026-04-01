@@ -24,9 +24,16 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     });
   }
 
+  minDateTime: string = '';
+
   ngOnInit(): void {
+    const now = new Date();
+    this.minDateTime = now.toISOString().slice(0, 16);
+
     this.getAppointments();
   }
+
+  
 
   getAppointments(): void {
     this.httpService.getAllAppointments().subscribe((data: any[]) => {

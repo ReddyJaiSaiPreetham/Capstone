@@ -57,9 +57,11 @@
         <div class="mb-3">
           <label class="form-label">New Appointment Time</label>
           <input
-            type="datetime-local"
-            class="form-control"
-            formControlName="time">
+          type="datetime-local"
+          class="form-control"
+          formControlName="time"
+          [min]="minDateTime">
+
         </div>
 
         <button type="submit" class="btn btn-success" [disabled]="itemForm.invalid">
