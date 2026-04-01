@@ -1,4 +1,4 @@
-<!-- Header -->
+
 <div class="app-header">
   <span class="title">HAM System</span>
   <div class="menu">
@@ -10,12 +10,10 @@
 
 <div class="container">
 
-  <!-- ✅ Success Message -->
   <div *ngIf="successMessage" class="alert alert-success mt-3">
     {{ successMessage }}
   </div>
 
-  <!-- Doctors List -->
   <h3>Available Doctors</h3>
 
   <table class="doctors-table">
@@ -50,13 +48,11 @@
     </tbody>
   </table>
 
-  <!-- Appointment Form -->
   <div *ngIf="isAdded" class="add-appointment mt-4">
     <h3>Schedule Appointment</h3>
 
     <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
 
-      <!-- ✅ REQUIRED hidden control -->
       <input type="hidden" formControlName="doctorId">
 
       <label>Appointment Time</label>

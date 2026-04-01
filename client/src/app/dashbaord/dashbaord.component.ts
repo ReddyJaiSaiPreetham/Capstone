@@ -21,10 +21,9 @@ export class DashbaordComponent implements OnInit {
   ngOnInit(): void {
     this.roleName = this.authService.getRole;
 
-    // Safety check: if not logged in, redirect to login
     if (!this.authService.getLoginStatus) {
       this.router.navigate(['/login']);
     }
   }
 }
-``
+

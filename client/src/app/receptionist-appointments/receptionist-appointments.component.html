@@ -2,7 +2,6 @@
 
   <h2 class="text-center mb-4">Receptionist Appointments</h2>
 
-  <!-- ✅ Appointment List -->
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
@@ -18,19 +17,16 @@
       <tr *ngFor="let item of appointmentList">
         <td>{{ item.id }}</td>
 
-        <!-- ✅ Patient details -->
         <td>
           <strong>{{ item.patient?.username }}</strong><br>
           <small>{{ item.patient?.email }}</small>
         </td>
 
-        <!-- ✅ Doctor details -->
         <td>
           <strong>{{ item.doctor?.username }}</strong><br>
           <small>{{ item.doctor?.email }}</small>
         </td>
 
-        <!-- ✅ Correct time display -->
         <td>{{ formatTime(item.appointmentTime) }}</td>
 
         <td>
@@ -48,7 +44,6 @@
     </tbody>
   </table>
 
-  <!-- ✅ Reschedule Form -->
   <div *ngIf="isAdded" class="card mt-4">
     <div class="card-header bg-primary text-white">
       Reschedule Appointment
@@ -81,8 +76,7 @@
       </form>
     </div>
   </div>
-
-  <!-- ✅ Response Message -->
+  
   <div *ngIf="responseMessage" class="alert alert-info mt-3">
     {{ responseMessage }}
   </div>

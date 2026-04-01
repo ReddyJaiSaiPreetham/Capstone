@@ -28,30 +28,27 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.getAppointments();
   }
 
-  // ✅ Fetch all appointments
   getAppointments(): void {
     this.httpService.getAllAppointments().subscribe((data: any[]) => {
       this.appointmentList = data;
     });
   }
 
-  // ✅ Edit selected appointment
   editAppointment(item: any): void {
     this.itemForm.patchValue({
       id: item.id,
-      time: item.appointmentTime.substring(0, 16) // yyyy-MM-ddTHH:mm
+      time: item.appointmentTime.substring(0, 16) 
     });
     this.isAdded = true;
   }
 
-  // ✅ Reschedule appointment
   onSubmit(): void {
 
     if (this.itemForm.invalid) {
       return;
     }
 
-    const rawTime = this.itemForm.value.time; // yyyy-MM-ddTHH:mm
+    const rawTime = this.itemForm.value.time; 
     const formattedTime = rawTime.replace('T', ' ') + ':00';
 
     this.httpService
@@ -69,14 +66,12 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       });
   }
 
-  // ✅ ✅ ADD THIS METHOD (THIS FIXES THE ERROR)
   formatTime(time: string): string {
     if (!time) {
       return '';
     }
 
-    // Example input: 2026-04-29T10:55:00.000+00:00
-    const clean = time.substring(0, 19); // yyyy-MM-ddTHH:mm:ss
+    const clean = time.substring(0, 19); 
     const [datePart, timePart] = clean.split('T');
     const [year, month, day] = datePart.split('-');
     const [hh, mm] = timePart.split(':');

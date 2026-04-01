@@ -45,20 +45,17 @@
   }
 }
 
-/* ===== Page Container ===== */
 .container {
   padding: 20px 30px;
   background-color: #ffffff;
 }
 
-/* ===== Page Heading ===== */
 h3 {
   font-size: 18px;
   margin-bottom: 12px;
   color: #333;
 }
 
-/* ===== Appointments Table ===== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -84,13 +81,11 @@ tr:nth-child(even) {
   background-color: #fafafa;
 }
 
-/* ===== Email text ===== */
 small {
   color: #666;
   font-size: 12px;
 }
 
-/* ===== No Data Text ===== */
 .no-data {
   text-align: center;
   margin-top: 20px;

@@ -12,7 +12,6 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit{
-  //todo: complete missing code...
   itemForm!: FormGroup;
   formModel: any = {};
   showError: boolean = false;
@@ -32,7 +31,6 @@ export class LoginComponent implements OnInit{
     });
   }
 
-  // LOGIN METHOD
   onLogin(): void {
 
     if (this.itemForm.invalid) {
@@ -42,19 +40,10 @@ export class LoginComponent implements OnInit{
     this.httpService.Login(this.itemForm.value).subscribe(
       (res: any) => {
 
-        // Save JWT Token
         this.authService.saveToken(res.token);
-
-        // Save Role
         this.authService.SetRole(res.role);
-
-        //  Save UserId
         this.authService.saveUserId(res.userId.toString());
-
-        //  Navigate to Dashboard
         this.router.navigate(['/dashboard']);
-
-        //  Reload to refresh navbar & role-based UI
         setTimeout(() => {
           window.location.reload();
         }, 300);
@@ -66,7 +55,7 @@ export class LoginComponent implements OnInit{
     );
   }
 
-  //  GO TO REGISTRATION PAGE
+  
   registration(): void {
     this.router.navigate(['/registration']);
   }

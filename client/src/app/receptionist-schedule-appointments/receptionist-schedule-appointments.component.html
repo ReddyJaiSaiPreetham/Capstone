@@ -2,14 +2,12 @@
 
   <h3>Schedule Appointment (Receptionist)</h3>
 
-  <!-- ✅ Success message -->
   <div *ngIf="responseMessage" class="alert alert-success">
     {{ responseMessage }}
   </div>
 
   <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
 
-    <!-- ✅ Patient Dropdown -->
     <div class="mb-3">
       <label class="form-label">Patient</label>
       <select class="form-control" formControlName="patientId">
@@ -20,7 +18,6 @@
       </select>
     </div>
 
-    <!-- ✅ Doctor Dropdown -->
     <div class="mb-3">
       <label class="form-label">Doctor</label>
       <select class="form-control" formControlName="doctorId">
@@ -31,7 +28,6 @@
       </select>
     </div>
 
-    <!-- ✅ Appointment Time -->
     <div class="mb-3">
       <label class="form-label">Appointment Time</label>
       <input
@@ -40,7 +36,6 @@
         formControlName="time">
     </div>
 
-    <!-- ✅ Submit -->
     <button
       type="submit"
       class="btn btn-primary"

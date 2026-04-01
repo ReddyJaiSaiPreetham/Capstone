@@ -9,7 +9,6 @@ import { HttpService } from '../../services/http.service';
 })
 export class RegistrationComponent implements OnInit {
 
-  // Required variables
   itemForm!: FormGroup;
   formModel: any = {
     role: null,
@@ -20,17 +19,14 @@ export class RegistrationComponent implements OnInit {
   showMessage: boolean = false;
   responseMessage: any;
 
-  // Constructor as specified
   constructor(
     public router: Router,
     private bookService: HttpService,
     private formBuilder: FormBuilder
   ) {}
 
-  // OnInit lifecycle
   ngOnInit(): void {
 
-    // Initialize form
     this.itemForm = this.formBuilder.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -40,11 +36,9 @@ export class RegistrationComponent implements OnInit {
       availability: ['']
     });
 
-    // Setup dynamic role validation
     this.onRoleChange();
   }
 
-  // Role‑based validation
   onRoleChange(): void {
     this.itemForm.get('role')?.valueChanges.subscribe(role => {
 
@@ -64,7 +58,6 @@ export class RegistrationComponent implements OnInit {
     });
   }
 
-  // Register user
   onRegister(): void {
 
     if (this.itemForm.invalid) {

@@ -1,4 +1,3 @@
-/* ✅ Page container */
 .container {
   max-width: 550px;
   margin: auto;
@@ -8,7 +7,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ✅ Page heading */
 h3 {
   text-align: center;
   margin-bottom: 20px;
@@ -16,7 +14,6 @@ h3 {
   font-weight: 600;
 }
 
-/* ✅ Success message */
 .alert {
   text-align: center;
   font-size: 14px;
@@ -25,7 +22,6 @@ h3 {
   border-radius: 5px;
 }
 
-/* ✅ Form label */
 .form-label {
   font-weight: 500;
   margin-bottom: 6px;
@@ -33,7 +29,6 @@ h3 {
   color: #34495e;
 }
 
-/* ✅ Inputs & dropdowns */
 .form-control {
   width: 100%;
   padding: 10px;
@@ -49,12 +44,11 @@ h3 {
   box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.25);
 }
 
-/* ✅ Spacing between fields */
+
 .mb-3 {
   margin-bottom: 15px;
 }
 
-/* ✅ Submit button */
 .btn-primary {
   width: 100%;
   padding: 10px;
@@ -70,13 +64,12 @@ h3 {
   background-color: #084298;
 }
 
-/* ✅ Disabled state */
 .btn-primary:disabled {
   background-color: #a6c8ff;
   cursor: not-allowed;
 }
 
-/* ✅ Responsive improvement */
+
 @media (max-width: 576px) {
   .container {
     padding: 20px;

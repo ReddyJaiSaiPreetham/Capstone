@@ -1,4 +1,4 @@
-/* ===== Header ===== */
+
 .app-header {
   background-color: #222;
   color: #ffffff;
@@ -24,12 +24,11 @@
   text-decoration: underline;
 }
 
-/* ===== Main Container ===== */
+
 .container {
   padding: 20px;
 }
 
-/* ===== Add Appointment Section ===== */
 .add-appointment {
   border: 1px solid #ccc;
   padding: 15px;
@@ -71,7 +70,7 @@
   cursor: not-allowed;
 }
 
-/* ===== Doctors Section ===== */
+
 .doctors-section {
   margin-top: 30px;
 }
@@ -81,7 +80,6 @@
   font-size: 18px;
 }
 
-/* ===== Doctors Table ===== */
 .doctors-table {
   width: 100%;
   border-collapse: collapse;
@@ -105,7 +103,6 @@
   background-color: #f2f2f2;
 }
 
-/* ===== Appointment Button ===== */
 .btn-appointment {
   background-color: #007bff;
   color: #ffffff;

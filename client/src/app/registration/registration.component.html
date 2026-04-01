@@ -12,7 +12,6 @@
 
       <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
 
-        <!-- USERNAME -->
         <div class="mb-3">
           <label class="form-label">Username</label>
           <input
@@ -26,7 +25,6 @@
           </small>
         </div>
 
-        <!-- EMAIL -->
         <div class="mb-3">
           <label class="form-label">Email</label>
           <input
@@ -40,7 +38,6 @@
           </small>
         </div>
 
-        <!-- PASSWORD -->
         <div class="mb-3">
           <label class="form-label">Password</label>
           <input
@@ -54,7 +51,7 @@
           </small>
         </div>
 
-        <!-- ROLE -->
+        
         <div class="mb-3">
           <label class="form-label">Role</label>
           <select class="form-control" formControlName="role">
@@ -69,7 +66,6 @@
           </small>
         </div>
 
-        <!-- DOCTOR SPECIFIC FIELDS -->
         <div *ngIf="itemForm.get('role')?.value === 'DOCTOR'">
 
           <div class="mb-3">
@@ -106,8 +102,6 @@
 </div>
 
         </div>
-
-        <!-- SUBMIT BUTTON -->
         <div class="d-grid mt-4">
           <button class="btn btn-dark" type="submit">
             REGISTER
@@ -116,12 +110,10 @@
 
       </form>
 
-      <!-- SUCCESS MESSAGE -->
       <div class="alert alert-success mt-3" *ngIf="showMessage">
         {{ responseMessage }}
       </div>
 
-      <!-- LOGIN LINK -->
       <div class="text-center mt-3">
         <a routerLink="/login">Already have an account? Login</a>
       </div>

@@ -27,19 +27,13 @@ export class PatientAppointmentComponent implements OnInit {
     }
   }
 
-  /**
-   * ✅ Safe formatter for ISO datetime string
-   * Example input : 2026-04-29T10:55:00.000+00:00
-   * Output        : 29-Apr-2026 10:55 AM
-   */
   formatAppointmentTime(time: string): string {
 
     if (!time) {
       return '';
     }
 
-    // Remove timezone & milliseconds
-    const clean = time.substring(0, 19); // YYYY-MM-DDTHH:MM:SS
+    const clean = time.substring(0, 19); 
     const [datePart, timePart] = clean.split('T');
 
     const [year, month, day] = datePart.split('-');
