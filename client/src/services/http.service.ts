@@ -65,13 +65,17 @@ export class HttpService {
 
   // 5. SCHEDULE APPOINTMENT (PATIENT)
   ScheduleAppointment(details: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(
-      `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-      { time: details.time },
-      { headers }
-    );
-  }
+  const headers = this.getAuthHeaders();
+  return this.http.post(
+    `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+    { time: details.time },
+    {
+      headers,
+      responseType: 'text' as 'json'   // ✅ THIS LINE FIXES YOUR ISSUE
+    }
+  );
+}
+
 
   // 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
   ScheduleAppointmentByReceptionist(details: any): Observable<any> {

@@ -1,71 +1,93 @@
-<!-- Header -->
-<div class="app-header">
-  <span class="title">HAM System</span>
-  <div class="menu">
-    <a routerLink="/patient-appointment">Patient Appointments</a>
-    <a routerLink="/schedule-appointment">Schedule Appointment</a>
-    <a routerLink="/logout">Logout</a>
+<div class="container mt-4">
+
+  <!-- Add Appointment Card -->
+  <div class="card col-md-6 mb-4">
+    <div class="card-header bg-primary text-white">
+      Add Appointment
+    </div>
+
+    <div class="card-body">
+
+      <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+        <div class="mb-3">
+          <label class="form-label">Appointment Time</label>
+          <input
+            type="datetime-local"
+            class="form-control"
+            formControlName="appointmentTime"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="!appointmentForm.valid"
+        >
+          Submit
+        </button>
+
+      </form>
+
+      <!-- Success -->
+      <div *ngIf="successMessage" class="alert alert-success mt-3 text-center">
+        {{ successMessage }}
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="errorMessage" class="alert alert-danger mt-3 text-center">
+        {{ errorMessage }}
+      </div>
+
+    </div>
   </div>
-</div>
 
-<!-- Main Container -->
-<div class="container">
+  <!-- Doctors -->
+  <div class="card">
+    <div class="card-header bg-dark text-white">
+      Doctors
+    </div>
 
-  <!-- Add Appointment Section -->
-  <div class="add-appointment">
-    <h3>Add Appointment</h3>
+    <div class="card-body">
 
-    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Specialty</th>
+            <th>Availability</th>
+            <th>Action</th>
+          </tr>
+        </thead>
 
-      <label>Appointment Time</label>
-      <input
-        type="datetime-local"
-        formControlName="appointmentTime"
-        required
-      />
+        <tbody>
+          <tr *ngFor="let doctor of doctorList">
+            <td>{{ doctor.id }}</td>
+            <td>{{ doctor.name || 'N/A' }}</td>
+            <td>{{ doctor.specialty }}</td>
+            <td>
+              <span class="badge bg-success" *ngIf="doctor.availability === 'Yes'">
+                Yes
+              </span>
+              <span class="badge bg-danger" *ngIf="doctor.availability === 'No'">
+                No
+              </span>
+            </td>
+            <td>
+              <button
+                class="btn btn-primary"
+                (click)="addAppointment(doctor)"
+                [disabled]="doctor.availability !== 'Yes'"
+              >
+                Appointment
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-      <br /><br />
-
-      <button type="submit" [disabled]="!appointmentForm.valid">
-        Submit
-      </button>
-    </form>
-  </div>
-
-  <br />
-
-  <!-- Doctors List -->
-  <div class="doctors-section">
-    <h3>Doctors</h3>
-
-    <table class="doctors-table">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Name</th>
-          <th>Specialty</th>
-          <th>Availability</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let doctor of doctorList">
-          <td>{{ doctor.id }}</td>
-          <td>{{ doctor.name }}</td>
-          <td>{{ doctor.specialty }}</td>
-          <td>{{ doctor.availability }}</td>
-          <td>
-            <button
-              class="btn-appointment"
-              (click)="addAppointment(doctor)"
-              [disabled]="doctor.availability !== 'Yes'"
-            >
-              Appointment
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    </div>
   </div>
 
 </div>

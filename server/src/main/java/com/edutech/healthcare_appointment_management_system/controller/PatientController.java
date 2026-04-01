@@ -1,3 +1,4 @@
+
 package com.edutech.healthcare_appointment_management_system.controller;
 
 import com.edutech.healthcare_appointment_management_system.dto.TimeDto;
@@ -23,7 +24,6 @@ public class PatientController {
     @Autowired
     private DoctorService doctorService;
 
-    // ✅ ADD REPOSITORIES
     @Autowired
     private PatientRepository patientRepository;
 
@@ -38,7 +38,7 @@ public class PatientController {
 
     // ✅ SCHEDULE APPOINTMENT
     @PostMapping("/api/patient/appointment")
-    public Appointment scheduleAppointment(
+    public String scheduleAppointment(
             @RequestParam Long patientId,
             @RequestParam Long doctorId,
             @RequestBody TimeDto timeDto) {
@@ -49,19 +49,18 @@ public class PatientController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        return appointmentService.scheduleAppointment(
+        appointmentService.scheduleAppointment(
                 patient, doctor, timeDto.getTime());
+
+        return "Appointment scheduled successfully";
     }
 
-    // ✅ VIEW PATIENT APPOINTMENTS
+    // ✅ FIXED: VIEW PATIENT APPOINTMENTS
     @GetMapping("/api/patient/appointments")
     public List<Appointment> getPatientAppointments(
             @RequestParam Long patientId) {
 
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
-
-        return appointmentService.getAppointmentsByPatient(patient);
+        return appointmentService.getAppointmentsByPatient(patientId);
     }
 
     // ✅ VIEW MEDICAL RECORDS

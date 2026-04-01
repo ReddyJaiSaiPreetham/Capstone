@@ -1,3 +1,4 @@
+
 package com.edutech.healthcare_appointment_management_system.controller;
 
 import com.edutech.healthcare_appointment_management_system.entity.Appointment;
@@ -21,7 +22,7 @@ public class DoctorController {
     @Autowired
     private DoctorService doctorService;
 
-    // UPDATE DOCTOR AVAILABILITY
+    // ✅ UPDATE AVAILABILITY
     @PostMapping("/api/doctor/availability")
     public ResponseEntity<Doctor> updateAvailability(
             @RequestParam Long doctorId,
@@ -33,14 +34,13 @@ public class DoctorController {
         return new ResponseEntity<>(updatedDoctor, HttpStatus.OK);
     }
 
-    // VIEW DOCTOR APPOINTMENTS
+    // ✅ FIXED: VIEW DOCTOR APPOINTMENTS
     @GetMapping("/api/doctor/appointments")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(
             @RequestParam Long doctorId) {
 
-        Doctor doctor = doctorService.getDoctorById(doctorId);
         List<Appointment> appointments =
-                appointmentService.getAppointmentsByDoctor(doctor);
+                appointmentService.getAppointmentsByDoctor(doctorId);
 
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }

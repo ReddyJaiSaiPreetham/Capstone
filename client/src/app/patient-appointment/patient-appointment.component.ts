@@ -20,19 +20,24 @@ export class PatientAppointmentComponent implements OnInit {
   }
 
   // ✅ Fetch appointments for patient
-  getAppointments(): void {
+  
+getAppointments(): void {
 
-    const userIdString = localStorage.getItem('userId');
+  const userIdString = localStorage.getItem('userId');
+  const userId = userIdString ? parseInt(userIdString, 10) : null;
 
-    // ✅ Parse userId to integer (if exists)
-    const userId = userIdString ? parseInt(userIdString, 10) : null;
-
-    if (userId !== null) {
-      this.httpService.getAppointmentByPatient(userId).subscribe((data: any) => {
-        this.appointmentList = data;
-        console.log(this.appointmentList);
-      });
-    }
+  if (userId !== null) {
+    this.httpService.getAppointmentByPatient(userId).subscribe({
+      next: (data: any) => {
+        console.log("Appointments:", data); // ✅ DEBUG
+        this.appointmentList = data || [];
+      },
+      error: (err) => {
+        console.log("ERROR fetching appointments:", err);
+        this.appointmentList = [];
+      }
+    });
   }
+}
 }
 ``
