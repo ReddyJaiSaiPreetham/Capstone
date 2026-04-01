@@ -2,13 +2,13 @@
 
   <h2 class="text-center mb-4">Receptionist Appointments</h2>
 
-  <!-- Appointment List -->
+  <!-- ✅ Appointment List -->
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
         <th>ID</th>
-        <th>Patient Name</th>
-        <th>Doctor Name</th>
+        <th>Patient</th>
+        <th>Doctor</th>
         <th>Appointment Time</th>
         <th>Action</th>
       </tr>
@@ -17,13 +17,24 @@
     <tbody>
       <tr *ngFor="let item of appointmentList">
         <td>{{ item.id }}</td>
-        <td>{{ item.patientName }}</td>
-        <td>{{ item.doctorName }}</td>
-        <td>{{ item.time | date:'medium' }}</td>
+
+        <!-- ✅ Patient details -->
         <td>
-          <button 
-            class="btn btn-primary btn-sm"
-            (click)="editAppointment(item)">
+          <strong>{{ item.patient?.username }}</strong><br>
+          <small>{{ item.patient?.email }}</small>
+        </td>
+
+        <!-- ✅ Doctor details -->
+        <td>
+          <strong>{{ item.doctor?.username }}</strong><br>
+          <small>{{ item.doctor?.email }}</small>
+        </td>
+
+        <!-- ✅ Correct time display -->
+        <td>{{ formatTime(item.appointmentTime) }}</td>
+
+        <td>
+          <button class="btn btn-primary btn-sm" (click)="editAppointment(item)">
             Edit
           </button>
         </td>
@@ -37,7 +48,7 @@
     </tbody>
   </table>
 
-  <!-- Edit / Reschedule Form -->
+  <!-- ✅ Reschedule Form -->
   <div *ngIf="isAdded" class="card mt-4">
     <div class="card-header bg-primary text-white">
       Reschedule Appointment
@@ -46,35 +57,21 @@
     <div class="card-body">
       <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
 
-        <!-- Hidden ID Field -->
         <input type="hidden" formControlName="id">
 
-        <!-- Time Field -->
         <div class="mb-3">
-          <label for="time" class="form-label">New Appointment Time</label>
-          <input 
+          <label class="form-label">New Appointment Time</label>
+          <input
             type="datetime-local"
-            id="time"
             class="form-control"
-            formControlName="time"
-          >
-
-          <div 
-            class="text-danger"
-            *ngIf="itemForm.controls['time'].invalid && itemForm.controls['time'].touched">
-            Appointment time is required
-          </div>
+            formControlName="time">
         </div>
 
-        <!-- Buttons -->
-        <button 
-          type="submit"
-          class="btn btn-success"
-          [disabled]="itemForm.invalid">
+        <button type="submit" class="btn btn-success" [disabled]="itemForm.invalid">
           Update
         </button>
 
-        <button 
+        <button
           type="button"
           class="btn btn-secondary ms-2"
           (click)="isAdded = false; itemForm.reset()">
@@ -85,10 +82,8 @@
     </div>
   </div>
 
-  <!-- Response Message -->
-  <div 
-    *ngIf="responseMessage"
-    class="alert alert-info mt-3">
+  <!-- ✅ Response Message -->
+  <div *ngIf="responseMessage" class="alert alert-info mt-3">
     {{ responseMessage }}
   </div>
 

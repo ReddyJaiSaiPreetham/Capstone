@@ -1,37 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-receptionist-appointments',
   templateUrl: './receptionist-appointments.component.html',
-  styleUrls: ['./receptionist-appointments.component.scss'],
-  providers: [DatePipe]
+  styleUrls: ['./receptionist-appointments.component.scss']
 })
 export class ReceptionistAppointmentsComponent implements OnInit {
 
-  // Form for editing/rescheduling appointments
   itemForm: FormGroup;
-
-  // Default form model
-  formModel: any = {};
-
-  // Stores response messages
-  responseMessage: any;
-
-  // List of appointments
+  responseMessage: string = '';
   appointmentList: any[] = [];
-
-  // Flag to identify edit mode
   isAdded: boolean = false;
 
   constructor(
     public httpService: HttpService,
-    private formBuilder: FormBuilder,
-    private datePipe: DatePipe
+    private formBuilder: FormBuilder
   ) {
-    // Initialize reactive form
     this.itemForm = this.formBuilder.group({
       id: ['', Validators.required],
       time: ['', Validators.required]
@@ -42,38 +28,63 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.getAppointments();
   }
 
-  // Fetch all appointments
-  getAppointments() {
-    this.httpService.getAllAppointments().subscribe((data: any) => {
+  // ✅ Fetch all appointments
+  getAppointments(): void {
+    this.httpService.getAllAppointments().subscribe((data: any[]) => {
       this.appointmentList = data;
-      console.log(this.appointmentList);
     });
   }
 
-  // Edit selected appointment
-  editAppointment(val: any) {
+  // ✅ Edit selected appointment
+  editAppointment(item: any): void {
     this.itemForm.patchValue({
-      id: val.id,
-      time: val.time
+      id: item.id,
+      time: item.appointmentTime.substring(0, 16) // yyyy-MM-ddTHH:mm
     });
     this.isAdded = true;
   }
 
-  // Submit reschedule request
-  onSubmit() {
-    const formattedTime = this.datePipe.transform(
-      this.itemForm.value.time,
-      'yyyy-MM-dd HH:mm:ss'
-    );
+  // ✅ Reschedule appointment
+  onSubmit(): void {
 
-    this.httpService.reScheduleAppointment(
-      this.itemForm.value.id,
-      formattedTime
-    ).subscribe((response: any) => {
-      this.responseMessage = response;
-      this.itemForm.reset();
-      this.isAdded = false;
-      this.getAppointments();
-    });
+    if (this.itemForm.invalid) {
+      return;
+    }
+
+    const rawTime = this.itemForm.value.time; // yyyy-MM-ddTHH:mm
+    const formattedTime = rawTime.replace('T', ' ') + ':00';
+
+    this.httpService
+      .reScheduleAppointment(this.itemForm.value.id, { time: formattedTime })
+      .subscribe({
+        next: () => {
+          this.responseMessage = 'Appointment rescheduled successfully ✅';
+          this.itemForm.reset();
+          this.isAdded = false;
+          this.getAppointments();
+        },
+        error: () => {
+          alert('Failed to reschedule appointment');
+        }
+      });
+  }
+
+  // ✅ ✅ ADD THIS METHOD (THIS FIXES THE ERROR)
+  formatTime(time: string): string {
+    if (!time) {
+      return '';
+    }
+
+    // Example input: 2026-04-29T10:55:00.000+00:00
+    const clean = time.substring(0, 19); // yyyy-MM-ddTHH:mm:ss
+    const [datePart, timePart] = clean.split('T');
+    const [year, month, day] = datePart.split('-');
+    const [hh, mm] = timePart.split(':');
+
+    const hour = parseInt(hh, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+
+    return `${day}-${month}-${year} ${displayHour}:${mm} ${ampm}`;
   }
 }

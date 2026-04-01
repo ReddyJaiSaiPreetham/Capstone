@@ -63,25 +63,30 @@ export class HttpService {
     );
   }
 
-  // 5. SCHEDULE APPOINTMENT (PATIENT)
-  ScheduleAppointment(details: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(
-      `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-      { time: details.time },
-      { headers }
-    );
-  }
+// 5. SCHEDULE APPOINTMENT (PATIENT)
+// 5. SCHEDULE APPOINTMENT (PATIENT)
+ScheduleAppointment(details: any): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.post(
+    `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+    { time: details.time },
+    {
+      headers,
+      responseType: 'text' as 'json'   // ✅ CRITICAL FIX
+    }
+  );
+}
 
-  // 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
-  ScheduleAppointmentByReceptionist(details: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(
-      `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-      { time: details.time },
-      { headers }
-    );
-  }
+
+// 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
+ScheduleAppointmentByReceptionist(details: any): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.post(
+    `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+    { time: details.time },
+    { headers }
+  );
+}
 
   // 7. RESCHEDULE APPOINTMENT
   reScheduleAppointment(appointmentId: any, formvalue: any): Observable<any> {

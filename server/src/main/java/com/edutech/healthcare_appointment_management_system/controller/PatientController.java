@@ -7,6 +7,7 @@ import com.edutech.healthcare_appointment_management_system.repository.PatientRe
 import com.edutech.healthcare_appointment_management_system.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class PatientController {
     @Autowired
     private DoctorService doctorService;
 
-    // ✅ ADD REPOSITORIES
+    // ✅ Repositories
     @Autowired
     private PatientRepository patientRepository;
 
@@ -36,21 +37,31 @@ public class PatientController {
         return doctorService.getAllDoctors();
     }
 
-    // ✅ SCHEDULE APPOINTMENT
+    // ✅ SCHEDULE APPOINTMENT (FIXED ✅)
     @PostMapping("/api/patient/appointment")
-    public Appointment scheduleAppointment(
+    public ResponseEntity<String> scheduleAppointment(
             @RequestParam Long patientId,
             @RequestParam Long doctorId,
-            @RequestBody TimeDto timeDto) {
+            @RequestBody TimeDto timeDto
+    ) {
 
+        // ✅ Fetch Patient
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
+        // ✅ Fetch Doctor
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        return appointmentService.scheduleAppointment(
-                patient, doctor, timeDto.getTime());
+        // ✅ Schedule appointment (NO 반환 object → avoids Jackson loop)
+        appointmentService.scheduleAppointment(
+                patient,
+                doctor,
+                timeDto.getTime()
+        );
+
+        // ✅ Safe response
+        return ResponseEntity.ok("Appointment Scheduled");
     }
 
     // ✅ VIEW PATIENT APPOINTMENTS

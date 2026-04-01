@@ -2,70 +2,77 @@
 <div class="app-header">
   <span class="title">HAM System</span>
   <div class="menu">
-    <a routerLink="/patient-appointments">Patient Appointments</a>
+    <a routerLink="/patient-appointment">My Appointments</a>
     <a routerLink="/schedule-appointment">Schedule Appointment</a>
     <a routerLink="/logout">Logout</a>
   </div>
 </div>
 
-<!-- Main Container -->
 <div class="container">
 
-  <!-- Add Appointment Section -->
-  <div class="add-appointment">
-    <h3>Add Appointment</h3>
+  <!-- ✅ Success Message -->
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <!-- Doctors List -->
+  <h3>Available Doctors</h3>
+
+  <table class="doctors-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Doctor</th>
+        <th>Specialty</th>
+        <th>Availability</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let doctor of doctorList">
+        <td>{{ doctor.id }}</td>
+        <td>{{ doctor.username }}</td>
+        <td>{{ doctor.specialty }}</td>
+        <td>{{ doctor.availability }}</td>
+        <td>
+          <button
+            (click)="addAppointment(doctor)"
+            [disabled]="doctor.availability !== 'Yes'">
+            Appointment
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="doctorList.length === 0">
+        <td colspan="5">No doctors available</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Appointment Form -->
+  <div *ngIf="isAdded" class="add-appointment mt-4">
+    <h3>Schedule Appointment</h3>
 
     <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+      <!-- ✅ REQUIRED hidden control -->
+      <input type="hidden" formControlName="doctorId">
 
       <label>Appointment Time</label>
       <input
         type="datetime-local"
-        formControlName="appointmentTime"
-        required
-      />
+        formControlName="appointmentTime">
 
-      <br /><br />
+      <br><br>
 
-      <button type="submit" [disabled]="!appointmentForm.valid">
+      <button
+        type="submit"
+        [disabled]="appointmentForm.invalid">
         Submit
       </button>
+
     </form>
-  </div>
-
-  <br />
-
-  <!-- Doctors List -->
-  <div class="doctors-section">
-    <h3>Doctors</h3>
-
-    <table class="doctors-table">
-      <thead>
-        <tr>
-          <th>Id</th>
-          <th>Name</th>
-          <th>Specialty</th>
-          <th>Availability</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let doctor of doctorList">
-          <td>{{ doctor.id }}</td>
-          <td>{{ doctor.name }}</td>
-          <td>{{ doctor.specialty }}</td>
-          <td>{{ doctor.availability }}</td>
-          <td>
-            <button
-              class="btn-appointment"
-              (click)="addAppointment(doctor)"
-              [disabled]="doctor.availability !== 'Yes'"
-            >
-              Appointment
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
   </div>
 
 </div>

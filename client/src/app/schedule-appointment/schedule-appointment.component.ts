@@ -1,168 +1,120 @@
 import { Component, OnInit } from '@angular/core';
-
 import { HttpService } from '../../services/http.service';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
- 
+import { DatePipe } from '@angular/common';
+
 @Component({
-
   selector: 'app-schedule-appointment',
-
   templateUrl: './schedule-appointment.component.html',
-
-  styleUrls: ['./schedule-appointment.component.scss']
-
+  styleUrls: ['./schedule-appointment.component.scss'],
+  providers: [DatePipe]
 })
-
 export class ScheduleAppointmentComponent implements OnInit {
- 
- 
 
   doctorList: any[] = [];
 
+  // ✅ UI form used by user
   appointmentForm!: FormGroup;
 
-  formattedDate: any;
-
-  isAdded: boolean = false;
- 
-  
-
+  // ✅ Test-required form (DO NOT REMOVE)
   itemForm!: FormGroup;
- 
 
+  // UI flags
+  isAdded: boolean = false;
+  successMessage: string = '';
 
   constructor(
-
     public httpService: HttpService,
-
-    private formBuilder: FormBuilder
-
+    private formBuilder: FormBuilder,
+    private datePipe: DatePipe
   ) {
-
-    // UI form (prewritten usage)
-
     this.appointmentForm = this.formBuilder.group({
-
       doctorId: ['', Validators.required],
-
       appointmentTime: ['', Validators.required]
-
     });
-
   }
- 
-  // Lifecycle hook
 
   ngOnInit(): void {
- 
-    // TEST FORM (unit tests expect this exact structure)
 
+    // ✅ Form required by unit tests
     this.itemForm = this.formBuilder.group({
-
       patientId: ['', Validators.required],
-
       doctorId: ['', Validators.required],
-
       time: ['', Validators.required]
-
     });
- 
+
     this.getDoctors();
-
   }
- 
-  // Fetch doctors
 
+  // ✅ Load doctors
   getDoctors(): void {
-
-    this.httpService.getDoctors().subscribe((data: any) => {
-
-      this.doctorList = data;
-
+    this.httpService.getDoctors().subscribe({
+      next: (data: any) => {
+        this.doctorList = Array.isArray(data) ? data : [];
+      },
+      error: () => {
+        this.doctorList = [];
+      }
     });
-
   }
- 
-  // On Appointment button click
 
+  // ✅ When user clicks Appointment
   addAppointment(doctor: any): void {
- 
+
     const userIdString = localStorage.getItem('userId');
-
     const userId = userIdString ? parseInt(userIdString, 10) : null;
- 
-    // Update TEST FORM
 
+    // Sync both forms
     this.itemForm.patchValue({
-
       patientId: userId,
-
       doctorId: doctor.id
-
     });
- 
-    // Update UI FORM
 
     this.appointmentForm.patchValue({
-
       doctorId: doctor.id
-
     });
- 
+
     this.isAdded = true;
-
+    this.successMessage = '';
   }
- 
-  // Submit appointment
 
-  onSubmit(): void {
- 
-    if (this.appointmentForm.invalid) {
+  // ✅ Submit appointment (FIXED – no timezone issue)
+onSubmit(): void {
 
-      return;
+  if (this.appointmentForm.invalid) {
+    return;
+  }
 
-    }
- 
-    // Format date for backend
+  // ✅ Get raw datetime-local value
+  // Example: "2026-04-30T10:39"
+  const rawTime = this.appointmentForm.value.appointmentTime;
 
-    this.formattedDate = new Date(
+  // ✅ Convert to backend-required format WITHOUT timezone conversion
+  // Result: "2026-04-30 10:39:00"
+  const formattedTime = rawTime.replace('T', ' ') + ':00';
 
-      this.appointmentForm.value.appointmentTime
+  // ✅ Update test-required form
+  this.itemForm.patchValue({
+    time: formattedTime
+  });
 
-    ).toISOString();
- 
-    // Sync TEST FORM
+  const appointmentData = {
+    patientId: this.itemForm.value.patientId,
+    doctorId: this.itemForm.value.doctorId,
+    time: this.itemForm.value.time
+  };
 
-    this.itemForm.patchValue({
-
-      time: this.formattedDate
-
-    });
- 
-    const appointmentData = {
-
-      patientId: this.itemForm.value.patientId,
-
-      doctorId: this.itemForm.value.doctorId,
-
-      time: this.itemForm.value.time
-
-    };
- 
-    this.httpService.ScheduleAppointment(appointmentData).subscribe(() => {
-
+  this.httpService.ScheduleAppointment(appointmentData).subscribe({
+    next: () => {
+      this.successMessage = 'Appointment scheduled successfully ✅';
       this.isAdded = false;
-
       this.appointmentForm.reset();
-
       this.itemForm.reset();
-
-      alert('Appointment scheduled successfully');
-
-    });
-
-  }
+    },
+    error: () => {
+      alert('Failed to schedule appointment');
+    }
+  });
+}
 
 }
- 

@@ -7,43 +7,99 @@ import { DatePipe } from '@angular/common';
   selector: 'app-receptionist-schedule-appointments',
   templateUrl: './receptionist-schedule-appointments.component.html',
   styleUrls: ['./receptionist-schedule-appointments.component.scss'],
-  providers: [DatePipe] 
-  
+  providers: [DatePipe]
 })
 export class ReceptionistScheduleAppointmentsComponent implements OnInit {
-  
+
+  // ✅ Single form used in HTML
   itemForm: FormGroup;
-  formModel:any={};
-  responseMessage:any;
-  isAdded: boolean=false;
-  constructor(public httpService:HttpService,private formBuilder: FormBuilder,private datePipe: DatePipe) {
+
+  // ✅ Dropdown data
+  patientList: any[] = [];
+  doctorList: any[] = [];
+
+  // ✅ UI message
+  responseMessage: string = '';
+
+  constructor(
+    public httpService: HttpService,
+    private formBuilder: FormBuilder,
+    private datePipe: DatePipe
+  ) {
     this.itemForm = this.formBuilder.group({
-      patientId: [this.formModel.patientId,[ Validators.required]],
-      doctorId: [this.formModel.doctorId,[ Validators.required]],
-      time: [this.formModel.time,[ Validators.required]],
-  });
-   }
+      patientId: ['', Validators.required],
+      doctorId: ['', Validators.required],
+      time: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
-  
+    this.loadPatients();
+    this.loadDoctors();
   }
 
-  onSubmit()
-  {
-   
-    debugger;
-    const formattedTime = this.datePipe.transform(this.itemForm.controls['time'].value, 'yyyy-MM-dd HH:mm:ss');
-
-    // Update the form value with the formatted date
-    this.itemForm.controls['time'].setValue(formattedTime);
-    debugger;
-    this.httpService.ScheduleAppointmentByReceptionist( this.itemForm.value).subscribe((data)=>{
-   
-      this.itemForm.reset();
-      this.responseMessage="Appointment Save Successfully";
-      this.isAdded=false;
-    })
-    
+  // ✅ Load patients (derived from existing appointments – security safe)
+  loadPatients(): void {
+    this.httpService.getAllAppointments().subscribe({
+      next: (data: any[]) => {
+        const map = new Map<number, any>();
+        data.forEach(appt => {
+          if (appt.patient && !map.has(appt.patient.id)) {
+            map.set(appt.patient.id, appt.patient);
+          }
+        });
+        this.patientList = Array.from(map.values());
+      },
+      error: () => {
+        this.patientList = [];
+      }
+    });
   }
 
+  // ✅ Load doctors from DB
+  loadDoctors(): void {
+  this.httpService.getAllAppointments().subscribe({
+    next: (data: any[]) => {
+      const map = new Map<number, any>();
+
+      data.forEach(appt => {
+        if (appt.doctor && !map.has(appt.doctor.id)) {
+          map.set(appt.doctor.id, appt.doctor);
+        }
+      });
+
+      this.doctorList = Array.from(map.values());
+    },
+    error: () => {
+      this.doctorList = [];
+    }
+  });
+}
+
+  // ✅ Submit appointment
+  onSubmit(): void {
+
+    if (this.itemForm.invalid) {
+      return;
+    }
+
+    const formattedTime = this.datePipe.transform(
+      this.itemForm.value.time,
+      'yyyy-MM-dd HH:mm:ss'
+    );
+
+    this.itemForm.patchValue({ time: formattedTime });
+
+    this.httpService
+      .ScheduleAppointmentByReceptionist(this.itemForm.value)
+      .subscribe({
+        next: () => {
+          this.responseMessage = 'Appointment scheduled successfully ✅';
+          this.itemForm.reset();
+        },
+        error: () => {
+          alert('Failed to schedule appointment');
+        }
+      });
+  }
 }

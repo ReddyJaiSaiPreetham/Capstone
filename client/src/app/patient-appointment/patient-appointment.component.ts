@@ -8,31 +8,50 @@ import { HttpService } from '../../services/http.service';
 })
 export class PatientAppointmentComponent implements OnInit {
 
-  // ✅ Stores the list of appointments for the patient
   appointmentList: any[] = [];
 
-  // ✅ Inject HttpService
   constructor(public httpService: HttpService) {}
 
-  // ✅ Lifecycle hook
   ngOnInit(): void {
     this.getAppointments();
   }
 
-  // ✅ Fetch appointments for patient
   getAppointments(): void {
-
     const userIdString = localStorage.getItem('userId');
-
-    // ✅ Parse userId to integer (if exists)
     const userId = userIdString ? parseInt(userIdString, 10) : null;
 
     if (userId !== null) {
       this.httpService.getAppointmentByPatient(userId).subscribe((data: any) => {
         this.appointmentList = data;
-        console.log(this.appointmentList);
       });
     }
   }
+
+  /**
+   * ✅ Safe formatter for ISO datetime string
+   * Example input : 2026-04-29T10:55:00.000+00:00
+   * Output        : 29-Apr-2026 10:55 AM
+   */
+  formatAppointmentTime(time: string): string {
+
+    if (!time) {
+      return '';
+    }
+
+    // Remove timezone & milliseconds
+    const clean = time.substring(0, 19); // YYYY-MM-DDTHH:MM:SS
+    const [datePart, timePart] = clean.split('T');
+
+    const [year, month, day] = datePart.split('-');
+    const [hourStr, minute] = timePart.split(':');
+
+    const hourNum = parseInt(hourStr, 10);
+    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    return `${day}-${months[+month - 1]}-${year} ${displayHour}:${minute} ${ampm}`;
+  }
 }
-``
