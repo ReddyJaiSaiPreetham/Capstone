@@ -13,11 +13,9 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // ✅ Base64‑safe key
     private static final String SECRET_KEY =
             "YmFja2VuZF9oZWFsdGhjYXJlX2FwcA==";
 
-    // ✅ GENERATE TOKEN
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -27,23 +25,19 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ EXTRACT USERNAME
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // ✅ EXTRACT EXPIRATION
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // ✅ EXTRACT CLAIM
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // ✅ PARSE CLAIMS SAFELY
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(SECRET_KEY.getBytes())
@@ -51,7 +45,6 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // ✅ VALIDATE TOKEN
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername())

@@ -31,7 +31,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // ✅ IMPORTANT: Skip JWT filter for LOGIN & REGISTER endpoints
         String path = request.getServletPath();
         if (path.equals("/api/user/login") ||
             path.equals("/api/patient/register") ||
@@ -51,7 +50,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             try {
                 username = jwtUtil.extractUsername(jwt);
             } catch (Exception e) {
-                // Invalid token – continue without authentication
                 filterChain.doFilter(request, response);
                 return;
             }

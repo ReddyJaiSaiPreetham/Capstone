@@ -21,7 +21,6 @@ public class DoctorController {
     @Autowired
     private DoctorService doctorService;
 
-    // UPDATE DOCTOR AVAILABILITY
     @PostMapping("/api/doctor/availability")
     public ResponseEntity<Doctor> updateAvailability(
             @RequestParam Long doctorId,
@@ -33,7 +32,6 @@ public class DoctorController {
         return new ResponseEntity<>(updatedDoctor, HttpStatus.OK);
     }
 
-    // VIEW DOCTOR APPOINTMENTS
     @GetMapping("/api/doctor/appointments")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(
             @RequestParam Long doctorId) {

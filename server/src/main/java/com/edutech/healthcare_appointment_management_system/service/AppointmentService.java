@@ -17,7 +17,6 @@ public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    // ✅ Schedule appointment (Patient / Receptionist)
     public Appointment scheduleAppointment(
             Patient patient,
             Doctor doctor,
@@ -32,14 +31,12 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // ✅ Reschedule appointment (Receptionist)
     public Appointment rescheduleAppointment(
             Long appointmentId,
             Date newTime) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() ->
-                        new RuntimeException("Appointment not found"));
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
         appointment.setAppointmentTime(newTime);
         appointment.setStatus("RESCHEDULED");
@@ -47,17 +44,14 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // ✅ Patient: view appointments
     public List<Appointment> getAppointmentsByPatient(Patient patient) {
         return appointmentRepository.findByPatient(patient);
     }
 
-    // ✅ Doctor: view appointments
     public List<Appointment> getAppointmentsByDoctor(Doctor doctor) {
         return appointmentRepository.findByDoctor(doctor);
     }
 
-    // ✅ Receptionist: view all
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }

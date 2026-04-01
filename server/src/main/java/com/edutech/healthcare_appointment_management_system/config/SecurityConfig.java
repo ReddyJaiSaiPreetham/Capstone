@@ -43,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
             .authorizeRequests()
 
-            // ✅ PUBLIC APIs (VERY IMPORTANT)
             .antMatchers(
                 "/api/user/login",
                 "/api/patient/register",
@@ -51,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/receptionist/register"
             ).permitAll()
 
-            // ✅ PATIENT APIs
             .antMatchers(
                 "/api/patient/doctors",
                 "/api/patient/appointments",
@@ -59,13 +57,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/patient/medicalrecords"
             ).hasAuthority("PATIENT")
 
-            // ✅ DOCTOR APIs
             .antMatchers(
                 "/api/doctor/appointments",
                 "/api/doctor/availability"
             ).hasAuthority("DOCTOR")
 
-            // ✅ RECEPTIONIST APIs
             .antMatchers(
                 "/api/receptionist/appointments",
                 "/api/receptionist/appointment",
@@ -77,7 +73,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        // ✅ JWT filter (after public URLs are permitted)
         http.addFilterBefore(jwtRequestFilter,
                 UsernamePasswordAuthenticationFilter.class);
     }

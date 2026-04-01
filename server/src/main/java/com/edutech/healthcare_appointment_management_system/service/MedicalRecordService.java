@@ -18,12 +18,11 @@ public class MedicalRecordService {
 
     @Autowired
     public MedicalRecordService(MedicalRecordRepository medicalRecordRepository,
-                                PatientRepository patientRepository) {
+            PatientRepository patientRepository) {
         this.medicalRecordRepository = medicalRecordRepository;
         this.patientRepository = patientRepository;
     }
 
-    // ✅ Get medical records based on patient ID
     public List<MedicalRecord> getMedicalRecordsByPatientId(Long patientId) {
 
         Patient patient = patientRepository.findById(patientId)
@@ -33,6 +32,6 @@ public class MedicalRecordService {
     }
 
     public List<MedicalRecord> getMedicalRecordsByPatient(Patient patient) {
-    return medicalRecordRepository.findByPatient(patient);
-}
+        return medicalRecordRepository.findByPatient(patient);
+    }
 }

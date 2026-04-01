@@ -37,14 +37,12 @@ public class RegisterAndLoginController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ✅ PATIENT REGISTER
     @PostMapping("/api/patient/register")
     public ResponseEntity<User> registerPatient(@RequestBody Patient patient) {
         patient.setRole("PATIENT");
         return ResponseEntity.ok(userService.registerUser(patient));
     }
 
-    // ✅ DOCTOR REGISTER
     @PostMapping("/api/doctors/register")
     public ResponseEntity<User> registerDoctor(@RequestBody Doctor doctor) {
         doctor.setRole("DOCTOR");
@@ -54,7 +52,6 @@ public class RegisterAndLoginController {
     @PostMapping("/api/receptionist/register")
 public ResponseEntity<User> registerReceptionist(@RequestBody Receptionist receptionist) {
     receptionist.setRole("RECEPTIONIST");
-    //User savedUser = userService.registerUser(receptionist);
     return ResponseEntity.ok(userService.registerUser(receptionist));
 }
 

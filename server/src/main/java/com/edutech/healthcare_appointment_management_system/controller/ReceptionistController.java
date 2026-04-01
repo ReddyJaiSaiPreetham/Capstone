@@ -27,13 +27,11 @@ public class ReceptionistController {
     private DoctorRepository doctorRepository;
 
 
-    // ✅ VIEW ALL APPOINTMENTS
     @GetMapping("/api/receptionist/appointments")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
     }
 
-    // ✅ SCHEDULE APPOINTMENT
     @PostMapping("/api/receptionist/appointment")
     public Appointment scheduleAppointment(
             @RequestParam Long patientId,

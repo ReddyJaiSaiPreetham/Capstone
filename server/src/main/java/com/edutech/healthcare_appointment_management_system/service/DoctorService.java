@@ -18,18 +18,15 @@ public class DoctorService {
         this.doctorRepository = doctorRepository;
     }
 
-    // ✅ Get doctor by ID
     public Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + doctorId));
     }
 
-    // ✅ Get all doctors
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }
 
-    // ✅ Update doctor availability
     public Doctor updateAvailability(Long doctorId, String availability) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + doctorId));
@@ -37,6 +34,5 @@ public class DoctorService {
         doctor.setAvailability(availability);
         return doctorRepository.save(doctor);
     }
-
 
 }

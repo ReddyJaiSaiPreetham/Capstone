@@ -10,6 +10,7 @@ import com.edutech.healthcare_appointment_management_system.entity.User;
 import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 
 import java.util.Collections;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -18,12 +19,11 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ✅ Register user
     public User registerUser(User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists!");
@@ -37,29 +37,23 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    // ✅ FIXED: Never return null
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    // ✅ Load user for Spring Security
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found: " + username)
-                );
+                        () -> new UsernameNotFoundException("User not found: " + username));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
                 Collections.singleton(
-                        new SimpleGrantedAuthority(user.getRole())
-                )
-        );
+                        new SimpleGrantedAuthority(user.getRole())));
     }
 }

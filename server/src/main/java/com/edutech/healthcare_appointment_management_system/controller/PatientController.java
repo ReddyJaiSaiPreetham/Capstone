@@ -24,20 +24,17 @@ public class PatientController {
     @Autowired
     private DoctorService doctorService;
 
-    // ✅ Repositories
     @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
     private DoctorRepository doctorRepository;
 
-    // ✅ VIEW DOCTORS
     @GetMapping("/api/patient/doctors")
     public List<Doctor> getDoctors() {
         return doctorService.getAllDoctors();
     }
 
-    // ✅ SCHEDULE APPOINTMENT (FIXED ✅)
     @PostMapping("/api/patient/appointment")
     public ResponseEntity<String> scheduleAppointment(
             @RequestParam Long patientId,
@@ -45,26 +42,21 @@ public class PatientController {
             @RequestBody TimeDto timeDto
     ) {
 
-        // ✅ Fetch Patient
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
-        // ✅ Fetch Doctor
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // ✅ Schedule appointment (NO 반환 object → avoids Jackson loop)
         appointmentService.scheduleAppointment(
                 patient,
                 doctor,
                 timeDto.getTime()
         );
 
-        // ✅ Safe response
         return ResponseEntity.ok("Appointment Scheduled");
     }
 
-    // ✅ VIEW PATIENT APPOINTMENTS
     @GetMapping("/api/patient/appointments")
     public List<Appointment> getPatientAppointments(
             @RequestParam Long patientId) {
@@ -75,7 +67,6 @@ public class PatientController {
         return appointmentService.getAppointmentsByPatient(patient);
     }
 
-    // ✅ VIEW MEDICAL RECORDS
     @GetMapping("/api/patient/medicalrecords")
     public List<MedicalRecord> getMedicalRecords(
             @RequestParam Long patientId) {

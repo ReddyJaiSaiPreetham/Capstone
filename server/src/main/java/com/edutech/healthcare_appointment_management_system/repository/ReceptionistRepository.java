@@ -9,5 +9,5 @@ import com.edutech.healthcare_appointment_management_system.entity.Receptionist;
 
 @Repository
 public interface ReceptionistRepository extends JpaRepository<Receptionist,Long> {
-   // List<Receptionist> findByActiveTrue();
+   
 }
