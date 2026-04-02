@@ -58,6 +58,7 @@ export class DoctorAppointmentComponent implements OnInit {
     this.selectedDate = '';
     this.splitAppointments(this.allAppointments);
   }
+
 splitAppointments(list: any[]): void {
   const todayStr = new Date().toDateString();
 
@@ -128,7 +129,7 @@ splitAppointments(list: any[]): void {
       (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     // ✅ STRICT: must be MORE THAN 5 hours
-    return diffHours > 5;
+    return diffHours > 2;
   }
 
   editAppointment(app: any): void {
@@ -148,7 +149,7 @@ splitAppointments(list: any[]): void {
     const diff =
       (selected.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    if (selected <= now || diff <= 5) {
+    if (selected <= now || diff <= 2) {
       alert('Reschedule must be more than 5 hours from now');
       return;
     }
@@ -169,7 +170,6 @@ splitAppointments(list: any[]): void {
     this.selectedAppointment = null;
   }
 
-  /* ================= HELPERS ================= */
   parseLocal(time: string): Date {
     return new Date(time.replace(' ', 'T'));
   }
