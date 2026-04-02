@@ -19,7 +19,19 @@ public class Appointment {
 
     private String status;
 
+    @Column(name = "completionstatus", nullable = false)
+private String completionstatus = "PENDING";
+
+
     
+
+    public String getCompletionstatus() {
+        return completionstatus;
+    }
+
+    public void setCompletionstatus(String completionstatus) {
+        this.completionstatus = completionstatus;
+    }
 
     public Appointment(){}
 

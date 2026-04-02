@@ -34,47 +34,47 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder);
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
-            .authorizeRequests()
+                .authorizeRequests()
 
-            .antMatchers(
-                "/api/user/login",
-                "/api/patient/register",
-                "/api/doctors/register",
-                "/api/receptionist/register",
-                "/api/captcha"
-            ).permitAll()
+                .antMatchers(
+                        "/api/user/login",
+                        "/api/patient/register",
+                        "/api/doctors/register",
+                        "/api/receptionist/register",
+                        "/api/captcha")
+                .permitAll()
 
-            .antMatchers(
-                "/api/patient/doctors",
-                "/api/patient/appointments",
-                "/api/patient/appointment",
-                "/api/patient/medicalrecords"
-            ).hasAuthority("PATIENT")
+                .antMatchers(
+                        "/api/patient/doctors",
+                        "/api/patient/appointments",
+                        "/api/patient/appointment",
+                        "/api/patient/medicalrecords")
+                .hasAuthority("PATIENT")
 
-            .antMatchers(
-                "/api/doctor/appointments",
-                "/api/doctor/availability"
-            ).hasAuthority("DOCTOR")
+                .antMatchers(
+                        "/api/doctor/appointments",
+                        "/api/doctor/availability",
+                        "/api/doctor/appointment/**")
+                .hasAuthority("DOCTOR")
 
-            .antMatchers(
-                "/api/receptionist/appointments",
-                "/api/receptionist/appointment",
-                "/api/receptionist/patients",
-                "/api/receptionist/appointment-reschedule/**"
-            ).hasAuthority("RECEPTIONIST")
+                .antMatchers(
+                        "/api/receptionist/appointments",
+                        "/api/receptionist/appointment",
+                        "/api/receptionist/patients",
+                        "/api/receptionist/appointment-reschedule/**")
+                .hasAuthority("RECEPTIONIST")
 
-            
-            .anyRequest().authenticated()
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .anyRequest().authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtRequestFilter,
                 UsernamePasswordAuthenticationFilter.class);

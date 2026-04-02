@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root'
 })
- 
+
 export class HttpService {
 
   // Stores base API URL
@@ -17,7 +17,7 @@ export class HttpService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   // COMMON HEADER WITH JWT
   private getAuthHeaders(): HttpHeaders {
@@ -64,30 +64,30 @@ export class HttpService {
     );
   }
 
-// 5. SCHEDULE APPOINTMENT (PATIENT)
-// 5. SCHEDULE APPOINTMENT (PATIENT)
-ScheduleAppointment(details: any): Observable<any> {
-  const headers = this.getAuthHeaders();
-  return this.http.post(
-    `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-    { time: details.time },
-    {
-      headers,
-      responseType: 'text' as 'json'   // ✅ CRITICAL FIX
-    }
-  );
-}
+  // 5. SCHEDULE APPOINTMENT (PATIENT)
+  // 5. SCHEDULE APPOINTMENT (PATIENT)
+  ScheduleAppointment(details: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(
+      `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+      { time: details.time },
+      {
+        headers,
+        responseType: 'text' as 'json'   // ✅ CRITICAL FIX
+      }
+    );
+  }
 
 
-// 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
-ScheduleAppointmentByReceptionist(details: any): Observable<any> {
-  const headers = this.getAuthHeaders();
-  return this.http.post(
-    `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-    { time: details.time },
-    { headers }
-  );
-}
+  // 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
+  ScheduleAppointmentByReceptionist(details: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(
+      `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+      { time: details.time },
+      { headers }
+    );
+  }
 
   // 7. RESCHEDULE APPOINTMENT
   reScheduleAppointment(appointmentId: any, formvalue: any): Observable<any> {
@@ -162,12 +162,38 @@ ScheduleAppointmentByReceptionist(details: any): Observable<any> {
   }
 
 
-getAllPatients() {
-  const headers = this.getAuthHeaders();
-  return this.http.get<any[]>(
-    `${this.serverName}/api/receptionist/patients`,
+  getAllPatients() {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/receptionist/patients`,
+      { headers }
+    );
+  }
+  getDoctorAppointments() {
+    return this.http.get<any[]>(`${this.serverName}/api/doctor/appointments`);
+  }
+
+  completeAppointment(id: number) {
+    return this.http.put(
+      `${this.serverName}/api/doctor/appointment/${id}/complete`,
+      {}
+    );
+  }
+
+
+updateCompletionStatus(id: number, status: string) {
+  const headers = new HttpHeaders({
+    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+    'Content-Type': 'application/json'
+  });
+
+  return this.http.put(
+    `${this.serverName}/api/doctor/appointment/${id}/completion-status`,
+    { completionstatus: status },
     { headers }
   );
 }
+
+
 
 } 

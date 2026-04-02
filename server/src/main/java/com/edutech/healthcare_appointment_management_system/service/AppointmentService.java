@@ -79,4 +79,36 @@ public class AppointmentService {
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
+
+    public List<Appointment> getAppointmentsForDoctor(Long doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId);
+    }
+
+    public Appointment markAppointmentCompleted(Long appointmentId) {
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        appointment.setCompletionstatus("COMPLETED");
+        return appointmentRepository.save(appointment);
+    }
+
+
+    public Appointment updateCompletionStatus(Long id, String status) {
+
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        System.out.println("🟡 BEFORE UPDATE = " + appointment.getCompletionstatus());
+
+        appointment.setCompletionstatus(status);
+
+        Appointment saved = appointmentRepository.save(appointment);
+
+        System.out.println("🟢 AFTER UPDATE = " + saved.getCompletionstatus());
+
+        return saved;
+    }
 }
+
+
