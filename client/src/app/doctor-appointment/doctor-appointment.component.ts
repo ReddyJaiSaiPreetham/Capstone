@@ -60,36 +60,39 @@ export class DoctorAppointmentComponent implements OnInit {
   }
 
 splitAppointments(list: any[]): void {
-  const todayStr = new Date().toDateString();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // ✅ date-only comparison
 
   this.todayAppointments = [];
-
-  // ✅ Temporary storage
   const tempMap = new Map<string, any[]>();
 
   list.forEach(app => {
     if (!app.appointmentTime) return;
 
     const dateObj = this.parseLocal(app.appointmentTime);
-    const dateStr = dateObj.toDateString();
 
-    if (dateStr === todayStr) {
+    const appDate = new Date(dateObj);
+    appDate.setHours(0, 0, 0, 0);
+
+    // ✅ ALL today's appointments (past + future)
+    if (appDate.getTime() === today.getTime()) {
       this.todayAppointments.push(app);
-    } else if (dateObj.getTime() > Date.now()) {
-      if (!tempMap.has(dateStr)) {
-        tempMap.set(dateStr, []);
-      }
-      tempMap.get(dateStr)!.push(app);
+    }
+    // ✅ Only future dates go to upcoming
+    else if (appDate.getTime() > today.getTime()) {
+      const key = appDate.toDateString();
+      if (!tempMap.has(key)) tempMap.set(key, []);
+      tempMap.get(key)!.push(app);
     }
   });
 
-  // ✅ SORT TODAY (earliest → latest)
+  // ✅ sort today's appointments by time
   this.todayAppointments.sort((a, b) =>
     this.parseLocal(a.appointmentTime).getTime() -
     this.parseLocal(b.appointmentTime).getTime()
   );
 
-  // ✅ SORT APPOINTMENTS WITHIN EACH DATE
+  // ✅ sort upcoming appointments by time
   tempMap.forEach(apps => {
     apps.sort((a, b) =>
       this.parseLocal(a.appointmentTime).getTime() -
@@ -97,13 +100,11 @@ splitAppointments(list: any[]): void {
     );
   });
 
-  // ✅ SORT THE DATE CARDS THEMSELVES (KEY FIX)
+  // ✅ sort upcoming dates
   this.upcomingGrouped = new Map(
-    Array.from(tempMap.entries()).sort((a, b) => {
-      const dateA = new Date(a[0]).getTime();
-      const dateB = new Date(b[0]).getTime();
-      return dateA - dateB;
-    })
+    Array.from(tempMap.entries()).sort(
+      (a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime()
+    )
   );
 }
 

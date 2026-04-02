@@ -41,7 +41,7 @@
       <ng-container *ngFor="let app of todayAppointments">
 
         <tr>
-          <td>{{ app.appointmentTime | date:'dd MMM yyyy, hh:mm a':'UTC' }}</td>
+          <td>{{ app.appointmentTime | date:'dd MMM yyyy, hh:mm a' }}</td>
 
           <td>
             <strong>{{ app.patient?.username }}</strong><br>
@@ -102,7 +102,7 @@
 
       <div class="appointment-row">
         <div class="appointment-info">
-          <div class="time">{{ app.appointmentTime | date:'hh:mm a':'UTC' }}</div>
+          <div class="time">{{ app.appointmentTime | date:'hh:mm a' }}</div>
           <div class="patient">
             <strong>{{ app.patient?.username }}</strong>
             <small>{{ app.patient?.email }}</small>
