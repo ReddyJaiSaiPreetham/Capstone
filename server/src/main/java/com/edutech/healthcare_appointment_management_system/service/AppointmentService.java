@@ -109,6 +109,33 @@ public class AppointmentService {
 
         return saved;
     }
+
+public Appointment doctorRescheduleAppointment(Long appointmentId, Date newTime) {
+
+    Appointment appointment = appointmentRepository.findById(appointmentId)
+        .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+    // ✅ Prevent rescheduling completed appointments
+    if ("COMPLETED".equals(appointment.getCompletionstatus())) {
+        throw new RuntimeException("Completed appointments cannot be rescheduled");
+    }
+
+    // ✅ Enforce 5-hour rule
+    long timeDiffMillis =
+        appointment.getAppointmentTime().getTime() - new Date().getTime();
+
+    long diffInHours = timeDiffMillis / (1000 * 60 * 60);
+
+    if (diffInHours < 5) {
+        throw new RuntimeException(
+            "Rescheduling is allowed only at least 5 hours before appointment time");
+    }
+
+    appointment.setAppointmentTime(newTime);
+    appointment.setStatus("RESCHEDULED");
+
+    return appointmentRepository.save(appointment);
+}
 }
 
 

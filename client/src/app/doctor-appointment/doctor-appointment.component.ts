@@ -8,125 +8,179 @@ import { HttpService } from '../../services/http.service';
 })
 export class DoctorAppointmentComponent implements OnInit {
 
-  // ✅ OLD LOGIC (UNCHANGED)
-  appointmentList: any[] = [];
+  allAppointments: any[] = [];
 
-  // ✅ NEW ENHANCED VIEW VARIABLES
   todayAppointments: any[] = [];
   upcomingGrouped: Map<string, any[]> = new Map();
 
+  // Date search
+  selectedDate: string = '';
+
+  // Reschedule state
+  rescheduleAppointmentId: number | null = null;
+  selectedAppointment: any = null;
+  rescheduleTime: string = '';
+  minDateTime: string = '';
+
   constructor(public httpService: HttpService) {}
 
-  // ✅ SINGLE ngOnInit (IMPORTANT)
   ngOnInit(): void {
-    // Old method still exists but NOT auto-called
-    // this.getAppointments();
-
-    // ✅ New enhanced doctor view
+    this.minDateTime = this.getLocalDateTime();
     this.loadAppointments();
   }
 
-  // ✅ OLD METHOD (KEEPING IT – NOT AFFECTED)
-  getAppointments(): void {
+  /* ================= LOAD ================= */
+  loadAppointments(): void {
     const userId = localStorage.getItem('userId');
-    if (userId) {
-      const doctorId = parseInt(userId, 10);
-      this.httpService.getAppointmentByDoctor(doctorId).subscribe((res: any) => {
-        this.appointmentList = res;
-        console.log('Old appointments list:', this.appointmentList);
+    if (!userId) return;
+
+    this.httpService.getAppointmentByDoctor(+userId).subscribe(data => {
+      this.allAppointments = data;
+      this.applyFilter();
+    });
+  }
+
+  /* ================= SEARCH ================= */
+  applyFilter(): void {
+    let list = [...this.allAppointments];
+
+    if (this.selectedDate) {
+      const selected = new Date(this.selectedDate).toDateString();
+      list = list.filter(app => {
+        return this.parseLocal(app.appointmentTime).toDateString() === selected;
       });
     }
+
+    this.splitAppointments(list);
   }
 
-  // ✅ NEW METHOD (ENHANCED DOCTOR VIEW)
-  loadAppointments(): void {
-  const userId = localStorage.getItem('userId');
-
-  if (!userId) {
-    console.error('No doctor ID in localStorage');
-    return;
+  clearFilter(): void {
+    this.selectedDate = '';
+    this.splitAppointments(this.allAppointments);
   }
-
-  const doctorId = parseInt(userId, 10);
-
-  this.httpService.getAppointmentByDoctor(doctorId).subscribe((data: any[]) => {
-    console.log('RAW API DATA:', data);
-    this.splitAppointments(data);
-  });
-}
-
-
- splitAppointments(all: any[]): void {
+splitAppointments(list: any[]): void {
   const todayStr = new Date().toDateString();
 
   this.todayAppointments = [];
-  this.upcomingGrouped.clear();
 
-  all.forEach(appt => {
+  // ✅ Temporary storage
+  const tempMap = new Map<string, any[]>();
 
-    // ✅ SAFETY: skip NULL appointment_time
-    if (!appt.appointmentTime) {
-      console.warn('Skipping appointment with NULL time:', appt);
-      return;
-    }
+  list.forEach(app => {
+    if (!app.appointmentTime) return;
 
-    // ✅ Convert MySQL datetime → ISO
-    const isoTime = appt.appointmentTime.replace(' ', 'T');
-    const apptDateObj = new Date(isoTime);
+    const dateObj = this.parseLocal(app.appointmentTime);
+    const dateStr = dateObj.toDateString();
 
-    // ✅ SAFETY: skip invalid dates
-    if (isNaN(apptDateObj.getTime())) {
-      console.error('Invalid date:', appt.appointmentTime);
-      return;
-    }
-
-    const apptDateStr = apptDateObj.toDateString();
-
-    // ✅ TODAY
-    if (apptDateStr === todayStr) {
-      this.todayAppointments.push(appt);
-    }
-    // ✅ UPCOMING (future)
-    else if (apptDateObj.getTime() > Date.now()) {
-      if (!this.upcomingGrouped.has(apptDateStr)) {
-        this.upcomingGrouped.set(apptDateStr, []);
+    if (dateStr === todayStr) {
+      this.todayAppointments.push(app);
+    } else if (dateObj.getTime() > Date.now()) {
+      if (!tempMap.has(dateStr)) {
+        tempMap.set(dateStr, []);
       }
-      this.upcomingGrouped.get(apptDateStr)!.push(appt);
+      tempMap.get(dateStr)!.push(app);
     }
   });
 
-  // ✅ DEBUG (temporary – remove after verification)
-  console.log('TODAY APPOINTMENTS:', this.todayAppointments);
-  console.log('UPCOMING GROUPED:', Array.from(this.upcomingGrouped.entries()));
+  // ✅ SORT TODAY (earliest → latest)
+  this.todayAppointments.sort((a, b) =>
+    this.parseLocal(a.appointmentTime).getTime() -
+    this.parseLocal(b.appointmentTime).getTime()
+  );
+
+  // ✅ SORT APPOINTMENTS WITHIN EACH DATE
+  tempMap.forEach(apps => {
+    apps.sort((a, b) =>
+      this.parseLocal(a.appointmentTime).getTime() -
+      this.parseLocal(b.appointmentTime).getTime()
+    );
+  });
+
+  // ✅ SORT THE DATE CARDS THEMSELVES (KEY FIX)
+  this.upcomingGrouped = new Map(
+    Array.from(tempMap.entries()).sort((a, b) => {
+      const dateA = new Date(a[0]).getTime();
+      const dateB = new Date(b[0]).getTime();
+      return dateA - dateB;
+    })
+  );
 }
 
-  // ✅ MARK APPOINTMENT AS COMPLETED
-  markCompleted(id: number): void {
-    this.httpService.completeAppointment(id).subscribe(() => {
-      this.loadAppointments();
-    });
+
+  /* ================= STATUS ================= */
+  updateCompletionStatus(app: any): void {
+    this.httpService
+      .updateCompletionStatus(app.id, app.completionstatus)
+      .subscribe(() => this.loadAppointments());
   }
 
+  /* ================= RESCHEDULE RULE ================= */
+  canReschedule(app: any): boolean {
+    if (!app.appointmentTime) return false;
+    if (app.completionstatus === 'COMPLETED') return false;
 
-  // ✅ EDIT / RESCHEDULE APPOINTMENT (Doctor)
-editAppointment(app: any): void {
-  // For now, just log – later you can open a modal or reuse form
-  console.log('Reschedule clicked for appointment:', app);
+    const appointmentTime = this.parseLocal(app.appointmentTime);
+    const now = new Date();
 
-  // Example future usage:
-  // this.selectedAppointment = app;
-  // this.showRescheduleForm = true;
-}
+    if (appointmentTime <= now) return false;
 
+    const diffHours =
+      (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-updateCompletionStatus(app: any): void {
-  console.log('Auto-saving:', app.id, app.completionstatus);
+    // ✅ STRICT: must be MORE THAN 5 hours
+    return diffHours > 5;
+  }
 
-  this.httpService
-    .updateCompletionStatus(app.id, app.completionstatus)
-    .subscribe({
-      next: () => console.log('✅ DB updated'),
-      error: err => console.error('❌ Update failed', err)
-    });
-}
+  editAppointment(app: any): void {
+    if (!this.canReschedule(app)) return;
+
+    this.selectedAppointment = app;
+    this.rescheduleAppointmentId = app.id;
+    this.rescheduleTime = this.formatForInput(app.appointmentTime);
+  }
+
+  submitReschedule(): void {
+    if (!this.selectedAppointment || !this.rescheduleTime) return;
+
+    const selected = new Date(this.rescheduleTime);
+    const now = new Date();
+
+    const diff =
+      (selected.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (selected <= now || diff <= 5) {
+      alert('Reschedule must be more than 5 hours from now');
+      return;
+    }
+
+    const formattedTime = this.rescheduleTime.replace('T', ' ') + ':00';
+
+    this.httpService
+      .doctorRescheduleAppointment(this.selectedAppointment.id, formattedTime)
+      .subscribe(() => {
+        this.rescheduleAppointmentId = null;
+        this.selectedAppointment = null;
+        this.loadAppointments();
+      });
+  }
+
+  cancelReschedule(): void {
+    this.rescheduleAppointmentId = null;
+    this.selectedAppointment = null;
+  }
+
+  /* ================= HELPERS ================= */
+  parseLocal(time: string): Date {
+    return new Date(time.replace(' ', 'T'));
+  }
+
+  formatForInput(time: string): string {
+    return time.substring(0, 16);
+  }
+
+  getLocalDateTime(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }
 }

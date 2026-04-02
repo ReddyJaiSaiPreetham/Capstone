@@ -4,6 +4,7 @@ import com.edutech.healthcare_appointment_management_system.jwt.JwtRequestFilter
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -64,12 +65,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/doctor/appointment/**")
                 .hasAuthority("DOCTOR")
 
-                .antMatchers(
-                        "/api/receptionist/appointments",
-                        "/api/receptionist/appointment",
-                        "/api/receptionist/patients",
-                        "/api/receptionist/appointment-reschedule/**")
-                .hasAuthority("RECEPTIONIST")
+                        .antMatchers(
+                "/api/receptionist/appointments",
+                "/api/receptionist/patients"
+        ).hasAuthority("RECEPTIONIST")
+
+        .antMatchers(HttpMethod.POST,
+                "/api/receptionist/appointment"
+        ).hasAuthority("RECEPTIONIST")
+
+        .antMatchers(HttpMethod.PUT,
+                "/api/receptionist/appointment-reschedule/**"
+        ).hasAuthority("RECEPTIONIST")
+
+        .antMatchers(HttpMethod.DELETE,
+                "/api/receptionist/appointment/**"
+        ).hasAuthority("RECEPTIONIST")
 
                 .anyRequest().authenticated()
                 .and()

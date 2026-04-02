@@ -194,6 +194,32 @@ updateCompletionStatus(id: number, status: string) {
   );
 }
 
+doctorRescheduleAppointment(id: number, time: string) {
+  const headers = new HttpHeaders({
+    'Authorization': 'Bearer ' + localStorage.getItem('token'),
+    'Content-Type': 'application/json'
+  });
+
+  return this.http.put(
+    `${this.serverName}/api/doctor/appointment/${id}/reschedule`,
+    { time },
+    { headers }
+  );
+}
+
+
+
+deleteAppointment(id: number) {
+
+  const headers = new HttpHeaders({
+    'Authorization': 'Bearer ' + localStorage.getItem('token')
+  });
+
+  return this.http.delete(
+    `${this.serverName}/api/receptionist/appointment/${id}`,
+    { headers }
+  );
+}
 
 
 } 

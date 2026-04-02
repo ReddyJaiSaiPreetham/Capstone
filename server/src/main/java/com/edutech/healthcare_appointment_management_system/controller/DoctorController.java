@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -83,5 +85,18 @@ public ResponseEntity<?> updateCompletionStatus(
     appointmentService.updateCompletionStatus(id, status);
 
     return ResponseEntity.ok().build();
+}
+
+ @PutMapping("/api/doctor/appointment/{id}/reschedule")
+public ResponseEntity<Appointment> rescheduleAppointmentByDoctor(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body) {
+
+    Date newTime = Timestamp.valueOf(body.get("time"));
+
+    Appointment updated =
+            appointmentService.doctorRescheduleAppointment(id, newTime);
+
+    return ResponseEntity.ok(updated);
 }
 }

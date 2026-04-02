@@ -13,6 +13,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   responseMessage: string = '';
   appointmentList: any[] = [];
   isAdded: boolean = false;
+  searchText : string = '';
 
   
   currentPage: number = 1;
@@ -46,11 +47,21 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   }
 
   
-  get paginatedAppointments(): any[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.appointmentList.slice(startIndex, endIndex);
-  }
+get paginatedAppointments(): any[] {
+
+  const filtered = this.appointmentList.filter(item =>
+    item.patient?.username.toLowerCase().includes(this.searchText.toLowerCase()) ||
+    item.doctor?.username.toLowerCase().includes(this.searchText.toLowerCase())
+  );
+
+  this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+
+  const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  const endIndex = startIndex + this.itemsPerPage;
+
+  return filtered.slice(startIndex, endIndex);
+}
+
 
   
   goToPage(page: number): void {
@@ -120,4 +131,21 @@ export class ReceptionistAppointmentsComponent implements OnInit {
 
     return `${day}-${month}-${year} ${displayHour}:${mm} ${ampm}`;
   }
+
+
+  deleteAppointment(id: number): void {
+  if (!confirm('Are you sure you want to delete this appointment?')) {
+    return;
+  }
+
+  this.httpService.deleteAppointment(id).subscribe({
+    next: () => {
+      this.responseMessage = 'Appointment deleted successfully ✅';
+      this.getAppointments();
+    },
+    error: () => {
+      alert('Failed to delete appointment');
+    }
+  });
+}
 }
