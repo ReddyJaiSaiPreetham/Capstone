@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
 
     if (!this.IsLoggin) {
       this.router.navigateByUrl('/login');
-      return;
+      this.router.navigateByUrl('/home');
     }
 
     // ✅ Load logged-in user profile

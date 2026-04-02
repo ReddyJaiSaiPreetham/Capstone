@@ -169,6 +169,8 @@ export class HttpService {
       { headers }
     );
   }
+
+
   getDoctorAppointments() {
     return this.http.get<any[]>(`${this.serverName}/api/doctor/appointments`);
   }
@@ -241,4 +243,12 @@ updateUsername(username: string): Observable<any> {
   );
 }
 
+
+getDoctorsForReceptionist(): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(
+    `${this.serverName}/api/receptionist/doctors`,
+    { headers }
+  );
+}
 } 

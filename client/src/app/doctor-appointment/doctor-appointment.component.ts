@@ -60,8 +60,13 @@ export class DoctorAppointmentComponent implements OnInit {
   }
 
 splitAppointments(list: any[]): void {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // ✅ date-only comparison
+  const now = new Date();
+
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date(now);
+  todayEnd.setHours(23, 59, 59, 999);
 
   this.todayAppointments = [];
   const tempMap = new Map<string, any[]>();
@@ -71,28 +76,23 @@ splitAppointments(list: any[]): void {
 
     const dateObj = this.parseLocal(app.appointmentTime);
 
-    const appDate = new Date(dateObj);
-    appDate.setHours(0, 0, 0, 0);
-
-    // ✅ ALL today's appointments (past + future)
-    if (appDate.getTime() === today.getTime()) {
+    // ✅ STRICT "Today" range: 00:00 → 23:59 IST
+    if (dateObj >= todayStart && dateObj <= todayEnd) {
       this.todayAppointments.push(app);
-    }
-    // ✅ Only future dates go to upcoming
-    else if (appDate.getTime() > today.getTime()) {
-      const key = appDate.toDateString();
+    } 
+    // ✅ Everything AFTER today goes to Upcoming
+    else if (dateObj > todayEnd) {
+      const key = dateObj.toDateString();
       if (!tempMap.has(key)) tempMap.set(key, []);
       tempMap.get(key)!.push(app);
     }
   });
 
-  // ✅ sort today's appointments by time
   this.todayAppointments.sort((a, b) =>
     this.parseLocal(a.appointmentTime).getTime() -
     this.parseLocal(b.appointmentTime).getTime()
   );
 
-  // ✅ sort upcoming appointments by time
   tempMap.forEach(apps => {
     apps.sort((a, b) =>
       this.parseLocal(a.appointmentTime).getTime() -
@@ -100,7 +100,6 @@ splitAppointments(list: any[]): void {
     );
   });
 
-  // ✅ sort upcoming dates
   this.upcomingGrouped = new Map(
     Array.from(tempMap.entries()).sort(
       (a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime()
@@ -171,9 +170,29 @@ splitAppointments(list: any[]): void {
     this.selectedAppointment = null;
   }
 
-  parseLocal(time: string): Date {
-    return new Date(time.replace(' ', 'T'));
+  parseLocal(time: string | Date): Date {
+  // ✅ If already Date, return it
+  if (time instanceof Date) {
+    return time;
   }
+
+  // Normalize space/ISO format
+  const clean = time.substring(0, 19).replace('T', ' ');
+  const parts = clean.split(' ');
+
+  if (parts.length < 2) {
+    // fallback (very defensive)
+    return new Date(clean);
+  }
+
+  const [datePart, timePart] = parts;
+
+  const [year, month, day] = datePart.split('-').map(Number);
+  const [hour = 0, minute = 0, second = 0] = timePart.split(':').map(Number);
+
+  // ✅ Force LOCAL IST construction
+  return new Date(year, month - 1, day, hour, minute, second);
+}
 
   formatForInput(time: string): string {
     return time.substring(0, 16);

@@ -40,6 +40,18 @@ public class ReceptionistController {
         return patientRepository.findAll();
     }
 
+    // @GetMapping("/api/patient/doctors")
+    // public List<Doctor> getDoctors() {
+    //     return doctorRepository.findAll();
+    // }
+
+
+    @GetMapping("/api/receptionist/doctors")
+public List<Doctor> getAllDoctors() {
+    return doctorRepository.findAll();
+}
+
+
     // ✅ SCHEDULE APPOINTMENT
     @PostMapping("/api/receptionist/appointment")
     public Appointment scheduleAppointment(

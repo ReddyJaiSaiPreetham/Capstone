@@ -12,17 +12,29 @@
 
       <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
 
-        <div class="mb-3">
+         <div class="mb-3">
           <label class="form-label">Username</label>
 
           <input type="text" class="form-control" formControlName="username" placeholder="Enter username">
+
           <small class="text-danger"
             *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
             Username is required
           </small>
+
           <small class="text-danger"
             *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['minlength']">
             Minimum 4 characters required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['maxlength']">
+            Maximum 20 characters allowed
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['pattern']">
+            Username must start with a letter or underscore and can contain only letters, numbers, and underscore
           </small>
         </div>
 
@@ -34,7 +46,6 @@
           </small>
         </div>
 
-        <!-- Password -->
         <div class="mb-3">
           <label class="form-label">Password</label>
 
@@ -47,7 +58,12 @@
 
           <small class="text-danger"
             *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['minlength']">
-            Password must be at least 6 characters
+            Password must be at least 8 characters
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['pattern']">
+            Password must include at least 1 uppercase letter, 1 number, and 1 special character
           </small>
         </div>
 

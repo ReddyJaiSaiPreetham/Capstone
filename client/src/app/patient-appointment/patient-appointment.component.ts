@@ -27,25 +27,47 @@ export class PatientAppointmentComponent implements OnInit {
     }
   }
 
+  // formatAppointmentTime(time: string): string {
+
+  //   if (!time) {
+  //     return '';
+  //   }
+
+  //   const clean = time.substring(0, 19); 
+  //   const [datePart, timePart] = clean.split('T');
+
+  //   const [year, month, day] = datePart.split('-');
+  //   const [hourStr, minute] = timePart.split(':');
+
+  //   const hourNum = parseInt(hourStr, 10);
+  //   const ampm = hourNum >= 12 ? 'PM' : 'AM';
+  //   const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
+
+  //   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  //                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  //   return `${day}-${months[+month - 1]}-${year} ${displayHour}:${minute} ${ampm}`;
+  // }
+
   formatAppointmentTime(time: string): string {
+  if (!time) return '';
 
-    if (!time) {
-      return '';
-    }
+  // Normalize both formats: " " or "T"
+  const clean = time.substring(0, 19).replace('T', ' ');
+  const [datePart, timePart] = clean.split(' ');
 
-    const clean = time.substring(0, 19); 
-    const [datePart, timePart] = clean.split('T');
+  if (!datePart || !timePart) return '';
 
-    const [year, month, day] = datePart.split('-');
-    const [hourStr, minute] = timePart.split(':');
+  const [year, month, day] = datePart.split('-');
+  const [hourStr, minute] = timePart.split(':');
 
-    const hourNum = parseInt(hourStr, 10);
-    const ampm = hourNum >= 12 ? 'PM' : 'AM';
-    const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
 
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                  'Jul','Aug','Sep','Oct','Nov','Dec'];
 
-    return `${day}-${months[+month - 1]}-${year} ${displayHour}:${minute} ${ampm}`;
-  }
+  return `${day}-${months[+month - 1]}-${year} ${hour}:${minute} ${ampm}`;
+}
 }

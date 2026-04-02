@@ -22,13 +22,30 @@ export class LoginComponent implements OnInit {
     public httpService: HttpService,
     private formBuilder: FormBuilder,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
 
     this.itemForm = this.formBuilder.group({
-      username: ['', [Validators.required,Validators.minLength(4),Validators.maxLength(20),Validators.pattern('^[a-zA-Z0-9_]+$')]],
-      password: ['', [Validators.required,Validators.minLength(6),]],
+
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(4),
+          Validators.maxLength(20),
+          Validators.pattern('^[A-Za-z_][A-Za-z0-9_]*$')
+        ]
+      ],
+
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.pattern('^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$')
+        ]
+      ],
       captcha: ['', Validators.required]
     });
 
@@ -50,32 +67,32 @@ export class LoginComponent implements OnInit {
 
   onLogin(): void {
 
-  console.log('Form validity:', this.itemForm.valid);
-  console.log('Form value:', this.itemForm.value);
+    console.log('Form validity:', this.itemForm.valid);
+    console.log('Form value:', this.itemForm.value);
 
-  if (this.itemForm.invalid) {
-    this.itemForm.markAllAsTouched(); // ✅ SHOW ERRORS
-    return;
-  }
-
-  this.httpService.Login(this.itemForm.value).subscribe(
-    (res: any) => {
-
-      this.authService.saveToken(res.token);
-      this.authService.SetRole(res.role);
-      this.authService.saveUserId(res.userId.toString());
-
-      this.router.navigate(['/dashboard']);
-      setTimeout(() => window.location.reload(), 300);
-    },
-    error => {
-      this.showError = true;
-      this.errorMessage = 'Invalid username, password, or captcha';
-      this.loadCaptcha();
+    if (this.itemForm.invalid) {
+      this.itemForm.markAllAsTouched(); // ✅ SHOW ERRORS
+      return;
     }
-  );
-} 
-registration(): void {
+
+    this.httpService.Login(this.itemForm.value).subscribe(
+      (res: any) => {
+
+        this.authService.saveToken(res.token);
+        this.authService.SetRole(res.role);
+        this.authService.saveUserId(res.userId.toString());
+
+        this.router.navigate(['/dashboard']);
+        setTimeout(() => window.location.reload(), 300);
+      },
+      error => {
+        this.showError = true;
+        this.errorMessage = 'Invalid username, password, or captcha';
+        this.loadCaptcha();
+      }
+    );
+  }
+  registration(): void {
     this.router.navigate(['/registration']);
   }
 }

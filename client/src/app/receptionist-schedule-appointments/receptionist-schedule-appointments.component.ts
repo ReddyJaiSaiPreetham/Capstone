@@ -14,14 +14,12 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   itemForm: FormGroup;
   patientList: any[] = [];
   doctorList: any[] = [];
-
   responseMessage: string = '';
-   minDateTime: string = '';
+  minDateTime: string = '';
 
   constructor(
     public httpService: HttpService,
-    private formBuilder: FormBuilder,
-    private datePipe: DatePipe
+    private formBuilder: FormBuilder
   ) {
     this.itemForm = this.formBuilder.group({
       patientId: ['', Validators.required],
@@ -30,40 +28,28 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
+  ngOnInit(): void {
+    this.minDateTime = this.getLocalDateTime();
 
+    this.loadPatients();
+    this.loadDoctors();
+  }
 
-ngOnInit(): void {
-  const now = new Date();
-  this.minDateTime = now.toISOString().slice(0, 16);
+  loadPatients(): void {
+    this.httpService.getAllPatients().subscribe({
+      next: (data: any[]) => {
+        this.patientList = data;
+      },
+      error: () => {
+        this.patientList = [];
+      }
+    });
+  }
 
-  this.loadPatients();
-  this.loadDoctors();
-}
-loadPatients(): void {
-  this.httpService.getAllPatients().subscribe({
-    next: (data: any[]) => {
-      this.patientList = data;
-      console.log('Patients loaded:', this.patientList);
-    },
-    error: (err) => {
-      console.error('Failed to load patients', err);
-      this.patientList = [];
-    }
-  });
-}
-
-  loadDoctors(): void {
-  this.httpService.getAllAppointments().subscribe({
-    next: (data: any[]) => {
-      const map = new Map<number, any>();
-
-      data.forEach(appt => {
-        if (appt.doctor && !map.has(appt.doctor.id)) {
-          map.set(appt.doctor.id, appt.doctor);
-        }
-      });
-
-      this.doctorList = Array.from(map.values());
+loadDoctors(): void {
+  this.httpService.getDoctorsForReceptionist().subscribe({
+    next: (doctors) => {
+      this.doctorList = doctors;
     },
     error: () => {
       this.doctorList = [];
@@ -72,15 +58,11 @@ loadPatients(): void {
 }
 
   onSubmit(): void {
+    if (this.itemForm.invalid) return;
 
-    if (this.itemForm.invalid) {
-      return;
-    }
-
-    const formattedTime = this.datePipe.transform(
-      this.itemForm.value.time,
-      'yyyy-MM-dd HH:mm:ss'
-    );
+    // ✅ IST-safe formatting
+    const formattedTime =
+      this.itemForm.value.time.replace('T', ' ') + ':00';
 
     this.itemForm.patchValue({ time: formattedTime });
 
@@ -95,5 +77,11 @@ loadPatients(): void {
           alert('Failed to schedule appointment');
         }
       });
+  }
+
+  getLocalDateTime(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
   }
 }

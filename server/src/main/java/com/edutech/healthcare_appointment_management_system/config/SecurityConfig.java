@@ -39,35 +39,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
-                .authorizeRequests()
+    http.csrf().disable()
+        .authorizeRequests()
 
-                .antMatchers(
-                        "/api/user/login",
-                        "/api/patient/register",
-                        "/api/doctors/register",
-                        "/api/receptionist/register",
-                        "/api/captcha")
-                .permitAll()
+        // ✅ PUBLIC APIs
+        .antMatchers(
+                "/api/user/login",
+                "/api/patient/register",
+                "/api/doctors/register",
+                "/api/receptionist/register",
+                "/api/captcha"
+        ).permitAll()
 
-                .antMatchers(
-                        "/api/patient/doctors",
-                        "/api/patient/appointments",
-                        "/api/patient/appointment",
-                        "/api/patient/medicalrecords")
-                .hasAuthority("PATIENT")
+        // ✅ PATIENT APIs
+        .antMatchers(
+                "/api/patient/doctors",
+                "/api/patient/appointments",
+                "/api/patient/appointment",
+                "/api/patient/medicalrecords"
+        ).hasAuthority("PATIENT")
 
-                .antMatchers(
-                        "/api/doctor/appointments",
-                        "/api/doctor/availability",
-                        "/api/doctor/appointment/**")
-                .hasAuthority("DOCTOR")
+        // ✅ DOCTOR APIs
+        .antMatchers(
+                "/api/doctor/appointments",
+                "/api/doctor/availability",
+                "/api/doctor/appointment/**"
+        ).hasAuthority("DOCTOR")
 
-                        .antMatchers(
+        // ✅ RECEPTIONIST APIs
+        .antMatchers(
                 "/api/receptionist/appointments",
-                "/api/receptionist/patients"
+                "/api/receptionist/patients",
+                "/api/receptionist/doctors"
         ).hasAuthority("RECEPTIONIST")
 
         .antMatchers(HttpMethod.POST,
@@ -82,17 +87,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/receptionist/appointment/**"
         ).hasAuthority("RECEPTIONIST")
 
-        .antMatchers("/api/profile/**")
-                                .authenticated()
+        // ✅ PROFILE (ANY LOGGED-IN USER)
+        .antMatchers("/api/profile/**").authenticated()
 
-                .anyRequest().authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .anyRequest().authenticated()
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(jwtRequestFilter,
-                UsernamePasswordAuthenticationFilter.class);
-    }
+    http.addFilterBefore(
+            jwtRequestFilter,
+            UsernamePasswordAuthenticationFilter.class
+    );
+}
+
 
     @Bean
     @Override
