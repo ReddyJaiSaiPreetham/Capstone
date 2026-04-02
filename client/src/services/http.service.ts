@@ -222,4 +222,23 @@ deleteAppointment(id: number) {
 }
 
 
+// ✅ GET LOGGED-IN USER PROFILE
+getProfile(): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(
+    `${this.serverName}/api/profile`,
+    { headers }
+  );
+}
+
+// ✅ UPDATE USERNAME
+updateUsername(username: string): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.put(
+    `${this.serverName}/api/profile/username`,
+    { username },
+    { headers }
+  );
+}
+
 } 

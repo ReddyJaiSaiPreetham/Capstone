@@ -56,4 +56,11 @@ public class UserService implements UserDetailsService {
                 Collections.singleton(
                         new SimpleGrantedAuthority(user.getRole())));
     }
+
+
+       public User updateUsername(String oldUsername, String newUsername) {
+        User user = getUserByUsername(oldUsername);
+        user.setUsername(newUsername);
+        return userRepository.save(user);
+    }
 }

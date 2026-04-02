@@ -82,6 +82,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/receptionist/appointment/**"
         ).hasAuthority("RECEPTIONIST")
 
+        .antMatchers("/api/profile/**")
+                                .authenticated()
+
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement()

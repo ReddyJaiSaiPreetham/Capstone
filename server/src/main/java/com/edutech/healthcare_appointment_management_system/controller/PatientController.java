@@ -2,8 +2,6 @@ package com.edutech.healthcare_appointment_management_system.controller;
 
 import com.edutech.healthcare_appointment_management_system.dto.TimeDto;
 import com.edutech.healthcare_appointment_management_system.entity.*;
-import com.edutech.healthcare_appointment_management_system.repository.DoctorRepository;
-import com.edutech.healthcare_appointment_management_system.repository.PatientRepository;
 import com.edutech.healthcare_appointment_management_system.service.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +20,18 @@ public class PatientController {
     private MedicalRecordService medicalRecordService;
 
     @Autowired
-    private DoctorService doctorService;
+    private DoctorService doctorService;   // ✅ Using service
 
     @Autowired
-    private PatientRepository patientRepository;
+    private PatientService patientService; // ✅ Using service
 
-    @Autowired
-    private DoctorRepository doctorRepository;
-
+    // ✅ GET ALL DOCTORS
     @GetMapping("/api/patient/doctors")
     public List<Doctor> getDoctors() {
         return doctorService.getAllDoctors();
     }
 
+    // ✅ SCHEDULE APPOINTMENT
     @PostMapping("/api/patient/appointment")
     public ResponseEntity<String> scheduleAppointment(
             @RequestParam Long patientId,
@@ -42,11 +39,11 @@ public class PatientController {
             @RequestBody TimeDto timeDto
     ) {
 
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        // ✅ Using PatientService
+        Patient patient = patientService.getPatientById(patientId);
 
-        Doctor doctor = doctorRepository.findById(doctorId)
-                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        // ✅ Using DoctorService
+        Doctor doctor = doctorService.getDoctorById(doctorId);
 
         appointmentService.scheduleAppointment(
                 patient,
@@ -57,25 +54,21 @@ public class PatientController {
         return ResponseEntity.ok("Appointment Scheduled");
     }
 
+    // ✅ GET PATIENT APPOINTMENTS
     @GetMapping("/api/patient/appointments")
-    public List<Appointment> getPatientAppointments(
-            @RequestParam Long patientId) {
+    public List<Appointment> getPatientAppointments(@RequestParam Long patientId) {
 
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        Patient patient = patientService.getPatientById(patientId);
 
         return appointmentService.getAppointmentsByPatient(patient);
     }
 
+    // ✅ GET PATIENT MEDICAL RECORDS
     @GetMapping("/api/patient/medicalrecords")
-    public List<MedicalRecord> getMedicalRecords(
-            @RequestParam Long patientId) {
+    public List<MedicalRecord> getMedicalRecords(@RequestParam Long patientId) {
 
-        Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+        Patient patient = patientService.getPatientById(patientId);
 
         return medicalRecordService.getMedicalRecordsByPatient(patient);
     }
-
- 
 }

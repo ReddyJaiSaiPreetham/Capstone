@@ -1,28 +1,95 @@
-<div class="dashbaord-container">
-  
-  <div *ngIf="roleName === 'PATIENT'" class="card">
-    <h3>Patient Dashboard</h3>
-    <a routerLink="/schedule-appointment" class="btn">Schedule Appointment</a>
-    <a routerLink="/patient-appointment" class="btn">View Appointments</a>
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+<div class="dashboard-bg">
+  <div class="dashboard-center">
 
-  </div>
+    <!-- ================= PATIENT DASHBOARD ================= -->
+    <div *ngIf="roleName === 'PATIENT'" class="dashboard-card patient">
+      <img
+        src="https://images.unsplash.com/photo-1579684385127-1ef15d508118"
+        class="hero-img"
+        alt="Patient dashboard"
+      />
 
-  <div *ngIf="roleName === 'DOCTOR'" class="card">
-    <h3>Doctor Dashboard</h3>
-    <a routerLink="/doctor-availability" class="btn">Update Availability</a>
-    <a routerLink="/doctor-appointment" class="btn">View Appointments</a>
-    <a routerLink="/login" class="nav-link logout">Logout</a>
-  </div>
+      <h3>Patient Dashboard</h3>
+      <p class="subtitle">
+        Book appointments and view your medical records
+      </p>
 
-  <div *ngIf="roleName === 'RECEPTIONIST'" class="card">
-    <h3>Receptionist Dashboard</h3>
-    <a routerLink="/receptionist-schedule-appointments" class="btn">
-      Schedule Appointment
-    </a>
-    <a routerLink="/receptionist-appointments" class="btn">
-      View / Reschedule Appointments
-    </a>
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+      <a
+        routerLink="/schedule-appointment"
+        class="btn btn-primary w-100 mb-3"
+      >
+        <i class="bi bi-calendar-plus me-2"></i>
+        Schedule Appointment
+      </a>
+
+      <a
+        routerLink="/patient-appointment"
+        class="btn btn-outline-primary w-100"
+      >
+        <i class="bi bi-eye me-2"></i>
+        View Appointments
+      </a>
+    </div>
+
+    <!-- ================= DOCTOR DASHBOARD ================= -->
+    <div *ngIf="roleName === 'DOCTOR'" class="dashboard-card doctor">
+      <img
+        src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
+        class="hero-img"
+        alt="Doctor dashboard"
+      />
+
+      <h3>Doctor Dashboard</h3>
+      <p class="subtitle">
+        Manage availability and consult patients
+      </p>
+
+      <a
+        routerLink="/doctor-availability"
+        class="btn btn-success w-100 mb-3"
+      >
+        <i class="bi bi-clock-history me-2"></i>
+        Update Availability
+      </a>
+
+      <a
+        routerLink="/doctor-appointment"
+        class="btn btn-outline-success w-100"
+      >
+        <i class="bi bi-clipboard2-pulse me-2"></i>
+        View Appointments
+      </a>
+    </div>
+
+    <!-- ================= RECEPTIONIST DASHBOARD ================= -->
+    <div *ngIf="roleName === 'RECEPTIONIST'" class="dashboard-card receptionist">
+      <img
+        src="https://images.unsplash.com/photo-1587370560942-ad2a04eabb6d"
+        class="hero-img"
+        alt="Receptionist dashboard"
+      />
+
+      <h3>Receptionist Dashboard</h3>
+      <p class="subtitle">
+        Handle patient scheduling and coordination
+      </p>
+
+      <a
+        routerLink="/receptionist-schedule-appointments"
+        class="btn btn-warning w-100 mb-3"
+      >
+        <i class="bi bi-calendar-event me-2"></i>
+        Schedule Appointment
+      </a>
+
+      <a
+        routerLink="/receptionist-appointments"
+        class="btn btn-outline-warning w-100"
+      >
+        <i class="bi bi-list-check me-2"></i>
+        View / Reschedule Appointments
+      </a>
+    </div>
+
   </div>
 </div>
