@@ -12,9 +12,9 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   currentWord = this.words[0];
 
   slides = [
-    { icon: ':stethoscope:', label: 'Book a Doctor Instantly'   },
-    { icon: ':clipboard:', label: 'Manage Patient Records'     },
-    { icon: ':hospital:', label: 'Trusted Healthcare Network' }
+    { icon: '🩺', label: 'Book a Doctor Instantly'   },
+    { icon: '📋', label: 'Manage Patient Records'     },
+    { icon: '🏥', label: 'Trusted Healthcare Network' }
   ];
   activeSlide = 0;
 
@@ -48,4 +48,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     clearInterval(this.slideTimer);
     this.observer?.disconnect();
   }
+
+  scrollTo(sectionId: string) {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+}
 }
