@@ -96,6 +96,7 @@ protected void configure(HttpSecurity http) throws Exception {
                 "/api/receptionist/appointment/**"
         ).hasAuthority("RECEPTIONIST")
 
+        .antMatchers(HttpMethod.GET, "/api/receptionist/doctor/**").hasAuthority("RECEPTIONIST")
         // ✅ PROFILE (ANY LOGGED-IN USER)
         .antMatchers("/api/profile/**").authenticated()
 

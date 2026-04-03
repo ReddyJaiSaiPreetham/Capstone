@@ -34,3 +34,31 @@
   color: #ffffff;
   font-weight: 500;
 }
+
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.slot-btn {
+  border: 1px solid #198754;
+  background: #e9f7ef;
+  color: #0f5132;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+
+  &:hover {
+    background: #d1f2e3;
+  }
+}
+
+.slot-btn.selected {
+  background: #198754;
+  color: #fff;
+}

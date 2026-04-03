@@ -1,4 +1,3 @@
-
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
@@ -10,7 +9,6 @@
     </a>
   </div>
 </nav>
-
 
 <div class="container mt-4">
 
@@ -41,7 +39,6 @@
 
     <tbody>
 
-      <!-- ✅ APPOINTMENT ROWS -->
       <tr *ngFor="let item of paginatedAppointments">
         <td>{{ item.id }}</td>
 
@@ -58,27 +55,18 @@
         <td>{{ formatTime(item.appointmentTime) }}</td>
 
         <td>
-          <!-- ✅ RESCHEDULE -->
-          <button
-            class="btn btn-primary btn-sm me-2"
-            (click)="editAppointment(item)">
+          <button class="btn btn-primary btn-sm me-2" (click)="editAppointment(item)">
             Edit
           </button>
 
-          <!-- ✅ DELETE -->
-          <button
-            class="btn btn-danger btn-sm"
-            (click)="deleteAppointment(item.id)">
+          <button class="btn btn-danger btn-sm" (click)="deleteAppointment(item.id)">
             Delete
           </button>
         </td>
       </tr>
 
-      <!-- ✅ NO DATA -->
       <tr *ngIf="appointmentList.length === 0">
-        <td colspan="5" class="text-center">
-          No appointments available
-        </td>
+        <td colspan="5" class="text-center">No appointments available</td>
       </tr>
 
     </tbody>
@@ -96,9 +84,7 @@
         *ngFor="let page of [].constructor(totalPages); let i = index"
         class="page-item"
         [class.active]="currentPage === i + 1">
-        <button class="page-link" (click)="goToPage(i + 1)">
-          {{ i + 1 }}
-        </button>
+        <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
       </li>
 
       <li class="page-item" [class.disabled]="currentPage === totalPages">
@@ -108,34 +94,73 @@
     </ul>
   </nav>
 
-  <!-- ✅ RESCHEDULE FORM -->
+  <!-- ✅ RESCHEDULE FORM (SLOT BASED) -->
   <div *ngIf="isAdded" class="card mt-4">
     <div class="card-header bg-primary text-white">
-      Reschedule Appointment
+      Reschedule Appointment (Slot Based)
     </div>
 
     <div class="card-body">
+
+      <div class="mb-2" *ngIf="selectedAppointment">
+        <strong>Doctor:</strong> {{ selectedAppointment?.doctor?.username }} &nbsp; | &nbsp;
+        <strong>Patient:</strong> {{ selectedAppointment?.patient?.username }}
+      </div>
+
       <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
 
         <input type="hidden" formControlName="id">
 
+        <!-- Date picker -->
         <div class="mb-3">
-          <label class="form-label">New Appointment Time</label>
+          <label class="form-label">Select Date</label>
           <input
-            type="datetime-local"
+            type="date"
             class="form-control"
-            formControlName="time"
-            [min]="minDateTime">
+            [(ngModel)]="selectedDate"
+            [ngModelOptions]="{ standalone: true }"
+            [min]="minDate"
+            [max]="maxDate"
+            (change)="onRescheduleDateChange()">
+          <small class="text-muted">Slots available only for next 10 days</small>
+        </div>
+
+        <!-- Slot loading -->
+        <div *ngIf="loadingSlots" class="text-muted mb-2">
+          Loading available slots...
+        </div>
+
+        <!-- Slots grid -->
+        <div *ngIf="!loadingSlots" class="mb-3">
+          <label class="form-label">Available Slots</label>
+
+          <div *ngIf="availableSlots.length === 0" class="text-danger">
+            No available slots for this date.
+          </div>
+
+          <div class="slot-grid" *ngIf="availableSlots.length > 0">
+            <button
+              type="button"
+              *ngFor="let slot of availableSlots"
+              class="slot-btn"
+              [class.selected]="selectedSlotTime === slot.time"
+              (click)="selectSlot(slot)">
+              {{ slot.display }}
+            </button>
+          </div>
+
+          <!-- Hidden control to keep form validity -->
+          <input type="hidden" formControlName="time">
+          <small class="text-danger" *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
+            Please select a slot
+          </small>
         </div>
 
         <button type="submit" class="btn btn-success" [disabled]="itemForm.invalid">
           Update
         </button>
 
-        <button
-          type="button"
-          class="btn btn-secondary ms-2"
-          (click)="isAdded = false; itemForm.reset()">
+        <button type="button" class="btn btn-secondary ms-2" (click)="cancelReschedule()">
           Cancel
         </button>
 

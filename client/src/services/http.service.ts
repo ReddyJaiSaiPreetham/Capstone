@@ -27,15 +27,20 @@ export class HttpService {
   /**
    * ✅ Convert frontend datetime to backend LocalDateTime string
    * Accepts:
-   *  - "2026-04-03T14:51" (from datetime-local) -> "2026-04-03T14:51:00"
+   *  - "2026-04-03T14:51" -> "2026-04-03T14:51:00"
    *  - "2026-04-03T14:51:00" -> unchanged
    *  - "2026-04-03 14:51:00" -> "2026-04-03T14:51:00"
+   *  - "2026-04-03T14:51:00.000+00:00" -> "2026-04-03T14:51:00"
    */
-  private toLocalDateTimeString(value: string): string {
+  private toLocalDateTimeString(value: any): string {
     if (!value) return value;
 
+    // If accidentally passed object {time, display}, extract time
+    const raw = typeof value === 'string' ? value : value?.time;
+    if (!raw) return value;
+
     // Convert space to 'T' if needed
-    let v = value.includes(' ') ? value.replace(' ', 'T') : value;
+    let v = raw.includes(' ') ? raw.replace(' ', 'T') : raw;
 
     // If it's like "yyyy-MM-ddTHH:mm" append seconds
     if (v.length === 16) {
@@ -43,7 +48,6 @@ export class HttpService {
     }
 
     // If it includes milliseconds/zone, trim to seconds
-    // e.g. "2026-04-03T14:51:00.000+00:00" -> "2026-04-03T14:51:00"
     if (v.length > 19) {
       v = v.substring(0, 19);
     }
@@ -92,9 +96,38 @@ export class HttpService {
     const headers = this.getAuthHeaders();
     const fixedTime = this.toLocalDateTimeString(time);
 
-    // Backend expects TimeDto -> { "time": "yyyy-MM-dd'T'HH:mm:ss" }
     return this.http.put(
       `${this.serverName}/api/doctor/appointment/${id}/reschedule`,
+      { time: fixedTime },
+      { headers }
+    );
+  }
+
+  /* ===================== DOCTOR SLOTS ===================== */
+
+  generateDoctorSlots(doctorId: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.post(
+      `${this.serverName}/api/doctor/${doctorId}/generate-slots`,
+      {},
+      { headers }
+    );
+  }
+
+  getDoctorSlots(doctorId: number, date: string): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/doctor/${doctorId}/slots?date=${date}`,
+      { headers }
+    );
+  }
+
+  updateDoctorSlot(doctorId: number, time: any, available: boolean): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const fixedTime = this.toLocalDateTimeString(time);
+
+    return this.http.put(
+      `${this.serverName}/api/doctor/${doctorId}/slot?available=${available}`,
       { time: fixedTime },
       { headers }
     );
@@ -126,6 +159,7 @@ export class HttpService {
     );
   }
 
+  // ✅ Receptionist: slot-based schedule appointment
   ScheduleAppointmentByReceptionist(details: any): Observable<any> {
     const headers = this.getAuthHeaders();
     const fixedTime = this.toLocalDateTimeString(details.time);
@@ -152,6 +186,26 @@ export class HttpService {
     const headers = this.getAuthHeaders();
     return this.http.delete(
       `${this.serverName}/api/receptionist/appointment/${id}`,
+      { headers }
+    );
+  }
+
+  /* ✅✅ NEW: RECEPTIONIST SLOT APIs (ADD THESE) ✅✅ */
+
+  // ✅ 1) Receptionist: Get AVAILABLE slots for booking UI (returns [{time, display}])
+  getReceptionistAvailableSlots(doctorId: number, date: string): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/receptionist/doctor/${doctorId}/available-slots?date=${date}`,
+      { headers }
+    );
+  }
+
+  // ✅ 2) Receptionist: Get ALL slots to view why locked (AVAILABLE/BLOCKED/BOOKED)
+  getReceptionistDoctorSlots(doctorId: number, date: string): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/receptionist/doctor/${doctorId}/slots?date=${date}`,
       { headers }
     );
   }
@@ -185,9 +239,29 @@ export class HttpService {
     );
   }
 
+  // ✅ Patient: get available slots for a doctor + date
+  getAvailableSlotsForDoctor(doctorId: number, date: string): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/patient/doctor/${doctorId}/available-slots?date=${date}`,
+      { headers }
+    );
+  }
+
+  // ✅ Patient: schedule using slot (safeTime handles string or {time, display})
+  scheduleAppointmentWithSlot(patientId: number, doctorId: number, slotTime: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const safeTime = this.toLocalDateTimeString(slotTime);
+
+    return this.http.post(
+      `${this.serverName}/api/patient/appointment?patientId=${patientId}&doctorId=${doctorId}`,
+      { time: safeTime },
+      { headers }
+    );
+  }
+
   /* ===================== AUTH / CAPTCHA ===================== */
 
-  // Captcha needs session cookie -> withCredentials
   getCaptcha(): Observable<any> {
     return this.http.get<any>(
       `${this.serverName}/api/captcha`,
@@ -195,7 +269,6 @@ export class HttpService {
     );
   }
 
-  // Login also needs same session for captcha validation -> withCredentials
   Login(details: any): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(
@@ -250,56 +323,4 @@ export class HttpService {
       { headers }
     );
   }
-
-  // ✅ Generate slots for next 10 days (9AM–9PM)
-generateDoctorSlots(doctorId: number): Observable<any> {
-  const headers = this.getAuthHeaders();
-  return this.http.post(
-    `${this.serverName}/api/doctor/${doctorId}/generate-slots`,
-    {},
-    { headers }
-  );
-}
-
-// ✅ Get slots for doctor on a date (YYYY-MM-DD)
-getDoctorSlots(doctorId: number, date: string): Observable<any[]> {
-  const headers = this.getAuthHeaders();
-  return this.http.get<any[]>(
-    `${this.serverName}/api/doctor/${doctorId}/slots?date=${date}`,
-    { headers }
-  );
-}
-
-// ✅ Toggle one slot
-updateDoctorSlot(doctorId: number, time: string, available: boolean): Observable<any> {
-  const headers = this.getAuthHeaders();
-  // time must be ISO: "YYYY-MM-DDTHH:mm:ss"
-  return this.http.put(
-    `${this.serverName}/api/doctor/${doctorId}/slot?available=${available}`,
-    { time },
-    { headers }
-  );
-}
-
-
-// ✅ Patient: get available slots for a doctor and date
-getAvailableSlotsForDoctor(doctorId: number, date: string): Observable<any[]> {
-  const headers = this.getAuthHeaders();
-  return this.http.get<any[]>(
-    `${this.serverName}/api/patient/doctor/${doctorId}/available-slots?date=${date}`,
-    { headers }
-  );
-}
-scheduleAppointmentWithSlot(patientId: number, doctorId: number, slotTime: any): Observable<any> {
-  const headers = this.getAuthHeaders();
-
-  // ✅ If slotTime was accidentally passed as object, extract the real value
-  const safeTime = typeof slotTime === 'string' ? slotTime : slotTime?.time;
-
-  return this.http.post(
-    `${this.serverName}/api/patient/appointment?patientId=${patientId}&doctorId=${doctorId}`,
-    { time: safeTime },
-    { headers }   // ✅ backend now returns JSON {message:...}
-  );
-}
 }

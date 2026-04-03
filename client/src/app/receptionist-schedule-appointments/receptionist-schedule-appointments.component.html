@@ -1,23 +1,28 @@
-
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
-    <a routerLink="/receptionist-schedule-appointment" class="nav-link active">
+
+    <!-- ✅ Fix route link: keep consistent with your router config -->
+    <a routerLink="/receptionist-schedule-appointments" class="nav-link active">
       Schedule Appointment
     </a>
-    <a routerLink="/receptionist-appointments" class="nav-link ">
+
+    <a routerLink="/receptionist-appointments" class="nav-link">
       View Appointments
     </a>
   </div>
 </nav>
 
-
 <div class="container mt-4">
 
-  <h3>Schedule Appointment (Receptionist)</h3>
+  <h3>Schedule Appointment (Receptionist - Slot Based)</h3>
 
   <div *ngIf="responseMessage" class="alert alert-success">
     {{ responseMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
   </div>
 
   <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
@@ -42,20 +47,50 @@
       </select>
     </div>
 
+    <!-- ✅ Date Picker (10 days window) -->
     <div class="mb-3">
-      <label class="form-label">Appointment Time</label>
+      <label class="form-label">Select Date</label>
       <input
-    type="datetime-local"
-    class="form-control"
-    formControlName="time"
-    [min]="minDateTime">
-
+        type="date"
+        class="form-control"
+        [(ngModel)]="selectedDate"
+        [ngModelOptions]="{ standalone: true }"
+        [min]="minDate"
+        [max]="maxDate"
+        (change)="onDateChange()"
+      />
+      <small class="text-muted">Slots available only for next 10 days</small>
     </div>
 
-    <button
-      type="submit"
-      class="btn btn-primary"
-      [disabled]="itemForm.invalid">
+    <!-- ✅ Slots -->
+    <div class="mb-3">
+      <label class="form-label">Available Slots</label>
+
+      <div *ngIf="loadingSlots" class="text-muted">Loading available slots...</div>
+
+      <div *ngIf="!loadingSlots && availableSlots.length === 0" class="text-danger">
+        No available slots for this date.
+      </div>
+
+      <div class="slot-grid" *ngIf="!loadingSlots && availableSlots.length > 0">
+        <button
+          type="button"
+          *ngFor="let slot of availableSlots"
+          class="slot-btn"
+          [class.selected]="selectedSlotTime === slot.time"
+          (click)="selectSlot(slot)">
+          {{ slot.display }}
+        </button>
+      </div>
+
+      <!-- Hidden control to validate form -->
+      <input type="hidden" formControlName="time">
+      <small class="text-danger" *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
+        Please select a slot
+      </small>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="itemForm.invalid">
       Schedule Appointment
     </button>
 

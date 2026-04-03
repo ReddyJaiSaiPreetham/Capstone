@@ -106,28 +106,57 @@ public class AppointmentService {
 
     /* ===================== RESCHEDULE (RECEPTIONIST) ===================== */
 
-    public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
+    @Transactional
+public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    Appointment appointment = appointmentRepository.findById(appointmentId)
+            .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        validateNotNullTime(newTime, "New appointment time is required");
-        validateNotPast(newTime, "Cannot reschedule appointment to past time");
+    if (newTime == null) throw new RuntimeException("New appointment time is required");
+    if (newTime.isBefore(LocalDateTime.now())) throw new RuntimeException("Cannot reschedule to past time");
 
-        Doctor doctor = appointment.getDoctor();
+    Doctor doctor = appointment.getDoctor();
+    Patient patient = appointment.getPatient();
 
-        // ✅ Prevent slot conflict (only if changing time)
-        if (doctor != null
-                && appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)
-                && !newTime.equals(appointment.getAppointmentTime())) {
-            throw new RuntimeException("This time slot is already booked for this doctor");
-        }
+    // ✅ Check new slot exists and is AVAILABLE
+    DoctorAvailabilitySlot newSlot = slotRepository.findByDoctorAndSlotStart(doctor, newTime)
+            .orElseThrow(() -> new RuntimeException("New slot not found"));
 
-        appointment.setAppointmentTime(newTime);
-        appointment.setStatus("RESCHEDULED");
+    if (newSlot.getStatus() == SlotStatus.BLOCKED) throw new RuntimeException("Doctor blocked this slot");
+    if (newSlot.getStatus() == SlotStatus.BOOKED) throw new RuntimeException("Slot already booked");
 
-        return appointmentRepository.save(appointment);
+    if (appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)) {
+        throw new RuntimeException("Slot already booked");
     }
+
+    // ✅ Free old slot (if exists)
+    LocalDateTime oldTime = appointment.getAppointmentTime();
+    if (oldTime != null) {
+        slotRepository.findByDoctorAndSlotStart(doctor, oldTime).ifPresent(oldSlot -> {
+            // only free if it was booked by this appointment
+            if (oldSlot.getBookedAppointmentId() != null && oldSlot.getBookedAppointmentId().equals(appointment.getId())) {
+                oldSlot.setStatus(SlotStatus.AVAILABLE);
+                oldSlot.setBookedAppointmentId(null);
+                oldSlot.setBookedPatientId(null);
+                oldSlot.setBookedPatientName(null);
+                slotRepository.save(oldSlot);
+            }
+        });
+    }
+
+    // ✅ Book new slot
+    newSlot.setStatus(SlotStatus.BOOKED);
+    newSlot.setBookedAppointmentId(appointment.getId());
+    newSlot.setBookedPatientId(patient.getId());
+    newSlot.setBookedPatientName(patient.getUsername());
+    slotRepository.save(newSlot);
+
+    // ✅ Update appointment
+    appointment.setAppointmentTime(newTime);
+    appointment.setStatus("RESCHEDULED");
+
+    return appointmentRepository.save(appointment);
+}
 
     /* ===================== CANCEL APPOINTMENT ===================== */
 
