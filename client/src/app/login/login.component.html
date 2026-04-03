@@ -1,21 +1,28 @@
-<div class="row justify-content-center mt-5">
-  <div class="col-md-5">
+<div class="login-page">
+  <div class="login-overlay"></div>
 
-    <div class="card p-4 shadow">
-      <h3 class="text-center mb-3">
-        HEALTHCARE APPOINTMENT MANAGEMENT SYSTEM
+  <div class="login-wrapper">
+    <div class="login-form">
+
+      <h3 class="text-center mb-2">
+        HEALTHCARE APPOINTMENT
+        <br />
+        MANAGEMENT SYSTEM
       </h3>
 
-      <p class="text-center text-muted">
+      <p class="text-center subtitle">
         Please enter your login credentials
       </p>
 
       <form [formGroup]="itemForm" (ngSubmit)="onLogin()">
 
+        <!-- Username -->
         <div class="mb-3">
           <label class="form-label">Username</label>
 
-          <input type="text" class="form-control" formControlName="username" placeholder="Enter username">
+          <input type="text" class="form-control"
+                 formControlName="username"
+                 placeholder="Enter username">
 
           <small class="text-danger"
             *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
@@ -38,10 +45,13 @@
           </small>
         </div>
 
+        <!-- Password -->
         <div class="mb-3">
           <label class="form-label">Password</label>
 
-          <input type="password" class="form-control" formControlName="password" placeholder="Enter password">
+          <input type="password" class="form-control"
+                 formControlName="password"
+                 placeholder="Enter password">
 
           <small class="text-danger"
             *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['required']">
@@ -59,42 +69,46 @@
           </small>
         </div>
 
-
+        <!-- Captcha -->
         <div class="mb-3">
           <label class="form-label">Captcha</label>
 
-          <div class="d-flex align-items-center mb-2">
-            <span class="p-2 border rounded bg-light fw-bold me-3" style="letter-spacing: 3px;">
+          <div class="d-flex align-items-center mb-2 captcha-row">
+            <span class="captcha-box me-3">
               {{ captcha }}
             </span>
 
-            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="loadCaptcha()">
+            <button type="button"
+                    class="btn btn-sm btn-outline-light captcha-btn"
+                    (click)="loadCaptcha()">
               Refresh
             </button>
           </div>
 
-          <input type="text" class="form-control" formControlName="captcha" placeholder="Enter captcha">
+          <input type="text" class="form-control"
+                 formControlName="captcha"
+                 placeholder="Enter captcha">
 
-          <small class="text-danger" *ngIf="itemForm.get('captcha')?.touched && itemForm.get('captcha')?.invalid">
+          <small class="text-danger"
+            *ngIf="itemForm.get('captcha')?.touched && itemForm.get('captcha')?.invalid">
             Captcha is required
           </small>
         </div>
 
-
+        <!-- Error -->
         <div *ngIf="showError" class="alert alert-danger text-center">
           {{ errorMessage }}
         </div>
 
-
+        <!-- Login -->
         <div class="d-grid mt-3">
-          <button class="btn btn-dark" type="submit">
+          <button class="btn login-btn" type="submit">
             LOGIN
           </button>
         </div>
       </form>
 
-
-      <div class="text-center mt-3">
+      <div class="text-center mt-3 register-link">
         <span>Don’t have an account?</span>
         <a class="ms-1 text-decoration-none" routerLink="/registration">
           Register here

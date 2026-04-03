@@ -1,7 +1,14 @@
-<nav class="navbar navbar-dark bg-dark px-4">
-  <span class="navbar-brand">
+<nav class="navbar navbar-dark bg-dark px-4" *ngIf="showNavbar">
+  <div class="logo">
+  <img
+    src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png"
+    alt="HealthEase Logo"
+  />
+  <span>HealthEase</span>
+</div>
+  <!-- <span class="navbar-brand">
     Healthcare Appointment System
-  </span>
+  </span> -->
 
   <div class="ms-auto d-flex align-items-center" *ngIf="IsLoggin">
   <span class="text-light me-3">

@@ -1,216 +1,113 @@
-<header class="header">
-    <div class="container header-inner">
-
-        <div class="logo" routerLink="/home">
-            <span class="logo-text">➕HealthEase</span>
-        </div>
-
-
-        <nav class="nav">
-            <a (click)="scrollTo('home')">Home</a>
-            <a (click)="scrollTo('about')">About Us</a>
-            <a (click)="scrollTo('services')">Services</a>
-            <!-- <a (click)="scrollTo('doctors')">Doctors</a> -->
-            <a (click)="scrollTo('contact')">Feedback</a>
-        </nav>
-        <div>
-            <button class="btn-outline" routerLink='/login'>Login</button>
-            <button class="btn-outline" routerLink='/registration'>Register</button>
-        </div>
-
+<!-- TOP NAVBAR -->
+<header class="top-nav">
+  <div class="nav-container">
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png" alt="HealthEase Logo" />
+      <span>HealthEase</span>
     </div>
+
+    <div class="nav-actions">
+      <button routerLink="/login" class="btn-outline">Login</button>
+      <button routerLink="/registration" class="btn-primary">Register</button>
+    </div>
+  </div>
 </header>
 
-<div class="lalala">
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-overlay"></div>
 
-    <!-- HERO -->
-    <section class="hero" id="home">
-        <div class="container hero-grid">
+  <div class="hero-content">
+    <h1>Smart Healthcare Appointments</h1>
+    <p>
+      Book doctor appointments, manage schedules, and simplify healthcare
+      workflows — all in one place.
+    </p>
+    <button class="btn-primary big">Get Started</button>
+  </div>
+</section>
 
-            <div class="hero-text">
-                <span class="hero-tag">WELCOME TO HealthEase</span>
-                <h1>
-                    Destination for<br />
-                    <span class="hero-rotate-wrap">
-                        <span class="rotating-text" id="rotatingText">{{ currentWord }}</span>
-                    </span>
-                </h1>
-                <p>
-                    A smart platform to book doctor appointments, manage schedules,
-                    and simplify healthcare workflows.
-                </p>
-                <button class="btn-outline">Make Appointment</button>
-            </div>
+<!-- SERVICES -->
+<section class="services">
+  <h2>Our Services</h2>
 
-            <!-- BANNER SLIDER -->
-            <div class="hero-image">
-                <div class="hero-slide" *ngFor="let slide of slides; let i = index" [class.active]="i === activeSlide">
-                    <span class="slide-icon">{{ slide.icon }}</span>
-                    {{ slide.label }}
-                </div>
-                <div class="slide-dots">
-                    <span class="slide-dot" *ngFor="let slide of slides; let i = index"
-                        [class.active]="i === activeSlide" (click)="activeSlide = i"></span>
-                </div>
-            </div>
+  <div class="service-grid">
+    <div class="service-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png" alt="Appointments" />
+      <h3>Appointments</h3>
+      <p>Book and manage doctor appointments easily.</p>
+    </div>
 
-            <div class="hero-stats">
-                <div class="stat">
-                    <h3>48+</h3>
-                    <p>Professional Doctors</p>
-                </div>
-                <div class="stat">
-                    <h3>24</h3>
-                    <p>Years Experience</p>
-                </div>
-                <div class="stat">
-                    <h3>3,500+</h3>
-                    <p>Appointments Completed</p>
-                </div>
-            </div>
+    <div class="service-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3870/3870822.png" alt="Doctors" />
+      <h3>Doctors</h3>
+      <p>Check doctor availability and schedules.</p>
+    </div>
 
-        </div>
-    </section>
+    <div class="service-card">
+      <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png" alt="Records" />
+      <h3>Records</h3>
+      <p>Secure access to medical history.</p>
+    </div>
+  </div>
+</section>
 
-    <!-- ABOUT -->
-    <section class="about" id="about">
-        <div class="container about-grid reveal">
-            <div>
-                <span class="section-label">ABOUT US</span>
-                <h2>We Are the Best Healthcare Platform</h2>
-                <p>HealthEase connects patients and doctors efficiently.</p>
-                <div class="about-points">
-                    <div>
-                        <h4>Our Vision</h4>
-                        <p>Modernize healthcare appointment systems.</p>
-                    </div>
-                    <div>
-                        <h4>Our Mission</h4>
-                        <p>Reduce waiting times and improve experience.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="about-images">🏥</div>
-        </div>
-    </section>
+<!-- PLATFORM STATS -->
+<section class="platform-stats">
+  <div class="stats-container">
 
-    <!-- SERVICES -->
-    <section class="services" id="services">
-        <div class="container">
-            <span class="section-label center">OUR SERVICES</span>
-            <h2 class="center">We Provide the Best Services</h2>
-            <div class="service-grid">
-                <div class="service-card reveal">
-                    <h3>Appointment Booking</h3>
-                    <p>Book and manage appointments easily.</p>
-                    <button class="btn-pill">Learn More</button>
-                </div>
-                <div class="service-card reveal">
-                    <h3>Doctor Management</h3>
-                    <p>Manage schedules and patient flow.</p>
-                    <button class="btn-pill">Learn More</button>
-                </div>
-                <div class="service-card reveal">
-                    <h3>Patient Records</h3>
-                    <p>Secure access to patient history.</p>
-                    <button class="btn-pill">Learn More</button>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="stat-box">
+      <h3>25,000+</h3>
+      <p>Registered Users</p>
+    </div>
 
-    <!-- FEEDBACK -->
-    <section class="feedback" id="contact">
-        <span class="section-label center">FEEDBACK</span>
-        <h2 class="center">We Value Your Feedback</h2>
+    <div class="stat-box">
+      <h3>1,200+</h3>
+      <p>Doctors</p>
+    </div>
 
-        <div class="feedback-card reveal">
+    <div class="stat-box">
+      <h3>50,000+</h3>
+      <p>Appointments Booked</p>
+    </div>
 
-            <form class="feedback-form">
+    <div class="stat-box">
+      <h3>150+</h3>
+      <p>Clinics & Hospitals</p>
+    </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>First Name</label>
-                        <input type="text" placeholder="Enter first name" />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Last Name</label>
-                        <input type="text" placeholder="Enter last name" />
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" placeholder="Enter email address" />
-                </div>
-
-                <div class="form-group">
-                    <label>Feedback Type</label>
-                    <select>
-                        <option value="" disabled selected>Select feedback type</option>
-                        <option>General Feedback</option>
-                        <option>Website Experience</option>
-                        <option>Appointment Process</option>
-                        <option>Doctor Consultation</option>
-                        <option>Technical Issue</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Your Feedback</label>
-                    <textarea placeholder="Share your feedback or suggestions here..."></textarea>
-                </div>
-
-                <button class="btn btn-success w-100 fw-semibold py-2 shadow">
-                    Submit Feedback
-                </button>
-
-            </form>
-
-        </div>
-    </section>
-
-    <!-- TESTIMONIAL -->
-    <section class="testimonial">
-        <div class="container testimonial-inner reveal">
-            <div>
-                <span class="section-label light">TESTIMONIAL</span>
-                <h2>What Our Patients Say</h2>
-                <p>
-                    "HealthEase made booking appointments effortless
-                    and reduced waiting times."
-                </p>
-                <strong>Rahul Sharma</strong>
-            </div>
-        </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container footer-grid">
-            <div>
-                <h3>HealthEase</h3>
-                <p>Healthcare appointment management platform.</p>
-            </div>
-            <div>
-                <h4>Quick Links</h4>
-                <a>Home</a>
-                <a>Services</a>
-                <a>Contact</a>
-            </div>
-            <div>
-                <h4>Support</h4>
-                <a>Privacy Policy</a>
-                <a>Terms</a>
-            </div>
-            <div>
-                <h4>Contact</h4>
-                <p>+91 1800‑HealthEase</p>
-            </div>
-        </div>
-        <div class="container footer-bottom">© 2026 HealthEase. All rights reserved.</div>
-    </footer>
+  </div>
+</section>
 
 
-</div>
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+  <h2>How HealthEase Works</h2>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-number">1</span>
+      <h3>Create an Account</h3>
+      <p>Register as a patient or doctor to get started.</p>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">2</span>
+      <h3>Book Appointment</h3>
+      <p>Select a doctor and book an appointment easily.</p>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">3</span>
+      <h3>Manage & Track</h3>
+      <p>View appointment status and medical records securely.</p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 HealthEase. All rights reserved.</p>
+</footer>

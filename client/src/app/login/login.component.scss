@@ -1,3 +1,182 @@
-a{
-    cursor: pointer;
+/* =========================
+   NO SCROLL + FULL SCREEN
+   ========================= */
+:host {
+  position: fixed;
+  inset: 0;
+  display: block;
+  overflow: hidden; /* ✅ prevents scroll inside this route */
+  background: transparent;
+}
+
+/* In case body scroll still appears due to global styles */
+:host ::ng-deep body {
+  overflow: hidden !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* =========================
+   BACKGROUND IMAGE
+   ========================= */
+.login-page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  background-image: url('https://images.pexels.com/photos/305565/pexels-photo-305565.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Dark overlay like reference */
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* =========================
+   CENTER FORM (NO CARD)
+   ========================= */
+.login-wrapper {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 440px;
+
+  color: #fff;
+
+  /* IMPORTANT: no white background */
+  background: transparent;
+}
+
+/* Heading + text */
+.login-form h3 {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  margin-bottom: 24px;
+}
+
+/* Labels */
+.login-form .form-label {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+/* =========================
+   INPUTS: FULL TRANSPARENT
+   ========================= */
+.login-form .form-control {
+  background: transparent !important; /* ✅ no white */
+  color: #fff !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 10px;
+
+  padding: 10px 12px;
+  outline: none;
+
+  /* helps readability over image */
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* Placeholder */
+.login-form .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* Focus */
+.login-form .form-control:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
+}
+
+/* Captcha row */
+.captcha-row {
+  gap: 10px;
+}
+
+/* Captcha box – transparent too */
+.captcha-box {
+  background: transparent;
+  color: #fff;
+
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 8px;
+
+  padding: 6px 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* Refresh button */
+.captcha-btn {
+  border-radius: 8px;
+}
+
+/* Login button */
+.login-btn {
+  background: #22c55e;
+  color: #052e16;
+  font-weight: 700;
+
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Register link */
+.register-link {
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+}
+
+.register-link a {
+  color: #22c55e;
+  font-weight: 700;
+}
+
+/* Validation messages */
+.text-danger {
+  font-size: 12px;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 480px) {
+  .login-wrapper {
+    padding: 12px;
+  }
+
+  .login-form h3 {
+    font-size: 18px;
+  }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { HttpService } from '../services/http.service';
 
 @Component({
@@ -15,12 +15,23 @@ export class AppComponent implements OnInit {
 
   username: string = '';          // ✅ used in HTML
   showProfile: boolean = false;   // ✅ used in HTML
+  showNavbar=true;
 
   constructor(
     private authService: AuthService,
     private router: Router,
     private httpService: HttpService
-  ) {}
+  ) {
+    
+this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // hide navbar only on landing page
+        this.showNavbar = event.url !== '/home';
+      }
+    });
+  
+
+  }
 
   ngOnInit(): void {
     this.IsLoggin = this.authService.getLoginStatus;
