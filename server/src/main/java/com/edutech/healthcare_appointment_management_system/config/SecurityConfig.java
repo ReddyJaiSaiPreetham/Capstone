@@ -41,8 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
 protected void configure(HttpSecurity http) throws Exception {
 
-    http.csrf().disable()
-        .authorizeRequests()
+    
+        http.cors().and().csrf().disable()
+                .authorizeRequests()
+
 
         // ✅ PUBLIC APIs
         .antMatchers(
@@ -58,17 +60,24 @@ protected void configure(HttpSecurity http) throws Exception {
                 "/api/patient/doctors",
                 "/api/patient/appointments",
                 "/api/patient/appointment",
+                "/api/patient/doctor/**",
                 "/api/patient/medicalrecords"
         ).hasAuthority("PATIENT")
 
-        // ✅ DOCTOR APIs
-        .antMatchers(
-                "/api/doctor/appointments",
-                "/api/doctor/availability",
-                "/api/doctor/appointment/**"
-        ).hasAuthority("DOCTOR")
+     // ✅ DOCTOR APIs (strict)
+.antMatchers(HttpMethod.GET, "/api/doctor/**").hasAuthority("DOCTOR")
 
-        // ✅ RECEPTIONIST APIs
+.antMatchers(HttpMethod.POST,
+        "/api/doctor/availability",
+        "/api/doctor/*/generate-slots"
+).hasAuthority("DOCTOR")
+
+.antMatchers(HttpMethod.PUT,
+        "/api/doctor/appointment/**",
+        "/api/doctor/*/slot"
+).hasAuthority("DOCTOR")
+
+                // ✅ RECEPTIONIST APIs
         .antMatchers(
                 "/api/receptionist/appointments",
                 "/api/receptionist/patients",

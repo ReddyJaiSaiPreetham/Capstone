@@ -4,14 +4,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { AuthService } from './auth.service';
 
-
 @Injectable({
   providedIn: 'root'
 })
-
 export class HttpService {
 
-  // Stores base API URL
   public serverName = environment.apiUrl;
 
   constructor(
@@ -19,7 +16,7 @@ export class HttpService {
     private authService: AuthService
   ) { }
 
-  // COMMON HEADER WITH JWT
+  /* ===================== COMMON HEADERS ===================== */
   private getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -27,7 +24,35 @@ export class HttpService {
     });
   }
 
-  // 1. UPDATE DOCTOR AVAILABILITY
+  /**
+   * ✅ Convert frontend datetime to backend LocalDateTime string
+   * Accepts:
+   *  - "2026-04-03T14:51" (from datetime-local) -> "2026-04-03T14:51:00"
+   *  - "2026-04-03T14:51:00" -> unchanged
+   *  - "2026-04-03 14:51:00" -> "2026-04-03T14:51:00"
+   */
+  private toLocalDateTimeString(value: string): string {
+    if (!value) return value;
+
+    // Convert space to 'T' if needed
+    let v = value.includes(' ') ? value.replace(' ', 'T') : value;
+
+    // If it's like "yyyy-MM-ddTHH:mm" append seconds
+    if (v.length === 16) {
+      v = v + ':00';
+    }
+
+    // If it includes milliseconds/zone, trim to seconds
+    // e.g. "2026-04-03T14:51:00.000+00:00" -> "2026-04-03T14:51:00"
+    if (v.length > 19) {
+      v = v.substring(0, 19);
+    }
+
+    return v;
+  }
+
+  /* ===================== DOCTOR ===================== */
+
   updateDoctorAvailability(doctorId: any, availability: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.post(
@@ -37,16 +62,6 @@ export class HttpService {
     );
   }
 
-  // 2. GET ALL APPOINTMENTS
-  getAllAppointments(): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get(
-      `${this.serverName}/api/receptionist/appointments`,
-      { headers }
-    );
-  }
-
-  // 3. GET APPOINTMENTS BY DOCTOR
   getAppointmentByDoctor(id: any): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get(
@@ -55,51 +70,94 @@ export class HttpService {
     );
   }
 
-  // 4. GET APPOINTMENTS BY PATIENT
-  getAppointmentByPatient(id: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.get(
-      `${this.serverName}/api/patient/appointments?patientId=${id}`,
-      { headers }
-    );
-  }
-
-  // 5. SCHEDULE APPOINTMENT (PATIENT)
-  // 5. SCHEDULE APPOINTMENT (PATIENT)
-  ScheduleAppointment(details: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(
-      `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-      { time: details.time },
-      {
-        headers,
-        responseType: 'text' as 'json'   // ✅ CRITICAL FIX
-      }
-    );
-  }
-
-
-  // 6. SCHEDULE APPOINTMENT (RECEPTIONIST)
-  ScheduleAppointmentByReceptionist(details: any): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.post(
-      `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
-      { time: details.time },
-      { headers }
-    );
-  }
-
-  // 7. RESCHEDULE APPOINTMENT
-  reScheduleAppointment(appointmentId: any, formvalue: any): Observable<any> {
+  completeAppointment(id: number): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.put(
-      `${this.serverName}/api/receptionist/appointment-reschedule/${appointmentId}`,
-      { time: formvalue.time },
+      `${this.serverName}/api/doctor/appointment/${id}/complete`,
+      {},
       { headers }
     );
   }
 
-  // 8. GET DOCTORS LIST
+  updateCompletionStatus(id: number, status: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.put(
+      `${this.serverName}/api/doctor/appointment/${id}/completion-status`,
+      { completionstatus: status },
+      { headers }
+    );
+  }
+
+  doctorRescheduleAppointment(id: number, time: string): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const fixedTime = this.toLocalDateTimeString(time);
+
+    // Backend expects TimeDto -> { "time": "yyyy-MM-dd'T'HH:mm:ss" }
+    return this.http.put(
+      `${this.serverName}/api/doctor/appointment/${id}/reschedule`,
+      { time: fixedTime },
+      { headers }
+    );
+  }
+
+  /* ===================== RECEPTIONIST ===================== */
+
+  getAllAppointments(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(
+      `${this.serverName}/api/receptionist/appointments`,
+      { headers }
+    );
+  }
+
+  getAllPatients(): Observable<any[]> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any[]>(
+      `${this.serverName}/api/receptionist/patients`,
+      { headers }
+    );
+  }
+
+  getDoctorsForReceptionist(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(
+      `${this.serverName}/api/receptionist/doctors`,
+      { headers }
+    );
+  }
+
+  ScheduleAppointmentByReceptionist(details: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const fixedTime = this.toLocalDateTimeString(details.time);
+
+    return this.http.post(
+      `${this.serverName}/api/receptionist/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+      { time: fixedTime },
+      { headers }
+    );
+  }
+
+  reScheduleAppointment(appointmentId: any, formvalue: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const fixedTime = this.toLocalDateTimeString(formvalue.time);
+
+    return this.http.put(
+      `${this.serverName}/api/receptionist/appointment-reschedule/${appointmentId}`,
+      { time: fixedTime },
+      { headers }
+    );
+  }
+
+  deleteAppointment(id: number): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.delete(
+      `${this.serverName}/api/receptionist/appointment/${id}`,
+      { headers }
+    );
+  }
+
+  /* ===================== PATIENT ===================== */
+
   getDoctors(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get(
@@ -108,23 +166,47 @@ export class HttpService {
     );
   }
 
-  // 9. LOGIN
-  Login(details: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    return this.http.post(
-      `${this.serverName}/api/user/login`,
-      details,
+  getAppointmentByPatient(id: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get(
+      `${this.serverName}/api/patient/appointments?patientId=${id}`,
       { headers }
     );
   }
 
-  // 10. REGISTER PATIENT
+  ScheduleAppointment(details: any): Observable<any> {
+    const headers = this.getAuthHeaders();
+    const fixedTime = this.toLocalDateTimeString(details.time);
+
+    return this.http.post(
+      `${this.serverName}/api/patient/appointment?patientId=${details.patientId}&doctorId=${details.doctorId}`,
+      { time: fixedTime },
+      { headers }
+    );
+  }
+
+  /* ===================== AUTH / CAPTCHA ===================== */
+
+  // Captcha needs session cookie -> withCredentials
+  getCaptcha(): Observable<any> {
+    return this.http.get<any>(
+      `${this.serverName}/api/captcha`,
+      { withCredentials: true }
+    );
+  }
+
+  // Login also needs same session for captcha validation -> withCredentials
+  Login(details: any): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post(
+      `${this.serverName}/api/user/login`,
+      details,
+      { headers, withCredentials: true }
+    );
+  }
+
   registerPatient(details: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(
       `${this.serverName}/api/patient/register`,
       details,
@@ -132,11 +214,8 @@ export class HttpService {
     );
   }
 
-  // 11. REGISTER DOCTOR
   registerDoctors(details: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(
       `${this.serverName}/api/doctors/register`,
       details,
@@ -144,11 +223,8 @@ export class HttpService {
     );
   }
 
-  // 12. REGISTER RECEPTIONIST
   registerReceptionist(details: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     return this.http.post(
       `${this.serverName}/api/receptionist/register`,
       details,
@@ -156,99 +232,74 @@ export class HttpService {
     );
   }
 
-  // ✅ Fetch CAPTCHA
-  getCaptcha() {
-    return this.http.get<any>(`${this.serverName}/api/captcha`);
-  }
+  /* ===================== PROFILE ===================== */
 
-
-  getAllPatients() {
+  getProfile(): Observable<any> {
     const headers = this.getAuthHeaders();
-    return this.http.get<any[]>(
-      `${this.serverName}/api/receptionist/patients`,
+    return this.http.get(
+      `${this.serverName}/api/profile`,
       { headers }
     );
   }
 
-
-  getDoctorAppointments() {
-    return this.http.get<any[]>(`${this.serverName}/api/doctor/appointments`);
-  }
-
-  completeAppointment(id: number) {
+  updateUsername(username: string): Observable<any> {
+    const headers = this.getAuthHeaders();
     return this.http.put(
-      `${this.serverName}/api/doctor/appointment/${id}/complete`,
-      {}
+      `${this.serverName}/api/profile/username`,
+      { username },
+      { headers }
     );
   }
 
-
-updateCompletionStatus(id: number, status: string) {
-  const headers = new HttpHeaders({
-    'Authorization': 'Bearer ' + localStorage.getItem('token'),
-    'Content-Type': 'application/json'
-  });
-
-  return this.http.put(
-    `${this.serverName}/api/doctor/appointment/${id}/completion-status`,
-    { completionstatus: status },
+  // ✅ Generate slots for next 10 days (9AM–9PM)
+generateDoctorSlots(doctorId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.post(
+    `${this.serverName}/api/doctor/${doctorId}/generate-slots`,
+    {},
     { headers }
   );
 }
 
-doctorRescheduleAppointment(id: number, time: string) {
-  const headers = new HttpHeaders({
-    'Authorization': 'Bearer ' + localStorage.getItem('token'),
-    'Content-Type': 'application/json'
-  });
+// ✅ Get slots for doctor on a date (YYYY-MM-DD)
+getDoctorSlots(doctorId: number, date: string): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/doctor/${doctorId}/slots?date=${date}`,
+    { headers }
+  );
+}
 
+// ✅ Toggle one slot
+updateDoctorSlot(doctorId: number, time: string, available: boolean): Observable<any> {
+  const headers = this.getAuthHeaders();
+  // time must be ISO: "YYYY-MM-DDTHH:mm:ss"
   return this.http.put(
-    `${this.serverName}/api/doctor/appointment/${id}/reschedule`,
+    `${this.serverName}/api/doctor/${doctorId}/slot?available=${available}`,
     { time },
     { headers }
   );
 }
 
 
-
-deleteAppointment(id: number) {
-
-  const headers = new HttpHeaders({
-    'Authorization': 'Bearer ' + localStorage.getItem('token')
-  });
-
-  return this.http.delete(
-    `${this.serverName}/api/receptionist/appointment/${id}`,
-    { headers }
-  );
-}
-
-
-// ✅ GET LOGGED-IN USER PROFILE
-getProfile(): Observable<any> {
+// ✅ Patient: get available slots for a doctor and date
+getAvailableSlotsForDoctor(doctorId: number, date: string): Observable<any[]> {
   const headers = this.getAuthHeaders();
-  return this.http.get(
-    `${this.serverName}/api/profile`,
+  return this.http.get<any[]>(
+    `${this.serverName}/api/patient/doctor/${doctorId}/available-slots?date=${date}`,
     { headers }
   );
 }
-
-// ✅ UPDATE USERNAME
-updateUsername(username: string): Observable<any> {
+scheduleAppointmentWithSlot(patientId: number, doctorId: number, slotTime: any): Observable<any> {
   const headers = this.getAuthHeaders();
-  return this.http.put(
-    `${this.serverName}/api/profile/username`,
-    { username },
-    { headers }
+
+  // ✅ If slotTime was accidentally passed as object, extract the real value
+  const safeTime = typeof slotTime === 'string' ? slotTime : slotTime?.time;
+
+  return this.http.post(
+    `${this.serverName}/api/patient/appointment?patientId=${patientId}&doctorId=${doctorId}`,
+    { time: safeTime },
+    { headers }   // ✅ backend now returns JSON {message:...}
   );
 }
-
-
-getDoctorsForReceptionist(): Observable<any> {
-  const headers = this.getAuthHeaders();
-  return this.http.get(
-    `${this.serverName}/api/receptionist/doctors`,
-    { headers }
-  );
 }
-} 

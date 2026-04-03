@@ -21,7 +21,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByStatus(String status);
 
     // ✅ Updated: Date → LocalDateTime
-    boolean existsByDoctorAndAppointmentTime(Doctor doctor, LocalDateTime appointmentTime);
+    boolean existsByDoctorAndAppointmentTime(Doctor doctor, java.time.LocalDateTime appointmentTime);
 
     // ✅ Updated: Date → LocalDateTime
     List<Appointment> findByDoctorAndAppointmentTimeBetween(

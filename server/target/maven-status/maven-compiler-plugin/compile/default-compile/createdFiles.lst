@@ -1,0 +1,3 @@
+com/edutech/healthcare_appointment_management_system/entity/SlotStatus.class
+com/edutech/healthcare_appointment_management_system/entity/DoctorAvailabilitySlot.class
+com/edutech/healthcare_appointment_management_system/repository/DoctorAvailabilitySlotRepository.class

@@ -3,9 +3,15 @@ package com.edutech.healthcare_appointment_management_system.service;
 import com.edutech.healthcare_appointment_management_system.entity.Appointment;
 import com.edutech.healthcare_appointment_management_system.entity.Doctor;
 import com.edutech.healthcare_appointment_management_system.entity.Patient;
+import com.edutech.healthcare_appointment_management_system.entity.DoctorAvailabilitySlot;
+import com.edutech.healthcare_appointment_management_system.entity.SlotStatus;
+
 import com.edutech.healthcare_appointment_management_system.repository.AppointmentRepository;
+import com.edutech.healthcare_appointment_management_system.repository.DoctorAvailabilitySlotRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,15 +23,65 @@ public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    // ✅ Schedule Appointment (LocalDateTime)
+    @Autowired
+    private DoctorAvailabilitySlotRepository slotRepository;
+
+    /* ===================== COMMON VALIDATIONS ===================== */
+
+    private void validateNotNullTime(LocalDateTime time, String msg) {
+        if (time == null) {
+            throw new RuntimeException(msg);
+        }
+    }
+
+    private void validateNotPast(LocalDateTime time, String msg) {
+        if (time.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException(msg);
+        }
+    }
+
+    private void validateDoctorNotNull(Doctor doctor) {
+        if (doctor == null) {
+            throw new RuntimeException("Doctor is required");
+        }
+    }
+
+    private void validatePatientNotNull(Patient patient) {
+        if (patient == null) {
+            throw new RuntimeException("Patient is required");
+        }
+    }
+
+    /* ===================== SCHEDULE APPOINTMENT (PATIENT/RECEPTIONIST) ===================== */
+    /**
+     * ✅ Slot-based booking:
+     * - Slot must exist
+     * - Slot must be AVAILABLE
+     * - When booked, slot becomes BOOKED and stores patient + appointment info
+     */
+    @Transactional
     public Appointment scheduleAppointment(Patient patient, Doctor doctor, LocalDateTime time) {
 
-        if (time == null) {
-            throw new RuntimeException("Appointment time is required");
+        validatePatientNotNull(patient);
+        validateDoctorNotNull(doctor);
+        validateNotNullTime(time, "Appointment time is required");
+        validateNotPast(time, "Appointment time cannot be in the past");
+
+        // ✅ Slot must exist (doctor must generate slots first)
+        DoctorAvailabilitySlot slot = slotRepository.findByDoctorAndSlotStart(doctor, time)
+                .orElseThrow(() -> new RuntimeException("Slot not found. Doctor must generate slots first."));
+
+        // ✅ Slot must be AVAILABLE
+        if (slot.getStatus() == SlotStatus.BLOCKED) {
+            throw new RuntimeException("Doctor blocked this slot");
+        }
+        if (slot.getStatus() == SlotStatus.BOOKED) {
+            throw new RuntimeException("Slot already booked");
         }
 
-        if (time.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Appointment time cannot be in the past");
+        // ✅ double-safety conflict prevention
+        if (appointmentRepository.existsByDoctorAndAppointmentTime(doctor, time)) {
+            throw new RuntimeException("Slot already booked");
         }
 
         Appointment a = new Appointment();
@@ -35,21 +91,36 @@ public class AppointmentService {
         a.setStatus("SCHEDULED");
         a.setCompletionstatus("PENDING");
 
-        return appointmentRepository.save(a);
+        Appointment saved = appointmentRepository.save(a);
+
+        // ✅ Mark slot as BOOKED and store why locked (doctor can see)
+        slot.setStatus(SlotStatus.BOOKED);
+        slot.setBookedAppointmentId(saved.getId());
+        slot.setBookedPatientId(patient.getId());
+        slot.setBookedPatientName(patient.getUsername());
+
+        slotRepository.save(slot);
+
+        return saved;
     }
 
-    // ✅ Reschedule Appointment (LocalDateTime)
+    /* ===================== RESCHEDULE (RECEPTIONIST) ===================== */
+
     public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        if (newTime == null) {
-            throw new RuntimeException("New appointment time is required");
-        }
+        validateNotNullTime(newTime, "New appointment time is required");
+        validateNotPast(newTime, "Cannot reschedule appointment to past time");
 
-        if (newTime.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Cannot reschedule appointment to past time");
+        Doctor doctor = appointment.getDoctor();
+
+        // ✅ Prevent slot conflict (only if changing time)
+        if (doctor != null
+                && appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)
+                && !newTime.equals(appointment.getAppointmentTime())) {
+            throw new RuntimeException("This time slot is already booked for this doctor");
         }
 
         appointment.setAppointmentTime(newTime);
@@ -58,21 +129,23 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // ✅ Cancel Appointment (LocalDateTime)
+    /* ===================== CANCEL APPOINTMENT ===================== */
+
     public Appointment cancelAppointment(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        // If appointmentTime is null, cancel is allowed (or you can block it)
-        if (appointment.getAppointmentTime() != null &&
-                appointment.getAppointmentTime().isBefore(LocalDateTime.now())) {
+        if (appointment.getAppointmentTime() != null
+                && appointment.getAppointmentTime().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Cannot cancel past appointment");
         }
 
         appointment.setStatus("CANCELLED");
         return appointmentRepository.save(appointment);
     }
+
+    /* ===================== READ OPERATIONS ===================== */
 
     public List<Appointment> getAppointmentsByPatient(Patient patient) {
         return appointmentRepository.findByPatient(patient);
@@ -90,7 +163,8 @@ public class AppointmentService {
         return appointmentRepository.findByDoctorId(doctorId);
     }
 
-    // ✅ Mark Completed
+    /* ===================== COMPLETION STATUS ===================== */
+
     public Appointment markAppointmentCompleted(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
@@ -100,33 +174,33 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // ✅ Update Completion Status
     public Appointment updateCompletionStatus(Long id, String status) {
 
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
+        if (status == null || status.trim().isEmpty()) {
+            throw new RuntimeException("Completion status is required");
+        }
+
         appointment.setCompletionstatus(status);
         return appointmentRepository.save(appointment);
     }
 
-    // ✅ Doctor Reschedule with 5-hour rule (LocalDateTime)
+    /* ===================== DOCTOR RESCHEDULE (STRICT RULES) ===================== */
+
     public Appointment doctorRescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        if ("COMPLETED".equals(appointment.getCompletionstatus())) {
+        // ❌ Cannot change completed appointments
+        if ("COMPLETED".equalsIgnoreCase(appointment.getCompletionstatus())) {
             throw new RuntimeException("Completed appointments cannot be rescheduled");
         }
 
-        if (newTime == null) {
-            throw new RuntimeException("New appointment time is required");
-        }
-
-        if (newTime.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Appointment time cannot be in the past");
-        }
+        validateNotNullTime(newTime, "New appointment time is required");
+        validateNotPast(newTime, "Appointment time cannot be in the past");
 
         // ✅ Enforce 5-hour rule based on CURRENT appointment time
         if (appointment.getAppointmentTime() != null) {
@@ -134,6 +208,13 @@ public class AppointmentService {
             if (hoursLeft < 5) {
                 throw new RuntimeException("Rescheduling is allowed only at least 5 hours before appointment time");
             }
+        }
+
+        Doctor doctor = appointment.getDoctor();
+        if (doctor != null
+                && appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)
+                && !newTime.equals(appointment.getAppointmentTime())) {
+            throw new RuntimeException("This time slot is already booked for this doctor");
         }
 
         appointment.setAppointmentTime(newTime);

@@ -1,13 +1,8 @@
-
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
-    <a routerLink="/schedule-appointment" class="nav-link active">
-      Schedule Appointment
-    </a>
-    <a routerLink="/patient-appointment" class="nav-link ">
-      View Appointments
-    </a>
+    <a routerLink="/schedule-appointment" class="nav-link active">Schedule Appointment</a>
+    <a routerLink="/patient-appointment" class="nav-link">View Appointments</a>
   </div>
 </nav>
 
@@ -15,6 +10,10 @@
 
   <div *ngIf="successMessage" class="alert alert-success mt-3">
     {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
   </div>
 
   <h3>Available Doctors</h3>
@@ -37,9 +36,7 @@
         <td>{{ doctor.specialty }}</td>
         <td>{{ doctor.availability }}</td>
         <td>
-          <button
-            (click)="addAppointment(doctor)"
-            [disabled]="doctor.availability !== 'Yes'">
+          <button class="btn-appointment" (click)="addAppointment(doctor)" [disabled]="doctor.availability !== 'Yes'">
             Appointment
           </button>
         </td>
@@ -51,30 +48,48 @@
     </tbody>
   </table>
 
-  <div *ngIf="isAdded" class="add-appointment mt-4">
-    <h3>Schedule Appointment</h3>
+  <!-- ================= SLOT BOOKING SECTION ================= -->
+  <div *ngIf="selectedDoctor" class="add-appointment mt-4">
+    <div class="booking-header">
+      <h3>Book Slot - {{ selectedDoctor.username }}</h3>
+      <button class="btn btn-sm btn-secondary" (click)="closeBooking()">Close</button>
+    </div>
 
-    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label class="form-label">Select Date</label>
+      <input type="date" class="form-control" [(ngModel)]="selectedDate" [min]="minDate" [max]="maxDate"
+        (change)="onDateChange()" />
+      <small class="text-muted">Booking allowed only up to 10 days ahead</small>
+    </div>
 
-      <input type="hidden" formControlName="doctorId">
+    <div *ngIf="loadingSlots" class="text-muted">
+      Loading available slots...
+    </div>
 
-      <label>Appointment Time</label>
-      <input
-  type="datetime-local"
-  class="form-control"
-  formControlName="appointmentTime"
-  [min]="minDateTime">
+    <div *ngIf="!loadingSlots">
+      <h5 class="mb-2">Available Time Slots (9AM - 9PM)</h5>
 
+      <div *ngIf="availableSlots.length === 0" class="text-danger">
+        No available slots for this date.
+      </div>
 
-      <br><br>
+      <!-- ✅ slots are string[] -->
+      <div class="slot-grid" *ngIf="availableSlots.length > 0">
 
-      <button
-        type="submit"
-        [disabled]="appointmentForm.invalid">
-        Submit
-      </button>
+        <button *ngFor="let slot of availableSlots" class="slot-btn" [class.selected]="selectedSlotTime === slot.time"
+          (click)="selectSlot(slot)">
+          {{ slot.display }}
+        </button>
 
-    </form>
+      </div>
+
+      <div class="mt-3 text-end">
+
+        <button class="btn btn-success" (click)="bookSlot()" [disabled]="!selectedSlotTime">
+          Confirm Booking
+        </button>
+
+      </div>
+    </div>
   </div>
-
 </div>

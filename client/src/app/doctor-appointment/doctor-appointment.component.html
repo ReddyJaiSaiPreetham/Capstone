@@ -1,13 +1,13 @@
-
+<!-- ================= NAVBAR ================= -->
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
-    <a routerLink="/doctor-appointment" class="nav-link active">
-      Doctor Appointment
-    </a>
-    <a routerLink="/doctor-availability" class="nav-link ">
-      Doctor Availability
-    </a>
+    <a routerLink="/doctor-appointment" class="nav-link active">Doctor Appointment</a>
+    <a routerLink="/doctor-availability" class="nav-link">Doctor Availability</a>
+  </div>
+
+  <div class="navbar-right">
+    <a routerLink="/login" class="nav-link logout">Logout</a>
   </div>
 </nav>
 
@@ -57,13 +57,17 @@
             </select>
 
             <button class="btn btn-sm btn-primary mt-1"
-                    (click)="updateCompletionStatus(app)">Save</button>
+                    (click)="updateCompletionStatus(app)">
+              Save
+            </button>
           </td>
 
           <td class="text-end">
             <button *ngIf="canReschedule(app)"
                     class="btn btn-sm btn-warning"
-                    (click)="editAppointment(app)">Reschedule</button>
+                    (click)="editAppointment(app)">
+              Reschedule
+            </button>
 
             <small *ngIf="!canReschedule(app)" class="text-danger d-block">
               Not allowed
@@ -71,18 +75,19 @@
           </td>
         </tr>
 
+        <!-- Inline reschedule for Today -->
         <tr *ngIf="rescheduleAppointmentId === app.id">
           <td colspan="4">
             <div class="inline-reschedule-card">
               <input type="datetime-local"
                      [(ngModel)]="rescheduleTime"
                      [min]="minDateTime"
+                     [ngModelOptions]="{ standalone: true }"
                      class="form-control form-control-sm">
+
               <div class="mt-2 text-end">
-                <button class="btn btn-success btn-sm"
-                        (click)="submitReschedule()">Update</button>
-                <button class="btn btn-secondary btn-sm"
-                        (click)="cancelReschedule()">Cancel</button>
+                <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
+                <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
               </div>
             </div>
           </td>
@@ -102,7 +107,9 @@
 
       <div class="appointment-row">
         <div class="appointment-info">
-          <div class="time">{{ app.appointmentTime }}</div>
+          <!-- ✅ FIXED: consistent time display -->
+          <div class="time">{{ parseLocal(app.appointmentTime) | date:'hh:mm a' }}</div>
+
           <div class="patient">
             <strong>{{ app.patient?.username }}</strong>
             <small>{{ app.patient?.email }}</small>
@@ -118,11 +125,15 @@
           </select>
 
           <button class="btn btn-sm btn-primary"
-                  (click)="updateCompletionStatus(app)">Save</button>
+                  (click)="updateCompletionStatus(app)">
+            Save
+          </button>
 
           <button *ngIf="canReschedule(app)"
                   class="btn btn-sm btn-warning"
-                  (click)="editAppointment(app)">Reschedule</button>
+                  (click)="editAppointment(app)">
+            Reschedule
+          </button>
 
           <small *ngIf="!canReschedule(app)" class="text-danger">
             Reschedule locked
@@ -130,20 +141,23 @@
         </div>
       </div>
 
+      <!-- Inline reschedule for Upcoming -->
       <div *ngIf="rescheduleAppointmentId === app.id"
            class="inline-reschedule-card">
+
         <input type="datetime-local"
                [(ngModel)]="rescheduleTime"
                [min]="minDateTime"
+               [ngModelOptions]="{ standalone: true }"
                class="form-control form-control-sm">
+
         <div class="mt-2 text-end">
-          <button class="btn btn-success btn-sm"
-                  (click)="submitReschedule()">Update</button>
-          <button class="btn btn-secondary btn-sm"
-                  (click)="cancelReschedule()">Cancel</button>
+          <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
+          <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
         </div>
       </div>
 
     </ng-container>
   </div>
 </div>
+``

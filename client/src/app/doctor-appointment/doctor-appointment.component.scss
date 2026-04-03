@@ -1,4 +1,3 @@
-
 .brand {
   color: #ffffff;
   font-weight: 600;
@@ -19,6 +18,11 @@
   align-items: center;
 }
 
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
 .nav-link {
   color: #cfcfcf;
   margin-right: 18px;
@@ -34,8 +38,21 @@
   color: #ffffff;
   font-weight: 500;
 }
+
+.logout {
+  margin-right: 0;
+  background: #dc3545;
+  color: #fff !important;
+  padding: 5px 10px;
+  border-radius: 4px;
+
+  &:hover {
+    background: #b02a37;
+  }
+}
+
 .page-title {
-  margin-bottom: 15px;
+  margin: 15px 0;
   font-weight: 600;
 }
 
@@ -108,4 +125,6 @@
   background: #fff3cd;
   padding: 10px;
   border-top: 1px dashed #ccc;
+  border-radius: 6px;
+  margin-top: 8px;
 }

@@ -1,36 +1,61 @@
-
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
-    <a routerLink="/doctor-appointment" class="nav-link">
-      Doctor Appointment
-    </a>
-    <a routerLink="/doctor-availability" class="nav-link active">
-      Doctor Availability
-    </a>
+    <a routerLink="/doctor-appointment" class="nav-link">Doctor Appointment</a>
+    <a routerLink="/doctor-availability" class="nav-link active">Doctor Availability</a>
   </div>
+
+  
 </nav>
 
 <div class="container">
-  <h3>Update Availability</h3>
-  <div *ngIf="isAdded" class="alert alert-success">
+  <h3 class="page-title">Doctor Availability (Time Slots)</h3>
+
+  <div *ngIf="showMessage" class="alert" [ngClass]="isError ? 'alert-danger' : 'alert-success'">
     {{ responseMessage }}
   </div>
 
-  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+  <div class="date-row">
+    <label class="form-label">Select Date</label>
+    <input type="date"
+           class="form-control date-input"
+           [(ngModel)]="selectedDate"
+           [min]="minDate"
+           [max]="maxDate"
+           (change)="onDateChange()">
+  </div>
 
-    <div class="form-group">
-      <label>Availability</label>
-      <select formControlName="availability">
-        <option value="">Select</option>
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-    </div>
+  <div *ngIf="isPageLoading" class="loading-text">Loading slots...</div>
 
-    <button type="submit" [disabled]="itemForm.invalid">
-      Update
+  <div *ngIf="!isPageLoading" class="slot-grid">
+    <button
+      *ngFor="let s of slots"
+      class="slot-btn"
+      [ngClass]="{
+        'available': s.status === 'AVAILABLE',
+        'blocked': s.status === 'BLOCKED',
+        'booked': s.status === 'BOOKED'
+      }"
+      (click)="toggleSlot(s)"
+      [disabled]="s.loading || s.status === 'BOOKED'">
+
+      <span class="slot-time">{{ s.label }}</span>
+
+      <span class="slot-status" *ngIf="s.status === 'AVAILABLE'">Available</span>
+      <span class="slot-status" *ngIf="s.status === 'BLOCKED'">Blocked</span>
+
+      <span class="slot-status" *ngIf="s.status === 'BOOKED'">
+        BOOKED
+        <span class="booked-info" *ngIf="s.bookedPatientName">
+          — {{ s.bookedPatientName }} (Appt: {{ s.bookedAppointmentId }})
+        </span>
+      </span>
+
+      <span class="slot-status" *ngIf="s.loading">Updating...</span>
     </button>
+  </div>
 
-  </form>
+  <p class="note">
+    Rules: Slots are 1 hour each (9AM–9PM). BOOKED slots are locked and show who booked them.
+  </p>
 </div>

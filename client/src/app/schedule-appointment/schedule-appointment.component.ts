@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+type SlotDto = { time: string; display: string };
 
 @Component({
   selector: 'app-schedule-appointment',
@@ -11,109 +12,174 @@ export class ScheduleAppointmentComponent implements OnInit {
 
   doctorList: any[] = [];
 
-  // Form used for selecting time for the selected doctor
-  appointmentForm!: FormGroup;
+  selectedDoctor: any = null;
+  selectedDate: string = '';
 
-  // Payload form (patientId/doctorId/time) used to submit
-  itemForm!: FormGroup;
+  minDate: string = '';
+  maxDate: string = '';
 
-  isAdded: boolean = false;
+  // ✅ Backend returns slot objects: [{time, display}]
+  availableSlots: SlotDto[] = [];
+  // ✅ Store ONLY ISO time string for booking
+  selectedSlotTime: string = '';
+
   successMessage: string = '';
+  errorMessage: string = '';
+  loadingSlots: boolean = false;
 
-  minDateTime: string = '';
-
-  constructor(
-    public httpService: HttpService,
-    private formBuilder: FormBuilder
-  ) {
-    this.appointmentForm = this.formBuilder.group({
-      doctorId: ['', Validators.required],
-      appointmentTime: ['', Validators.required]
-    });
-  }
+  constructor(public httpService: HttpService) {}
 
   ngOnInit(): void {
-    this.itemForm = this.formBuilder.group({
-      patientId: ['', Validators.required],
-      doctorId: ['', Validators.required],
-      time: ['', Validators.required]
-    });
-
-    // ✅ Prevent past date selection (LOCAL datetime, not UTC)
-    this.minDateTime = this.getLocalDateTimeMin();
-
+    this.setDateRange();
     this.getDoctors();
   }
 
-  // ✅ Local time in yyyy-MM-ddTHH:mm format for datetime-local min attribute
-  private getLocalDateTimeMin(): string {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-    return now.toISOString().slice(0, 16);
+  /* ================== DATE RANGE (10 DAYS) ================== */
+  private setDateRange(): void {
+    const today = new Date();
+    this.minDate = this.toDateOnly(today);
+
+    const max = new Date();
+    max.setDate(max.getDate() + 10);
+    this.maxDate = this.toDateOnly(max);
+
+    this.selectedDate = this.minDate;
   }
 
+  private toDateOnly(d: Date): string {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  /* ================== DOCTORS ================== */
   getDoctors(): void {
     this.httpService.getDoctors().subscribe({
-      next: (data: any) => {
-        this.doctorList = Array.isArray(data) ? data : [];
-      },
-      error: () => {
-        this.doctorList = [];
-      }
+      next: (data: any) => this.doctorList = Array.isArray(data) ? data : [],
+      error: () => this.doctorList = []
     });
   }
 
+  /* ================== SELECT DOCTOR ================== */
   addAppointment(doctor: any): void {
-    const userIdString = localStorage.getItem('userId');
-    const userId = userIdString ? parseInt(userIdString, 10) : null;
+    this.successMessage = '';
+    this.errorMessage = '';
 
-    this.itemForm.patchValue({
-      patientId: userId,
-      doctorId: doctor.id
-    });
+    this.selectedSlotTime = '';
+    this.availableSlots = [];
 
-    this.appointmentForm.patchValue({
-      doctorId: doctor.id
-    });
+    this.selectedDoctor = doctor;
+    this.fetchAvailableSlots();
+  }
 
-    this.isAdded = true;
+  onDateChange(): void {
+    this.selectedSlotTime = '';
+    this.fetchAvailableSlots();
+  }
+
+  fetchAvailableSlots(clearSuccess: boolean = false): void {
+  if (!this.selectedDoctor || !this.selectedDate) return;
+
+  this.loadingSlots = true;
+  this.errorMessage = '';
+
+  // ✅ Clear success ONLY when user changes doctor/date (not after booking)
+  if (clearSuccess) {
     this.successMessage = '';
   }
 
-  onSubmit(): void {
-    if (this.appointmentForm.invalid) {
-      this.appointmentForm.markAllAsTouched();
+  this.httpService.getAvailableSlotsForDoctor(this.selectedDoctor.id, this.selectedDate).subscribe({
+    next: (slots: any) => {
+      this.availableSlots = Array.isArray(slots) ? slots : [];
+      this.loadingSlots = false;
+    },
+    error: (err) => {
+      console.error('Slots fetch failed:', err);
+      this.availableSlots = [];
+      this.loadingSlots = false;
+      this.errorMessage = 'Failed to fetch slots. Please try again.';
+    }
+  });
+}
+
+  /* ================== SLOT SELECT ================== */
+  selectSlot(slot: SlotDto): void {
+    // ✅ store only ISO string, not whole object
+    this.selectedSlotTime = slot.time;
+  }
+
+  /* ================== BOOK SLOT ================== */
+  bookSlot(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    if (!this.selectedDoctor) {
+      this.errorMessage = 'Please select a doctor';
       return;
     }
 
-    const rawTime: string = this.appointmentForm.value.appointmentTime;
-    // rawTime from datetime-local looks like: "2026-04-03T14:51"
+    if (!this.selectedSlotTime) {
+      this.errorMessage = 'Please select a time slot';
+      return;
+    }
 
-    // ✅ FIX: Send ISO format that LocalDateTime can parse
-    // Backend expects: "yyyy-MM-dd'T'HH:mm:ss"
-    const formattedTime = rawTime + ':00'; // -> "2026-04-03T14:51:00"
+    const userIdString = localStorage.getItem('userId');
+    const patientId = userIdString ? parseInt(userIdString, 10) : null;
 
-    this.itemForm.patchValue({
-      time: formattedTime
-    });
+    if (!patientId) {
+      this.errorMessage = 'Patient not logged in';
+      return;
+    }
 
-    const appointmentData = {
-      patientId: this.itemForm.value.patientId,
-      doctorId: this.itemForm.value.doctorId,
-      time: this.itemForm.value.time
-    };
+    // ✅ Ensure seconds exist: "YYYY-MM-DDTHH:mm:ss"
+    const slotForBackend =
+      this.selectedSlotTime.length === 16 ? this.selectedSlotTime + ':00' : this.selectedSlotTime;
 
-    this.httpService.ScheduleAppointment(appointmentData).subscribe({
-      next: () => {
-        this.successMessage = 'Appointment scheduled successfully ✅';
-        this.isAdded = false;
-        this.appointmentForm.reset();
-        this.itemForm.reset();
-      },
-      error: (err) => {
-        console.error('Schedule failed:', err);
-        alert('Failed to schedule appointment');
-      }
-    });
+    this.httpService
+      .scheduleAppointmentWithSlot(patientId, this.selectedDoctor.id, slotForBackend)
+      .subscribe({
+        next: (res: any) => {
+          // backend returns {message:"Appointment Scheduled"} OR plain string
+          this.successMessage = (res?.message || res || 'Appointment Scheduled') + ' ✅';
+          this.selectedSlotTime = '';
+          this.fetchAvailableSlots(); // remove booked slot
+        },
+        error: (err) => {
+          console.error('Booking failed:', err);
+
+          const backendMsg =
+            typeof err?.error === 'string'
+              ? err.error
+              : (err?.error?.message || err?.message);
+
+          this.errorMessage = backendMsg
+            ? backendMsg
+            : `Failed to schedule appointment (HTTP ${err?.status || 'unknown'})`;
+        }
+      });
+  }
+
+  closeBooking(): void {
+    this.selectedDoctor = null;
+    this.availableSlots = [];
+    this.selectedSlotTime = '';
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+
+  /* ================== Helper (fallback display for old string slots) ================== */
+  private formatToIST(slot: string): string {
+    // slot like "2026-04-03T11:00" or "2026-04-03T11:00:00"
+    const cleaned = slot.replace(' ', 'T');
+    const parts = cleaned.split('T');
+    if (parts.length !== 2) return slot;
+
+    const timePart = parts[1];
+    const hour = Number(timePart.split(':')[0]);
+
+    if (Number.isNaN(hour)) return slot;
+
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    return `${String(displayHour).padStart(2, '0')}:00 ${ampm}`;
   }
 }
