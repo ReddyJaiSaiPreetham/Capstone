@@ -1,10 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashbaord',
   templateUrl: './dashbaord.component.html',
   styleUrls: ['./dashbaord.component.scss']
 })
-export class DashbaordComponent {
+export class DashbaordComponent implements OnInit {
 
+  roleName: string | null = null;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    if (!this.authService.getLoginStatus) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.roleName = this.authService.getRole;
+  }
 }

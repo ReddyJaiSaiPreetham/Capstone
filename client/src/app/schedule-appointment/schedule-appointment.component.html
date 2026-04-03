@@ -1,1 +1,80 @@
-//todo: complete missing code..
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/schedule-appointment" class="nav-link active">
+      Schedule Appointment
+    </a>
+    <a routerLink="/patient-appointment" class="nav-link ">
+      View Appointments
+    </a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <h3>Available Doctors</h3>
+
+  <table class="doctors-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Doctor</th>
+        <th>Specialty</th>
+        <th>Availability</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let doctor of doctorList">
+        <td>{{ doctor.id }}</td>
+        <td>{{ doctor.username }}</td>
+        <td>{{ doctor.specialty }}</td>
+        <td>{{ doctor.availability }}</td>
+        <td>
+          <button
+            (click)="addAppointment(doctor)"
+            [disabled]="doctor.availability !== 'Yes'">
+            Appointment
+          </button>
+        </td>
+      </tr>
+
+      <tr *ngIf="doctorList.length === 0">
+        <td colspan="5">No doctors available</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="isAdded" class="add-appointment mt-4">
+    <h3>Schedule Appointment</h3>
+
+    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+
+      <input type="hidden" formControlName="doctorId">
+
+      <label>Appointment Time</label>
+      <input
+  type="datetime-local"
+  class="form-control"
+  formControlName="appointmentTime"
+  [min]="minDateTime">
+
+
+      <br><br>
+
+      <button
+        type="submit"
+        [disabled]="appointmentForm.invalid">
+        Submit
+      </button>
+
+    </form>
+  </div>
+
+</div>

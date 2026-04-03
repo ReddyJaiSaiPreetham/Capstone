@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-patient-appointment',
@@ -8,25 +7,67 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./patient-appointment.component.scss']
 })
 export class PatientAppointmentComponent implements OnInit {
-  appointmentList:any=[];
-  constructor(public httpService:HttpService) {
-  
-   }
+
+  appointmentList: any[] = [];
+
+  constructor(public httpService: HttpService) {}
 
   ngOnInit(): void {
     this.getAppointments();
   }
-  getAppointments() {
-    const userIdString = localStorage.getItem('userId');
 
-    // Parse userId to an integer, if it exists
+  getAppointments(): void {
+    const userIdString = localStorage.getItem('userId');
     const userId = userIdString ? parseInt(userIdString, 10) : null;
-    this.appointmentList
-    this.httpService.getAppointmentByPatient(userId).subscribe((data)=>{
-      this.appointmentList=data;
-      console.log(this.appointmentList);
-    })
+
+    if (userId !== null) {
+      this.httpService.getAppointmentByPatient(userId).subscribe((data: any) => {
+        this.appointmentList = data;
+      });
+    }
   }
 
+  // formatAppointmentTime(time: string): string {
 
+  //   if (!time) {
+  //     return '';
+  //   }
+
+  //   const clean = time.substring(0, 19); 
+  //   const [datePart, timePart] = clean.split('T');
+
+  //   const [year, month, day] = datePart.split('-');
+  //   const [hourStr, minute] = timePart.split(':');
+
+  //   const hourNum = parseInt(hourStr, 10);
+  //   const ampm = hourNum >= 12 ? 'PM' : 'AM';
+  //   const displayHour = hourNum % 12 === 0 ? 12 : hourNum % 12;
+
+  //   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  //                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  //   return `${day}-${months[+month - 1]}-${year} ${displayHour}:${minute} ${ampm}`;
+  // }
+
+  formatAppointmentTime(time: string): string {
+  if (!time) return '';
+
+  // Normalize both formats: " " or "T"
+  const clean = time.substring(0, 19).replace('T', ' ');
+  const [datePart, timePart] = clean.split(' ');
+
+  if (!datePart || !timePart) return '';
+
+  const [year, month, day] = datePart.split('-');
+  const [hourStr, minute] = timePart.split(':');
+
+  let hour = parseInt(hourStr, 10);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;
+
+  const months = ['Jan','Feb','Mar','Apr','May','Jun',
+                  'Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  return `${day}-${months[+month - 1]}-${year} ${hour}:${minute} ${ampm}`;
+}
 }

@@ -4,6 +4,7 @@ import com.edutech.healthcare_appointment_management_system.jwt.JwtRequestFilter
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,53 +35,72 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder);
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+protected void configure(HttpSecurity http) throws Exception {
 
-        http.csrf().disable()
-            .authorizeRequests()
+    http.csrf().disable()
+        .authorizeRequests()
 
-            // ✅ PUBLIC APIs (VERY IMPORTANT)
-            .antMatchers(
+        // ✅ PUBLIC APIs
+        .antMatchers(
                 "/api/user/login",
                 "/api/patient/register",
                 "/api/doctors/register",
-                "/api/receptionist/register"
-            ).permitAll()
+                "/api/receptionist/register",
+                "/api/captcha"
+        ).permitAll()
 
-            // ✅ PATIENT APIs
-            .antMatchers(
+        // ✅ PATIENT APIs
+        .antMatchers(
                 "/api/patient/doctors",
                 "/api/patient/appointments",
                 "/api/patient/appointment",
                 "/api/patient/medicalrecords"
-            ).hasAuthority("PATIENT")
+        ).hasAuthority("PATIENT")
 
-            // ✅ DOCTOR APIs
-            .antMatchers(
+        // ✅ DOCTOR APIs
+        .antMatchers(
                 "/api/doctor/appointments",
-                "/api/doctor/availability"
-            ).hasAuthority("DOCTOR")
+                "/api/doctor/availability",
+                "/api/doctor/appointment/**"
+        ).hasAuthority("DOCTOR")
 
-            // ✅ RECEPTIONIST APIs
-            .antMatchers(
+        // ✅ RECEPTIONIST APIs
+        .antMatchers(
                 "/api/receptionist/appointments",
-                "/api/receptionist/appointment",
+                "/api/receptionist/patients",
+                "/api/receptionist/doctors"
+        ).hasAuthority("RECEPTIONIST")
+
+        .antMatchers(HttpMethod.POST,
+                "/api/receptionist/appointment"
+        ).hasAuthority("RECEPTIONIST")
+
+        .antMatchers(HttpMethod.PUT,
                 "/api/receptionist/appointment-reschedule/**"
-            ).hasAuthority("RECEPTIONIST")
+        ).hasAuthority("RECEPTIONIST")
 
-            .anyRequest().authenticated()
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .antMatchers(HttpMethod.DELETE,
+                "/api/receptionist/appointment/**"
+        ).hasAuthority("RECEPTIONIST")
 
-        // ✅ JWT filter (after public URLs are permitted)
-        http.addFilterBefore(jwtRequestFilter,
-                UsernamePasswordAuthenticationFilter.class);
-    }
+        // ✅ PROFILE (ANY LOGGED-IN USER)
+        .antMatchers("/api/profile/**").authenticated()
+
+        .anyRequest().authenticated()
+        .and()
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    http.addFilterBefore(
+            jwtRequestFilter,
+            UsernamePasswordAuthenticationFilter.class
+    );
+}
+
 
     @Bean
     @Override

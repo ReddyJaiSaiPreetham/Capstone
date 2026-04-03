@@ -1,31 +1,66 @@
-<div class="card mt-4">
-    <div class="card-header">
-        <h4>Appointments</h4>
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/schedule-appointment" class="nav-link">
+      Schedule Appointment
+    </a>
+    <a routerLink="/patient-appointment" class="nav-link active">
+      View Appointments
+    </a>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <div class="card">
+    <div class="card-header text-center">
+      <h4>Appointments</h4>
     </div>
+
     <div class="card-body">
-        <table class="table table-boarderd">
-            <thead>
-                <th>Appointment Id</th>
-                <th>Appointment Time</th>
-                <th>Status</th>
-                <th>Doctor</th>
-                <th>Patient</th>
-               
-            </thead>
-            <tbody *ngFor="let val of appointmentList">
-                <tr >
-                    <td>{{val.id}}</td>
-                    <td>{{val.appointmentTime | date:'dd-MMM-yyyy hh:mm:a'}}</td>
-                    <td>{{val.status}}</td>
-                    <td><strong>{{val.doctor.username}}</strong><br>
-                        <small>{{val.doctor.email}}</small>
-                    </td>
-                    <td><strong>{{val.patient.username}}</strong><br>
-                        <small>{{val.patient.email}}</small>
-                    </td>
-                  
-                </tr>
-            </tbody>
-        </table>
+
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>Appointment Id</th>
+            <th>Appointment Time</th>
+            <th>Status</th>
+            <th>Doctor</th>
+            <th>Patient</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let val of appointmentList">
+            <td>{{ val.id }}</td>
+
+        
+            <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+
+            <td>{{ val.status }}</td>
+
+            <td>
+              <strong>{{ val.doctor.username }}</strong><br>
+              <small>{{ val.doctor.email }}</small>
+            </td>
+
+            <td>
+              <strong>{{ val.patient.username }}</strong><br>
+              <small>{{ val.patient.email }}</small>
+            </td>
+          </tr>
+
+          <tr *ngIf="appointmentList.length === 0">
+            <td colspan="5" class="text-center">
+              No appointments available
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
     </div>
+  </div>
+
 </div>

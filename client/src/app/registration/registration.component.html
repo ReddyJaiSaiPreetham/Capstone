@@ -12,49 +12,71 @@
 
       <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
 
-        <!-- USERNAME -->
+        <!-- Username -->
         <div class="mb-3">
           <label class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="username"
-          />
+
+          <input type="text" class="form-control" formControlName="username" placeholder="Enter username">
+
           <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.invalid">
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
             Username is required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['minlength']">
+            Minimum 4 characters required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['maxlength']">
+            Maximum 20 characters allowed
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['pattern']">
+            Username must start with a letter or underscore and can contain only letters, numbers, and underscore
+          </small>
+
+          <!-- ✅ NEW: Username already exists -->
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['usernameExists']">
+            Username already exists
           </small>
         </div>
 
-        <!-- EMAIL -->
+        <!-- Email -->
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input
-            type="email"
-            class="form-control"
-            formControlName="email"
-          />
-          <small class="text-danger"
-            *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
+          <input type="email" class="form-control" formControlName="email" />
+          <small class="text-danger" *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
             Valid email is required
           </small>
         </div>
 
-        <!-- PASSWORD -->
+        <!-- Password -->
         <div class="mb-3">
           <label class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="password"
-          />
+
+          <input type="password" class="form-control" formControlName="password" placeholder="Enter password">
+
           <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.invalid">
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['required']">
             Password is required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['minlength']">
+            Password must be at least 8 characters
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['pattern']">
+            Password must include at least 1 uppercase letter, 1 number, and 1 special character
           </small>
         </div>
 
-        <!-- ROLE -->
+        <!-- Role -->
         <div class="mb-3">
           <label class="form-label">Role</label>
           <select class="form-control" formControlName="role">
@@ -63,35 +85,31 @@
             <option value="DOCTOR">DOCTOR</option>
             <option value="RECEPTIONIST">RECEPTIONIST</option>
           </select>
-          <small class="text-danger"
-            *ngIf="itemForm.get('role')?.touched && itemForm.get('role')?.invalid">
+          <small class="text-danger" *ngIf="itemForm.get('role')?.touched && itemForm.get('role')?.invalid">
             Role is required
           </small>
         </div>
 
-        <!-- DOCTOR SPECIFIC FIELDS -->
+        <!-- Doctor-only fields -->
         <div *ngIf="itemForm.get('role')?.value === 'DOCTOR'">
 
           <div class="mb-3">
             <label class="form-label">Specialty</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="specialty"
-            />
-            <small class="text-danger"
-              *ngIf="itemForm.get('specialty')?.touched && itemForm.get('specialty')?.invalid">
+            <input type="text" class="form-control" formControlName="specialty" />
+            <small class="text-danger" *ngIf="itemForm.get('specialty')?.touched && itemForm.get('specialty')?.invalid">
               Specialty is required for doctor
             </small>
           </div>
 
           <div class="mb-3">
             <label class="form-label">Availability</label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="availability"
-            />
+
+            <select class="form-control" formControlName="availability">
+              <option value="">-- Select Availability --</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+
             <small class="text-danger"
               *ngIf="itemForm.get('availability')?.touched && itemForm.get('availability')?.invalid">
               Availability is required for doctor
@@ -100,7 +118,7 @@
 
         </div>
 
-        <!-- SUBMIT BUTTON -->
+        <!-- Submit -->
         <div class="d-grid mt-4">
           <button class="btn btn-dark" type="submit">
             REGISTER
@@ -109,12 +127,14 @@
 
       </form>
 
-      <!-- SUCCESS MESSAGE -->
-      <div class="alert alert-success mt-3" *ngIf="showMessage">
+      <!-- ✅ Success / Error message -->
+      <div
+        class="alert mt-3"
+        [ngClass]="isError ? 'alert-danger' : 'alert-success'"
+        *ngIf="showMessage">
         {{ responseMessage }}
       </div>
 
-      <!-- LOGIN LINK -->
       <div class="text-center mt-3">
         <a routerLink="/login">Already have an account? Login</a>
       </div>

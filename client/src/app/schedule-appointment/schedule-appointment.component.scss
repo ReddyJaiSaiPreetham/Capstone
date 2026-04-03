@@ -1,0 +1,159 @@
+
+.brand {
+  color: #ffffff;
+  font-weight: 600;
+  margin-right: 20px;
+}
+
+.navbar {
+  width: 100%;
+  background-color: #1e1e1e;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  color: #cfcfcf;
+  margin-right: 18px;
+  font-size: 14px;
+  text-decoration: none;
+
+  &:hover {
+    color: #ffffff;
+  }
+}
+
+.nav-link.active {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.app-header {
+  background-color: #222;
+  color: #ffffff;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-header .title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.app-header .menu a {
+  color: #ffffff;
+  margin-left: 16px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.app-header .menu a:hover {
+  text-decoration: underline;
+}
+
+
+.container {
+  padding: 20px;
+}
+
+.add-appointment {
+  border: 1px solid #ccc;
+  padding: 15px;
+  background-color: #f9f9f9;
+  width: 100%;
+  max-width: 500px;
+}
+
+.add-appointment h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.add-appointment label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.add-appointment input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.add-appointment button {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-appointment button:disabled {
+  background-color: #9fc5e8;
+  cursor: not-allowed;
+}
+
+
+.doctors-section {
+  margin-top: 30px;
+}
+
+.doctors-section h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.doctors-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.doctors-table thead {
+  background-color: #333;
+  color: #ffffff;
+}
+
+.doctors-table th,
+.doctors-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.doctors-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.btn-appointment {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-appointment:hover {
+  background-color: #0056b3;
+}
+
+.btn-appointment:disabled {
+  background-color: #b5b5b5;
+  cursor: not-allowed;
+}

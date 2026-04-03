@@ -17,7 +17,7 @@ import { DoctorAppointmentComponent } from './doctor-appointment/doctor-appointm
 import { DoctorAvailabilityComponent } from './doctor-availability/doctor-availability.component';
 import { ReceptionistAppointmentsComponent } from './receptionist-appointments/receptionist-appointments.component';
 import { ReceptionistScheduleAppointmentsComponent } from './receptionist-schedule-appointments/receptionist-schedule-appointments.component';
-
+import { HomeComponent } from './home/home.component';
 
 
 
@@ -32,7 +32,8 @@ import { ReceptionistScheduleAppointmentsComponent } from './receptionist-schedu
     DoctorAvailabilityComponent,
     DoctorAppointmentComponent,
     ReceptionistAppointmentsComponent,
-    ReceptionistScheduleAppointmentsComponent
+    ReceptionistScheduleAppointmentsComponent,
+    HomeComponent
 
     
   ],

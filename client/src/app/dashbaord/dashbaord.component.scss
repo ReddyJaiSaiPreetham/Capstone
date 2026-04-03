@@ -1,0 +1,79 @@
+/* Full background */
+.dashboard-bg {
+  min-height: 100vh;
+  padding-top: 80px;   /* ✅ pushes content below navbar */
+  padding-bottom: 40px;
+
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+/* Overlay for readability */
+.dashboard-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+/* Center content */
+.dashboard-center {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Card */
+.dashboard-card {
+  width: 420px; /* ✅ wider */
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 35px;
+  text-align: center;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+  transition: all 0.4s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-10px);
+}
+
+/* Image on card */
+.hero-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 20px;
+}
+
+/* Text */
+.dashboard-card h3 {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 25px;
+}
+
+/* Button */
+.btn {
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+/* Role colors */
+.doctor h3 {
+  color: #198754;
+}
+
+.profile-open .dashboard-bg {
+  display: none;
+}

@@ -12,42 +12,80 @@
 
       <form [formGroup]="itemForm" (ngSubmit)="onLogin()">
 
-        <!-- USERNAME -->
         <div class="mb-3">
           <label class="form-label">Username</label>
-          <input
-            type="text"
-            class="form-control"
-            formControlName="username"
-            placeholder="Enter username"
-          />
+
+          <input type="text" class="form-control" formControlName="username" placeholder="Enter username">
+
           <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.invalid">
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
             Username is required
           </small>
-        </div>
 
-        <!-- PASSWORD -->
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input
-            type="password"
-            class="form-control"
-            formControlName="password"
-            placeholder="Enter password"
-          />
           <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.invalid">
-            Password is required
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['minlength']">
+            Minimum 4 characters required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['maxlength']">
+            Maximum 20 characters allowed
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['pattern']">
+            Username must start with a letter or underscore and can contain only letters, numbers, and underscore
           </small>
         </div>
 
-        <!-- ERROR MESSAGE -->
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+
+          <input type="password" class="form-control" formControlName="password" placeholder="Enter password">
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['required']">
+            Password is required
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['minlength']">
+            Password must be at least 8 characters
+          </small>
+
+          <small class="text-danger"
+            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['pattern']">
+            Password must include at least 1 uppercase letter, 1 number, and 1 special character
+          </small>
+        </div>
+
+
+        <div class="mb-3">
+          <label class="form-label">Captcha</label>
+
+          <div class="d-flex align-items-center mb-2">
+            <span class="p-2 border rounded bg-light fw-bold me-3" style="letter-spacing: 3px;">
+              {{ captcha }}
+            </span>
+
+            <button type="button" class="btn btn-sm btn-outline-secondary" (click)="loadCaptcha()">
+              Refresh
+            </button>
+          </div>
+
+          <input type="text" class="form-control" formControlName="captcha" placeholder="Enter captcha">
+
+          <small class="text-danger" *ngIf="itemForm.get('captcha')?.touched && itemForm.get('captcha')?.invalid">
+            Captcha is required
+          </small>
+        </div>
+
+
         <div *ngIf="showError" class="alert alert-danger text-center">
           {{ errorMessage }}
         </div>
 
-        <!-- LOGIN BUTTON -->
+
         <div class="d-grid mt-3">
           <button class="btn btn-dark" type="submit">
             LOGIN
@@ -55,7 +93,7 @@
         </div>
       </form>
 
-      <!-- REGISTER LINK -->
+
       <div class="text-center mt-3">
         <span>Don’t have an account?</span>
         <a class="ms-1 text-decoration-none" routerLink="/registration">

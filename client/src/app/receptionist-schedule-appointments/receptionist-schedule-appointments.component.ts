@@ -7,43 +7,81 @@ import { DatePipe } from '@angular/common';
   selector: 'app-receptionist-schedule-appointments',
   templateUrl: './receptionist-schedule-appointments.component.html',
   styleUrls: ['./receptionist-schedule-appointments.component.scss'],
-  providers: [DatePipe] 
-  
+  providers: [DatePipe]
 })
 export class ReceptionistScheduleAppointmentsComponent implements OnInit {
-  
+
   itemForm: FormGroup;
-  formModel:any={};
-  responseMessage:any;
-  isAdded: boolean=false;
-  constructor(public httpService:HttpService,private formBuilder: FormBuilder,private datePipe: DatePipe) {
+  patientList: any[] = [];
+  doctorList: any[] = [];
+  responseMessage: string = '';
+  minDateTime: string = '';
+
+  constructor(
+    public httpService: HttpService,
+    private formBuilder: FormBuilder
+  ) {
     this.itemForm = this.formBuilder.group({
-      patientId: [this.formModel.patientId,[ Validators.required]],
-      doctorId: [this.formModel.doctorId,[ Validators.required]],
-      time: [this.formModel.time,[ Validators.required]],
-  });
-   }
+      patientId: ['', Validators.required],
+      doctorId: ['', Validators.required],
+      time: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
-  
+    this.minDateTime = this.getLocalDateTime();
+
+    this.loadPatients();
+    this.loadDoctors();
   }
 
-  onSubmit()
-  {
-   
-    debugger;
-    const formattedTime = this.datePipe.transform(this.itemForm.controls['time'].value, 'yyyy-MM-dd HH:mm:ss');
-
-    // Update the form value with the formatted date
-    this.itemForm.controls['time'].setValue(formattedTime);
-    debugger;
-    this.httpService.ScheduleAppointmentByReceptionist( this.itemForm.value).subscribe((data)=>{
-   
-      this.itemForm.reset();
-      this.responseMessage="Appointment Save Successfully";
-      this.isAdded=false;
-    })
-    
+  loadPatients(): void {
+    this.httpService.getAllPatients().subscribe({
+      next: (data: any[]) => {
+        this.patientList = data;
+      },
+      error: () => {
+        this.patientList = [];
+      }
+    });
   }
 
+loadDoctors(): void {
+  this.httpService.getDoctorsForReceptionist().subscribe({
+    next: (doctors) => {
+      this.doctorList = doctors;
+    },
+    error: () => {
+      this.doctorList = [];
+    }
+  });
+}
+
+  onSubmit(): void {
+    if (this.itemForm.invalid) return;
+
+    // ✅ IST-safe formatting
+    const formattedTime =
+      this.itemForm.value.time.replace('T', ' ') + ':00';
+
+    this.itemForm.patchValue({ time: formattedTime });
+
+    this.httpService
+      .ScheduleAppointmentByReceptionist(this.itemForm.value)
+      .subscribe({
+        next: () => {
+          this.responseMessage = 'Appointment scheduled successfully ✅';
+          this.itemForm.reset();
+        },
+        error: () => {
+          alert('Failed to schedule appointment');
+        }
+      });
+  }
+
+  getLocalDateTime(): string {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
+  }
 }

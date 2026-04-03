@@ -1,43 +1,114 @@
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/receptionist-schedule-appointments" class="nav-link">
+      Schedule Appointment
+    </a>
+    <a routerLink="/receptionist-appointments" class="nav-link active">
+      View Appointments
+    </a>
+  </div>
+</nav>
+
+
 <div class="container mt-4">
 
   <h2 class="text-center mb-4">Receptionist Appointments</h2>
 
-  <!-- Appointment List -->
+  <!-- ✅ SEARCH BAR -->
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search by patient or doctor name"
+        [(ngModel)]="searchText">
+    </div>
+  </div>
+
+  <!-- ✅ APPOINTMENTS TABLE -->
   <table class="table table-bordered table-striped">
     <thead class="table-dark">
       <tr>
         <th>ID</th>
-        <th>Patient Name</th>
-        <th>Doctor Name</th>
+        <th>Patient</th>
+        <th>Doctor</th>
         <th>Appointment Time</th>
         <th>Action</th>
       </tr>
     </thead>
 
     <tbody>
-      <tr *ngFor="let item of appointmentList">
+
+      <!-- ✅ APPOINTMENT ROWS -->
+      <tr *ngFor="let item of paginatedAppointments">
         <td>{{ item.id }}</td>
-        <td>{{ item.patientName }}</td>
-        <td>{{ item.doctorName }}</td>
-        <td>{{ item.time | date:'medium' }}</td>
+
         <td>
-          <button 
-            class="btn btn-primary btn-sm"
+          <strong>{{ item.patient?.username }}</strong><br>
+          <small>{{ item.patient?.email }}</small>
+        </td>
+
+        <td>
+          <strong>{{ item.doctor?.username }}</strong><br>
+          <small>{{ item.doctor?.email }}</small>
+        </td>
+
+        <td>{{ formatTime(item.appointmentTime) }}</td>
+
+        <td>
+          <!-- ✅ RESCHEDULE -->
+          <button
+            class="btn btn-primary btn-sm me-2"
             (click)="editAppointment(item)">
             Edit
+          </button>
+
+          <!-- ✅ DELETE -->
+          <button
+            class="btn btn-danger btn-sm"
+            (click)="deleteAppointment(item.id)">
+            Delete
           </button>
         </td>
       </tr>
 
+      <!-- ✅ NO DATA -->
       <tr *ngIf="appointmentList.length === 0">
         <td colspan="5" class="text-center">
           No appointments available
         </td>
       </tr>
+
     </tbody>
   </table>
 
-  <!-- Edit / Reschedule Form -->
+  <!-- ✅ PAGINATION -->
+  <nav *ngIf="totalPages > 1" class="mt-3">
+    <ul class="pagination justify-content-center">
+
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="previousPage()">Previous</button>
+      </li>
+
+      <li
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        class="page-item"
+        [class.active]="currentPage === i + 1">
+        <button class="page-link" (click)="goToPage(i + 1)">
+          {{ i + 1 }}
+        </button>
+      </li>
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="nextPage()">Next</button>
+      </li>
+
+    </ul>
+  </nav>
+
+  <!-- ✅ RESCHEDULE FORM -->
   <div *ngIf="isAdded" class="card mt-4">
     <div class="card-header bg-primary text-white">
       Reschedule Appointment
@@ -46,35 +117,22 @@
     <div class="card-body">
       <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
 
-        <!-- Hidden ID Field -->
         <input type="hidden" formControlName="id">
 
-        <!-- Time Field -->
         <div class="mb-3">
-          <label for="time" class="form-label">New Appointment Time</label>
-          <input 
+          <label class="form-label">New Appointment Time</label>
+          <input
             type="datetime-local"
-            id="time"
             class="form-control"
             formControlName="time"
-          >
-
-          <div 
-            class="text-danger"
-            *ngIf="itemForm.controls['time'].invalid && itemForm.controls['time'].touched">
-            Appointment time is required
-          </div>
+            [min]="minDateTime">
         </div>
 
-        <!-- Buttons -->
-        <button 
-          type="submit"
-          class="btn btn-success"
-          [disabled]="itemForm.invalid">
+        <button type="submit" class="btn btn-success" [disabled]="itemForm.invalid">
           Update
         </button>
 
-        <button 
+        <button
           type="button"
           class="btn btn-secondary ms-2"
           (click)="isAdded = false; itemForm.reset()">
@@ -85,10 +143,8 @@
     </div>
   </div>
 
-  <!-- Response Message -->
-  <div 
-    *ngIf="responseMessage"
-    class="alert alert-info mt-3">
+  <!-- ✅ RESPONSE MESSAGE -->
+  <div *ngIf="responseMessage" class="alert alert-info mt-3">
     {{ responseMessage }}
   </div>
 
