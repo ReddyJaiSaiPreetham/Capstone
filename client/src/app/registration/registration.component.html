@@ -12,7 +12,8 @@
 
       <form [formGroup]="itemForm" (ngSubmit)="onRegister()">
 
-         <div class="mb-3">
+        <!-- Username -->
+        <div class="mb-3">
           <label class="form-label">Username</label>
 
           <input type="text" class="form-control" formControlName="username" placeholder="Enter username">
@@ -36,8 +37,15 @@
             *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['pattern']">
             Username must start with a letter or underscore and can contain only letters, numbers, and underscore
           </small>
+
+          <!-- ✅ NEW: Username already exists -->
+          <small class="text-danger"
+            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['usernameExists']">
+            Username already exists
+          </small>
         </div>
 
+        <!-- Email -->
         <div class="mb-3">
           <label class="form-label">Email</label>
           <input type="email" class="form-control" formControlName="email" />
@@ -46,6 +54,7 @@
           </small>
         </div>
 
+        <!-- Password -->
         <div class="mb-3">
           <label class="form-label">Password</label>
 
@@ -67,6 +76,7 @@
           </small>
         </div>
 
+        <!-- Role -->
         <div class="mb-3">
           <label class="form-label">Role</label>
           <select class="form-control" formControlName="role">
@@ -80,6 +90,7 @@
           </small>
         </div>
 
+        <!-- Doctor-only fields -->
         <div *ngIf="itemForm.get('role')?.value === 'DOCTOR'">
 
           <div class="mb-3">
@@ -94,11 +105,9 @@
             <label class="form-label">Availability</label>
 
             <select class="form-control" formControlName="availability">
-
               <option value="">-- Select Availability --</option>
               <option value="Yes">Yes</option>
               <option value="No">No</option>
-
             </select>
 
             <small class="text-danger"
@@ -108,6 +117,8 @@
           </div>
 
         </div>
+
+        <!-- Submit -->
         <div class="d-grid mt-4">
           <button class="btn btn-dark" type="submit">
             REGISTER
@@ -116,7 +127,11 @@
 
       </form>
 
-      <div class="alert alert-success mt-3" *ngIf="showMessage">
+      <!-- ✅ Success / Error message -->
+      <div
+        class="alert mt-3"
+        [ngClass]="isError ? 'alert-danger' : 'alert-success'"
+        *ngIf="showMessage">
         {{ responseMessage }}
       </div>
 

@@ -38,9 +38,13 @@ public class RegisterAndLoginController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/api/patient/register")
-    public ResponseEntity<User> registerPatient(@RequestBody Patient patient) {
-        patient.setRole("PATIENT");
-        return ResponseEntity.ok(userService.registerUser(patient));
+    public ResponseEntity<?> registerPatient(@RequestBody Patient patient) {
+        try {
+            patient.setRole("PATIENT");
+            return ResponseEntity.ok(userService.registerUser(patient));
+        } catch (RuntimeException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 
     @PostMapping("/api/doctors/register")

@@ -10,14 +10,10 @@ import { HttpService } from '../../services/http.service';
 export class RegistrationComponent implements OnInit {
 
   itemForm!: FormGroup;
-  formModel: any = {
-    role: null,
-    email: '',
-    password: '',
-    username: ''
-  };
+
   showMessage: boolean = false;
-  responseMessage: any;
+  responseMessage: string = '';
+  isError: boolean = false;
 
   constructor(
     public router: Router,
@@ -47,8 +43,10 @@ export class RegistrationComponent implements OnInit {
         ]
       ],
       role: ['', Validators.required],
-      specialty: ['', [Validators.required]],
-      availability: ['', [Validators.required]]
+
+      // Doctor-only fields (validators set dynamically)
+      specialty: [''],
+      availability: ['']
     });
 
     this.onRoleChange();
@@ -66,6 +64,10 @@ export class RegistrationComponent implements OnInit {
       } else {
         specialtyControl?.clearValidators();
         availabilityControl?.clearValidators();
+
+        // clear values if not doctor
+        specialtyControl?.setValue('');
+        availabilityControl?.setValue('');
       }
 
       specialtyControl?.updateValueAndValidity();
@@ -73,35 +75,87 @@ export class RegistrationComponent implements OnInit {
     });
   }
 
-  onRegister(): void {
+  private showSuccess(msg: string): void {
+    this.showMessage = true;
+    this.isError = false;
+    this.responseMessage = msg;
+  }
 
-    if (this.itemForm.invalid) {
+  private showErrorMessage(err: any): void {
+    this.showMessage = true;
+    this.isError = true;
+
+    // backend may return string like "Username already exists"
+    const backendMsg = err?.error;
+
+    if (err?.status === 400 && typeof backendMsg === 'string') {
+      this.responseMessage = backendMsg;
+
+      // ✅ field-level error for username
+      if (backendMsg.toLowerCase().includes('username')) {
+        this.itemForm.get('username')?.setErrors({ usernameExists: true });
+      }
       return;
     }
 
-    const data = this.itemForm.value;
+    this.responseMessage = 'Registration failed. Please try again.';
+  }
+
+  onRegister(): void {
+
+    // clear old message & field error before attempt
+    this.showMessage = false;
+    this.responseMessage = '';
+    this.isError = false;
+
+    // remove usernameExists error if present
+    const usernameControl = this.itemForm.get('username');
+    if (usernameControl?.errors?.['usernameExists']) {
+      const errs = { ...usernameControl.errors };
+      delete errs['usernameExists'];
+      usernameControl.setErrors(Object.keys(errs).length ? errs : null);
+    }
+
+    if (this.itemForm.invalid) {
+      this.itemForm.markAllAsTouched();
+      return;
+    }
+
+    const data = { ...this.itemForm.value };
+
+    // ✅ remove doctor-only fields if role is not DOCTOR
+    if (data.role !== 'DOCTOR') {
+      delete data.specialty;
+      delete data.availability;
+    }
 
     if (data.role === 'PATIENT') {
-      this.bookService.registerPatient(data).subscribe(() => {
-        this.showMessage = true;
-        this.responseMessage = 'Patient registered successfully';
-        this.itemForm.reset();
+      this.bookService.registerPatient(data).subscribe({
+        next: () => {
+          this.showSuccess('Patient registered successfully ✅');
+          this.itemForm.reset();
+        },
+        error: (err) => this.showErrorMessage(err)
       });
     }
 
     if (data.role === 'DOCTOR') {
-      this.bookService.registerDoctors(data).subscribe(() => {
-        this.showMessage = true;
-        this.responseMessage = 'Doctor registered successfully';
-        this.itemForm.reset();
+      this.bookService.registerDoctors(data).subscribe({
+        next: () => {
+          this.showSuccess('Doctor registered successfully ✅');
+          this.itemForm.reset();
+        },
+        error: (err) => this.showErrorMessage(err)
       });
     }
 
     if (data.role === 'RECEPTIONIST') {
-      this.bookService.registerReceptionist(data).subscribe(() => {
-        this.showMessage = true;
-        this.responseMessage = 'Receptionist registered successfully';
-        this.itemForm.reset();
+      this.bookService.registerReceptionist(data).subscribe({
+        next: () => {
+          this.showSuccess('Receptionist registered successfully ✅');
+          this.itemForm.reset();
+        },
+        error: (err) => this.showErrorMessage(err)
       });
     }
   }
