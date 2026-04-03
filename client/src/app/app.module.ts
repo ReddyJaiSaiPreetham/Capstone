@@ -18,6 +18,8 @@ import { DoctorAvailabilityComponent } from './doctor-availability/doctor-availa
 import { ReceptionistAppointmentsComponent } from './receptionist-appointments/receptionist-appointments.component';
 import { ReceptionistScheduleAppointmentsComponent } from './receptionist-schedule-appointments/receptionist-schedule-appointments.component';
 import { HomeComponent } from './home/home.component';
+import { DoctorMedicalRecordComponent } from './doctor-medical-record/doctor-medical-record.component';
+import { PatientMedicalRecordsComponent } from './patient-medical-records/patient-medical-records.component';
 
 
 
@@ -33,7 +35,9 @@ import { HomeComponent } from './home/home.component';
     DoctorAppointmentComponent,
     ReceptionistAppointmentsComponent,
     ReceptionistScheduleAppointmentsComponent,
-    HomeComponent
+    HomeComponent,
+    DoctorMedicalRecordComponent,
+    PatientMedicalRecordsComponent,
 
     
   ],

@@ -323,4 +323,61 @@ export class HttpService {
       { headers }
     );
   }
+  /* ===================== MEDICAL RECORDS (PRESCRIPTION) ===================== */
+
+// ✅ Doctor creates a medical record (diagnosis, treatment, prescriptionItems[])
+createMedicalRecord(patientId: number, doctorId: number, recordBody: any): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.post(
+    `${this.serverName}/api/doctor/medicalrecords?patientId=${patientId}&doctorId=${doctorId}`,
+    recordBody,
+    { headers }
+  );
+}
+
+// ✅ Doctor updates an existing medical record
+updateMedicalRecord(recordId: number, doctorId: number, recordBody: any): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.put(
+    `${this.serverName}/api/doctor/medicalrecords/${recordId}?doctorId=${doctorId}`,
+    recordBody,
+    { headers }
+  );
+}
+
+// ✅ Doctor fetch record by ID (useful for edit screen)
+getMedicalRecordByIdForDoctor(recordId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(
+    `${this.serverName}/api/doctor/medicalrecords/${recordId}`,
+    { headers }
+  );
+}
+
+// ✅ Patient gets all medical records (timeline list)
+getPatientMedicalRecords(patientId: number): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/patient/medicalrecords?patientId=${patientId}`,
+    { headers }
+  );
+}
+
+// ✅ Patient gets single medical record details
+getPatientMedicalRecordById(recordId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(
+    `${this.serverName}/api/patient/medicalrecords/${recordId}`,
+    { headers }
+  );
+}
+
+// ✅ Patient downloads prescription PDF (IMPORTANT: responseType = blob)
+downloadPrescriptionPdf(recordId: number): Observable<Blob> {
+  const headers = this.getAuthHeaders();
+  return this.http.get(
+    `${this.serverName}/api/patient/medicalrecords/${recordId}/pdf`,
+    { headers, responseType: 'blob' }
+  );
+}
 }

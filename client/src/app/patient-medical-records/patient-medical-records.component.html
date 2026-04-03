@@ -1,0 +1,108 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/schedule-appointment" class="nav-link">Schedule Appointment</a>
+    <a routerLink="/patient-appointment" class="nav-link">View Appointments</a>
+    <a routerLink="/patient-medical-records" class="nav-link active">Prescriptions</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <h3 class="title">My Medical Records</h3>
+
+  <div *ngIf="loading" class="text-muted">Loading records...</div>
+
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Records List -->
+  <div class="records-card" *ngIf="!loading && records.length > 0">
+    <table class="records-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Doctor</th>
+          <th>Diagnosis</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let r of records">
+          <td>{{ formatDateTime(r.recordDate) }}</td>
+          <td>{{ r.doctor?.username }}</td>
+          <td>{{ r.diagnosis }}</td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary me-2" (click)="viewRecord(r)">
+              View
+            </button>
+
+            <button class="btn btn-sm btn-success" (click)="downloadPdf(r.id)">
+              Download PDF
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No records -->
+  <div *ngIf="!loading && records.length === 0" class="empty-box">
+    No medical records found.
+  </div>
+
+  <!-- Record Details Modal/Card -->
+  <div *ngIf="selectedRecord" class="detail-card">
+    <div class="detail-header">
+      <h4>Record Details</h4>
+      <button class="btn btn-sm btn-secondary" (click)="closeView()">Close</button>
+    </div>
+
+    <div class="detail-body">
+      <p><strong>Date:</strong> {{ formatDateTime(selectedRecord.recordDate) }}</p>
+      <p><strong>Doctor:</strong> {{ selectedRecord.doctor?.username }}</p>
+      <p><strong>Diagnosis:</strong> {{ selectedRecord.diagnosis }}</p>
+      <p><strong>Treatment / Notes:</strong> {{ selectedRecord.treatment }}</p>
+
+      <h5 class="mt-3">Prescription Medicines</h5>
+
+      <table class="med-table" *ngIf="selectedRecord.prescriptionItems?.length">
+        <thead>
+          <tr>
+            <th>Medicine</th>
+            <th>Dosage</th>
+            <th>Frequency</th>
+            <th>Days</th>
+            <th>Instructions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of selectedRecord.prescriptionItems">
+            <td>{{ m.medicineName }}</td>
+            <td>{{ m.dosage }}</td>
+            <td>{{ m.frequency }}</td>
+            <td>{{ m.days }}</td>
+            <td>{{ m.instructions }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="!selectedRecord.prescriptionItems?.length" class="text-danger">
+        No medicines added.
+      </div>
+
+      <div class="text-end mt-3">
+        <button class="btn btn-success" (click)="downloadPdf(selectedRecord.id)">
+          Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

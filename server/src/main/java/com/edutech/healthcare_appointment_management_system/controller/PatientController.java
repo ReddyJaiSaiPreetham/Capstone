@@ -26,9 +26,6 @@ public class PatientController {
     private AppointmentService appointmentService;
 
     @Autowired
-    private MedicalRecordService medicalRecordService;
-
-    @Autowired
     private DoctorService doctorService;
 
     @Autowired
@@ -73,13 +70,6 @@ public class PatientController {
         return appointmentService.getAppointmentsByPatient(patient);
     }
 
-    // ✅ GET PATIENT MEDICAL RECORDS
-    @GetMapping("/medicalrecords")
-    public List<MedicalRecord> getMedicalRecords(@RequestParam Long patientId) {
-        Patient patient = patientService.getPatientById(patientId);
-        return medicalRecordService.getMedicalRecordsByPatient(patient);
-    }
-
     // ✅ GET AVAILABLE SLOTS (IST display + ISO booking time)
     @GetMapping("/doctor/{doctorId}/available-slots")
     public ResponseEntity<List<Map<String, String>>> getAvailableSlots(
@@ -97,20 +87,18 @@ public class PatientController {
         DateTimeFormatter isoFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("hh:mm a");
 
-        // ✅ FIX: use status-based method (AVAILABLE only)
         List<DoctorAvailabilitySlot> enabledSlots =
                 doctorAvailabilitySlotRepository.findByDoctorAndSlotStartBetweenAndStatus(
                         doctor, start, end, SlotStatus.AVAILABLE
                 );
 
-        // ✅ Remove already booked appointments (double safety)
         List<Map<String, String>> result = enabledSlots.stream()
                 .map(DoctorAvailabilitySlot::getSlotStart)
                 .filter(slotStart -> !appointmentRepository.existsByDoctorAndAppointmentTime(doctor, slotStart))
                 .map(slotStart -> {
                     Map<String, String> m = new java.util.HashMap<>();
-                    m.put("time", slotStart.format(isoFmt));       // for booking
-                    m.put("display", slotStart.format(displayFmt)); // for IST display
+                    m.put("time", slotStart.format(isoFmt));
+                    m.put("display", slotStart.format(displayFmt));
                     return m;
                 })
                 .collect(Collectors.toList());

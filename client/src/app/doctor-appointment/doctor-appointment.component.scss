@@ -1,7 +1,9 @@
+/* Navbar */
 .brand {
   color: #ffffff;
-  font-weight: 600;
-  margin-right: 20px;
+  font-weight: 700;
+  margin-right: 18px;
+  letter-spacing: 0.3px;
 }
 
 .navbar {
@@ -13,79 +15,149 @@
   align-items: center;
 }
 
-.navbar-left {
+.navbar-left, .navbar-right {
   display: flex;
   align-items: center;
-}
-
-.navbar-right {
-  display: flex;
-  align-items: center;
+  gap: 12px;
 }
 
 .nav-link {
   color: #cfcfcf;
-  margin-right: 18px;
   font-size: 14px;
   text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: 0.2s ease;
 
   &:hover {
     color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
 .nav-link.active {
   color: #ffffff;
-  font-weight: 500;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .logout {
-  margin-right: 0;
   background: #dc3545;
   color: #fff !important;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
 
   &:hover {
     background: #b02a37;
   }
 }
 
+/* Layout */
+.container {
+  padding: 18px 22px;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .page-title {
-  margin: 15px 0;
-  font-weight: 600;
+  margin: 12px 0;
+  font-weight: 800;
 }
 
 .section-title {
-  margin-top: 25px;
+  margin-top: 18px;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: 800;
+  color: #222;
 }
 
+/* Search Row */
+.search-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.search-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.date-input {
+  max-width: 200px;
+  border-radius: 10px;
+}
+
+.small {
+  font-size: 12px;
+}
+
+/* Empty box */
+.empty-box {
+  margin-top: 10px;
+  padding: 14px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+  border-radius: 12px;
+  color: #475569;
+}
+
+/* Table */
 .modern-table {
-  background: white;
-  border-radius: 6px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+}
+
+.modern-table thead {
+  background: #111827;
+  color: #fff;
+}
+
+.modern-table th,
+.modern-table td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+
+.time-cell {
+  font-weight: 700;
 }
 
 .status-cell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  max-width: 140px;
+  gap: 6px;
+  max-width: 180px;
 }
 
+.actions-cell .btn {
+  margin-bottom: 6px;
+}
+
+/* Day cards (upcoming) */
 .day-card {
   background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-top: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-top: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.05);
 }
 
 .day-header {
-  background: #f8f9fa;
-  padding: 8px 12px;
-  font-weight: 600;
-  border-bottom: 1px solid #ddd;
+  background: #f3f4f6;
+  padding: 10px 12px;
+  font-weight: 800;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .appointment-row {
@@ -93,7 +165,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eef2f7;
+  gap: 14px;
 }
 
 .appointment-row:last-child {
@@ -102,12 +175,14 @@
 
 .appointment-info {
   display: flex;
-  gap: 20px;
+  gap: 18px;
+  align-items: center;
 }
 
 .appointment-info .time {
-  font-weight: 600;
+  font-weight: 800;
   min-width: 80px;
+  color: #111827;
 }
 
 .appointment-info .patient {
@@ -119,12 +194,57 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
+/* Inline reschedule */
 .inline-reschedule-card {
-  background: #fff3cd;
-  padding: 10px;
-  border-top: 1px dashed #ccc;
-  border-radius: 6px;
+  background: #fff7ed;
+  border: 1px dashed #f59e0b;
+  padding: 12px;
+  border-radius: 12px;
   margin-top: 8px;
+}
+
+.inline-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.inline-title {
+  font-weight: 800;
+  color: #92400e;
+}
+
+.inline-body {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.inline-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .appointment-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .inline-body {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

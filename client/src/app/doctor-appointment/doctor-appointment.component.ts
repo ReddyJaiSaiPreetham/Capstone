@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-doctor-appointment',
@@ -22,7 +23,11 @@ export class DoctorAppointmentComponent implements OnInit {
   rescheduleTime: string = '';
   minDateTime: string = '';
 
-  constructor(public httpService: HttpService) {}
+  // UI
+  loading: boolean = false;
+  errorMessage: string = '';
+
+  constructor(public httpService: HttpService, private router: Router) {}
 
   ngOnInit(): void {
     this.minDateTime = this.getLocalDateTime();
@@ -34,9 +39,23 @@ export class DoctorAppointmentComponent implements OnInit {
     const userId = localStorage.getItem('userId');
     if (!userId) return;
 
-    this.httpService.getAppointmentByDoctor(+userId).subscribe(data => {
-      this.allAppointments = Array.isArray(data) ? data : [];
-      this.applyFilter();
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.httpService.getAppointmentByDoctor(+userId).subscribe({
+      next: (data: any) => {
+        this.allAppointments = Array.isArray(data) ? data : [];
+        this.applyFilter();
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Load doctor appointments failed:', err);
+        this.allAppointments = [];
+        this.todayAppointments = [];
+        this.upcomingGrouped = new Map();
+        this.loading = false;
+        this.errorMessage = 'Failed to load appointments';
+      }
     });
   }
 
@@ -46,7 +65,7 @@ export class DoctorAppointmentComponent implements OnInit {
     const parts = value.split('-').map(Number);
     if (parts.length !== 3) return new Date(value).toDateString();
     const [y, m, d] = parts;
-    return new Date(y, m - 1, d).toDateString(); // ✅ local day safely
+    return new Date(y, m - 1, d).toDateString(); // local date safely
   }
 
   applyFilter(): void {
@@ -125,7 +144,39 @@ export class DoctorAppointmentComponent implements OnInit {
   updateCompletionStatus(app: any): void {
     this.httpService
       .updateCompletionStatus(app.id, app.completionstatus)
-      .subscribe(() => this.loadAppointments());
+      .subscribe({
+        next: () => this.loadAppointments(),
+        error: (err) => {
+          console.error('Update completion failed:', err);
+          alert('Failed to update status');
+        }
+      });
+  }
+
+  /* ================= PRESCRIPTION ================= */
+  openPrescription(app: any): void {
+    // Recommended rule: allow only when appointment is completed
+    if (app?.completionstatus !== 'COMPLETED') {
+      alert('Please mark appointment as COMPLETED before adding prescription');
+      return;
+    }
+
+    const patientId = app?.patient?.id;
+    if (!patientId) {
+      alert('Patient ID not found');
+      return;
+    }
+
+    // doctorId from local storage (your system uses this)
+    const doctorId = localStorage.getItem('userId');
+
+    this.router.navigate(['/doctor-medical-record'], {
+      queryParams: {
+        patientId: patientId,
+        doctorId: doctorId,
+        appointmentId: app?.id // optional for future linking
+      }
+    });
   }
 
   /* ================= RESCHEDULE RULE ================= */
@@ -138,8 +189,7 @@ export class DoctorAppointmentComponent implements OnInit {
 
     if (appointmentTime <= now) return false;
 
-    const diffHours =
-      (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const diffHours = (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     // STRICT: must be MORE THAN 5 hours
     return diffHours > 5;
@@ -150,6 +200,8 @@ export class DoctorAppointmentComponent implements OnInit {
 
     this.selectedAppointment = app;
     this.rescheduleAppointmentId = app.id;
+
+    // datetime-local needs YYYY-MM-DDTHH:mm
     this.rescheduleTime = this.formatForInput(app.appointmentTime);
   }
 
@@ -159,29 +211,36 @@ export class DoctorAppointmentComponent implements OnInit {
     const selected = new Date(this.rescheduleTime);
     const now = new Date();
 
-    const diffHours =
-      (selected.getTime() - now.getTime()) / (1000 * 60 * 60);
+    const diffHours = (selected.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     if (selected <= now || diffHours <= 5) {
       alert('Reschedule must be more than 5 hours from now');
       return;
     }
 
-    // ✅ ISO format for LocalDateTime -> "YYYY-MM-DDTHH:mm:ss"
+    // Send ISO LocalDateTime: "YYYY-MM-DDTHH:mm:ss"
     const formattedTime = this.rescheduleTime + ':00';
 
     this.httpService
       .doctorRescheduleAppointment(this.selectedAppointment.id, formattedTime)
-      .subscribe(() => {
-        this.rescheduleAppointmentId = null;
-        this.selectedAppointment = null;
-        this.loadAppointments();
+      .subscribe({
+        next: () => {
+          this.rescheduleAppointmentId = null;
+          this.selectedAppointment = null;
+          this.rescheduleTime = '';
+          this.loadAppointments();
+        },
+        error: (err) => {
+          console.error('Reschedule failed:', err);
+          alert('Failed to reschedule appointment');
+        }
       });
   }
 
   cancelReschedule(): void {
     this.rescheduleAppointmentId = null;
     this.selectedAppointment = null;
+    this.rescheduleTime = '';
   }
 
   /* ================= HELPERS ================= */
@@ -190,9 +249,7 @@ export class DoctorAppointmentComponent implements OnInit {
   parseLocal(time: string | Date): Date {
     if (time instanceof Date) return time;
 
-    // supports:
-    // "2026-04-03T16:56:00"
-    // "2026-04-03 16:56:00"
+    // supports: "2026-04-03T16:56:00" or "2026-04-03 16:56:00"
     const clean = time.substring(0, 19).replace('T', ' ');
     const [datePart, timePart] = clean.split(' ');
 

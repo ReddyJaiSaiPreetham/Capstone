@@ -1,0 +1,98 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+    <a routerLink="/doctor-appointment" class="nav-link">Doctor Appointment</a>
+    <a routerLink="/doctor-availability" class="nav-link">Doctor Availability</a>
+    <a routerLink="/doctor-medical-record" class="nav-link active">Prescription</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <div class="header-row">
+    <h3>{{ recordId ? 'Edit Prescription' : 'Add Prescription' }}</h3>
+    <button class="btn btn-secondary btn-sm" (click)="goBack()">Back</button>
+  </div>
+
+  <div *ngIf="loading" class="text-muted">Processing...</div>
+
+  <div *ngIf="successMessage" class="alert alert-success mt-3">
+    {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="recordForm" (ngSubmit)="submit()" class="card-box">
+
+    <div class="mb-3">
+      <label class="form-label">Diagnosis</label>
+      <input type="text" class="form-control" formControlName="diagnosis">
+      <small class="text-danger" *ngIf="recordForm.get('diagnosis')?.touched && recordForm.get('diagnosis')?.invalid">
+        Diagnosis is required
+      </small>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Treatment / Notes</label>
+      <textarea class="form-control" rows="3" formControlName="treatment"></textarea>
+      <small class="text-danger" *ngIf="recordForm.get('treatment')?.touched && recordForm.get('treatment')?.invalid">
+        Notes are required
+      </small>
+    </div>
+
+    <div class="med-header">
+      <h5>Prescription Medicines</h5>
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="addMedicine()">
+        + Add Medicine
+      </button>
+    </div>
+
+    <div formArrayName="prescriptionItems" class="med-list">
+      <div class="med-row" *ngFor="let med of prescriptionItems.controls; let i = index" [formGroupName]="i">
+
+        <div class="grid">
+          <div>
+            <label class="small-label">Medicine</label>
+            <input class="form-control" type="text" formControlName="medicineName">
+          </div>
+
+          <div>
+            <label class="small-label">Dosage</label>
+            <input class="form-control" type="text" formControlName="dosage">
+          </div>
+
+          <div>
+            <label class="small-label">Frequency</label>
+            <input class="form-control" type="text" formControlName="frequency" placeholder="1-0-1">
+          </div>
+
+          <div>
+            <label class="small-label">Days</label>
+            <input class="form-control" type="number" formControlName="days" min="1">
+          </div>
+
+          <div class="full">
+            <label class="small-label">Instructions</label>
+            <input class="form-control" type="text" formControlName="instructions" placeholder="After food / Morning / Night">
+          </div>
+        </div>
+
+        <div class="med-actions">
+          <button type="button" class="btn btn-danger btn-sm" (click)="removeMedicine(i)" [disabled]="prescriptionItems.length === 1">
+            Remove
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-success" [disabled]="recordForm.invalid || loading">
+        {{ recordId ? 'Update Prescription' : 'Save Prescription' }}
+      </button>
+    </div>
+
+  </form>
+</div>

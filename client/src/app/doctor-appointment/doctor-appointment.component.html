@@ -4,28 +4,42 @@
     <span class="brand">HAM System</span>
     <a routerLink="/doctor-appointment" class="nav-link active">Doctor Appointment</a>
     <a routerLink="/doctor-availability" class="nav-link">Doctor Availability</a>
-  </div>
-
-  <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+    <a routerLink="/doctor-medical-record" class="nav-link">Prescription</a>
   </div>
 </nav>
 
 <div class="container">
-  <h3 class="page-title">Doctor Dashboard</h3>
+  <div class="top-row">
+    <h3 class="page-title">Doctor Dashboard</h3>
 
-  <!-- ✅ SEARCH (minimal, no UI change) -->
-  <div class="d-flex gap-2 mb-3">
-    <input type="date"
-           [(ngModel)]="selectedDate"
-           class="form-control"
-           style="max-width: 200px">
-    <button class="btn btn-primary" (click)="applyFilter()">Search</button>
-    <button class="btn btn-secondary" (click)="clearFilter()">Clear</button>
+    <!-- Loading -->
+    <div *ngIf="loading" class="text-muted small">Loading...</div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="alert alert-danger mt-2">
+    {{ errorMessage }}
+  </div>
+
+  <!-- ✅ SEARCH -->
+  <div class="search-row">
+    <div class="search-left">
+      <input type="date" [(ngModel)]="selectedDate" class="form-control date-input">
+      <button class="btn btn-primary" (click)="applyFilter()">Search</button>
+      <button class="btn btn-secondary" (click)="clearFilter()">Clear</button>
+    </div>
+
+    <div class="search-right text-muted small">
+      Tip: Complete appointment to enable Prescription.
+    </div>
   </div>
 
   <!-- ================= TODAY ================= -->
   <h4 class="section-title">Today's Appointments</h4>
+
+  <div *ngIf="!todayAppointments.length" class="empty-box">
+    No appointments for today.
+  </div>
 
   <table class="table modern-table" *ngIf="todayAppointments.length">
     <thead>
@@ -41,14 +55,16 @@
       <ng-container *ngFor="let app of todayAppointments">
 
         <tr>
-          <td>{{ parseLocal(app.appointmentTime) | date:'dd MMM yyyy, hh:mm a' }}</td>
+          <td class="time-cell">
+            {{ parseLocal(app.appointmentTime) | date:'dd MMM yyyy, hh:mm a' }}
+          </td>
 
           <td>
             <strong>{{ app.patient?.username }}</strong><br>
             <small class="text-muted">{{ app.patient?.email }}</small>
           </td>
 
-          <td>
+          <td class="status-cell">
             <select [(ngModel)]="app.completionstatus"
                     [ngModelOptions]="{ standalone: true }"
                     class="form-select form-select-sm">
@@ -62,7 +78,16 @@
             </button>
           </td>
 
-          <td class="text-end">
+          <td class="text-end actions-cell">
+            <!-- ✅ Prescription -->
+            <button
+              class="btn btn-sm btn-success me-2"
+              [disabled]="app.completionstatus !== 'COMPLETED'"
+              (click)="openPrescription(app)">
+              Prescription
+            </button>
+
+            <!-- ✅ Reschedule -->
             <button *ngIf="canReschedule(app)"
                     class="btn btn-sm btn-warning"
                     (click)="editAppointment(app)">
@@ -72,22 +97,33 @@
             <small *ngIf="!canReschedule(app)" class="text-danger d-block">
               Not allowed
             </small>
+
+            <small *ngIf="app.completionstatus !== 'COMPLETED'" class="text-muted d-block">
+              Complete to add prescription
+            </small>
           </td>
         </tr>
 
-        <!-- Inline reschedule for Today -->
+        <!-- Inline reschedule -->
         <tr *ngIf="rescheduleAppointmentId === app.id">
           <td colspan="4">
             <div class="inline-reschedule-card">
-              <input type="datetime-local"
-                     [(ngModel)]="rescheduleTime"
-                     [min]="minDateTime"
-                     [ngModelOptions]="{ standalone: true }"
-                     class="form-control form-control-sm">
+              <div class="inline-top">
+                <div class="inline-title">Reschedule Appointment</div>
+                <div class="inline-note text-muted">Must be &gt; 5 hours from now</div>
+              </div>
 
-              <div class="mt-2 text-end">
-                <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
-                <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
+              <div class="inline-body">
+                <input type="datetime-local"
+                       [(ngModel)]="rescheduleTime"
+                       [min]="minDateTime"
+                       [ngModelOptions]="{ standalone: true }"
+                       class="form-control form-control-sm">
+
+                <div class="inline-actions">
+                  <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
+                  <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
+                </div>
               </div>
             </div>
           </td>
@@ -100,6 +136,10 @@
   <!-- ================= UPCOMING ================= -->
   <h4 class="section-title mt-4">Upcoming Appointments</h4>
 
+  <div *ngIf="upcomingGrouped.size === 0" class="empty-box">
+    No upcoming appointments.
+  </div>
+
   <div *ngFor="let entry of upcomingGrouped | keyvalue" class="day-card">
     <div class="day-header">{{ entry.key }}</div>
 
@@ -107,7 +147,6 @@
 
       <div class="appointment-row">
         <div class="appointment-info">
-          <!-- ✅ FIXED: consistent time display -->
           <div class="time">{{ parseLocal(app.appointmentTime) | date:'hh:mm a' }}</div>
 
           <div class="patient">
@@ -124,9 +163,13 @@
             <option value="COMPLETED">Completed</option>
           </select>
 
-          <button class="btn btn-sm btn-primary"
-                  (click)="updateCompletionStatus(app)">
-            Save
+          <button class="btn btn-sm btn-primary" (click)="updateCompletionStatus(app)">Save</button>
+
+          <!-- ✅ Prescription -->
+          <button class="btn btn-sm btn-success"
+                  [disabled]="app.completionstatus !== 'COMPLETED'"
+                  (click)="openPrescription(app)">
+            Prescription
           </button>
 
           <button *ngIf="canReschedule(app)"
@@ -141,23 +184,27 @@
         </div>
       </div>
 
-      <!-- Inline reschedule for Upcoming -->
-      <div *ngIf="rescheduleAppointmentId === app.id"
-           class="inline-reschedule-card">
+      <!-- Inline reschedule for upcoming -->
+      <div *ngIf="rescheduleAppointmentId === app.id" class="inline-reschedule-card">
+        <div class="inline-top">
+          <div class="inline-title">Reschedule Appointment</div>
+          <div class="inline-note text-muted">Must be &gt; 5 hours from now</div>
+        </div>
 
-        <input type="datetime-local"
-               [(ngModel)]="rescheduleTime"
-               [min]="minDateTime"
-               [ngModelOptions]="{ standalone: true }"
-               class="form-control form-control-sm">
+        <div class="inline-body">
+          <input type="datetime-local"
+                 [(ngModel)]="rescheduleTime"
+                 [min]="minDateTime"
+                 [ngModelOptions]="{ standalone: true }"
+                 class="form-control form-control-sm">
 
-        <div class="mt-2 text-end">
-          <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
-          <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
+          <div class="inline-actions">
+            <button class="btn btn-success btn-sm" (click)="submitReschedule()">Update</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelReschedule()">Cancel</button>
+          </div>
         </div>
       </div>
 
     </ng-container>
   </div>
 </div>
-``
