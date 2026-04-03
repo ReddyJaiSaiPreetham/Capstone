@@ -4,11 +4,11 @@ import com.edutech.healthcare_appointment_management_system.entity.Appointment;
 import com.edutech.healthcare_appointment_management_system.entity.Doctor;
 import com.edutech.healthcare_appointment_management_system.entity.Patient;
 import com.edutech.healthcare_appointment_management_system.repository.AppointmentRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,34 +17,38 @@ public class AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    public Appointment scheduleAppointment(
-            Patient patient,
-            Doctor doctor,
-            Date time) {
+    // ✅ Schedule Appointment (LocalDateTime)
+    public Appointment scheduleAppointment(Patient patient, Doctor doctor, LocalDateTime time) {
 
-        Date now = new Date();
-        if (time.before(now)) {
+        if (time == null) {
+            throw new RuntimeException("Appointment time is required");
+        }
+
+        if (time.isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Appointment time cannot be in the past");
         }
 
-        Appointment appointment = new Appointment();
-        appointment.setPatient(patient);
-        appointment.setDoctor(doctor);
-        appointment.setAppointmentTime(time);
-        appointment.setStatus("SCHEDULED");
+        Appointment a = new Appointment();
+        a.setPatient(patient);
+        a.setDoctor(doctor);
+        a.setAppointmentTime(time);
+        a.setStatus("SCHEDULED");
+        a.setCompletionstatus("PENDING");
 
-        return appointmentRepository.save(appointment);
+        return appointmentRepository.save(a);
     }
 
-    public Appointment rescheduleAppointment(
-            Long appointmentId,
-            Date newTime) {
+    // ✅ Reschedule Appointment (LocalDateTime)
+    public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        Date now = new Date();
-        if (newTime.before(now)) {
+        if (newTime == null) {
+            throw new RuntimeException("New appointment time is required");
+        }
+
+        if (newTime.isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Cannot reschedule appointment to past time");
         }
 
@@ -54,13 +58,15 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
+    // ✅ Cancel Appointment (LocalDateTime)
     public Appointment cancelAppointment(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        Date now = new Date();
-        if (appointment.getAppointmentTime().before(now)) {
+        // If appointmentTime is null, cancel is allowed (or you can block it)
+        if (appointment.getAppointmentTime() != null &&
+                appointment.getAppointmentTime().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Cannot cancel past appointment");
         }
 
@@ -84,6 +90,7 @@ public class AppointmentService {
         return appointmentRepository.findByDoctorId(doctorId);
     }
 
+    // ✅ Mark Completed
     public Appointment markAppointmentCompleted(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
@@ -93,49 +100,45 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-
+    // ✅ Update Completion Status
     public Appointment updateCompletionStatus(Long id, String status) {
 
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        System.out.println("🟡 BEFORE UPDATE = " + appointment.getCompletionstatus());
-
         appointment.setCompletionstatus(status);
-
-        Appointment saved = appointmentRepository.save(appointment);
-
-        System.out.println("🟢 AFTER UPDATE = " + saved.getCompletionstatus());
-
-        return saved;
+        return appointmentRepository.save(appointment);
     }
 
-public Appointment doctorRescheduleAppointment(Long appointmentId, Date newTime) {
+    // ✅ Doctor Reschedule with 5-hour rule (LocalDateTime)
+    public Appointment doctorRescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
-    Appointment appointment = appointmentRepository.findById(appointmentId)
-        .orElseThrow(() -> new RuntimeException("Appointment not found"));
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-    // ✅ Prevent rescheduling completed appointments
-    if ("COMPLETED".equals(appointment.getCompletionstatus())) {
-        throw new RuntimeException("Completed appointments cannot be rescheduled");
+        if ("COMPLETED".equals(appointment.getCompletionstatus())) {
+            throw new RuntimeException("Completed appointments cannot be rescheduled");
+        }
+
+        if (newTime == null) {
+            throw new RuntimeException("New appointment time is required");
+        }
+
+        if (newTime.isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Appointment time cannot be in the past");
+        }
+
+        // ✅ Enforce 5-hour rule based on CURRENT appointment time
+        if (appointment.getAppointmentTime() != null) {
+            long hoursLeft = Duration.between(LocalDateTime.now(), appointment.getAppointmentTime()).toHours();
+            if (hoursLeft < 5) {
+                throw new RuntimeException("Rescheduling is allowed only at least 5 hours before appointment time");
+            }
+        }
+
+        appointment.setAppointmentTime(newTime);
+        appointment.setStatus("RESCHEDULED");
+
+        return appointmentRepository.save(appointment);
     }
-
-    // ✅ Enforce 5-hour rule
-    long timeDiffMillis =
-        appointment.getAppointmentTime().getTime() - new Date().getTime();
-
-    long diffInHours = timeDiffMillis / (1000 * 60 * 60);
-
-    if (diffInHours < 5) {
-        throw new RuntimeException(
-            "Rescheduling is allowed only at least 5 hours before appointment time");
-    }
-
-    appointment.setAppointmentTime(newTime);
-    appointment.setStatus("RESCHEDULED");
-
-    return appointmentRepository.save(appointment);
 }
-}
-
-

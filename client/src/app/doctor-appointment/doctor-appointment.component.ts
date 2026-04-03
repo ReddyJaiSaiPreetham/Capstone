@@ -35,7 +35,7 @@ export class DoctorAppointmentComponent implements OnInit {
     if (!userId) return;
 
     this.httpService.getAppointmentByDoctor(+userId).subscribe(data => {
-      this.allAppointments = data;
+      this.allAppointments = Array.isArray(data) ? data : [];
       this.applyFilter();
     });
   }
@@ -47,6 +47,7 @@ export class DoctorAppointmentComponent implements OnInit {
     if (this.selectedDate) {
       const selected = new Date(this.selectedDate).toDateString();
       list = list.filter(app => {
+        if (!app.appointmentTime) return false;
         return this.parseLocal(app.appointmentTime).toDateString() === selected;
       });
     }
@@ -59,54 +60,57 @@ export class DoctorAppointmentComponent implements OnInit {
     this.splitAppointments(this.allAppointments);
   }
 
-splitAppointments(list: any[]): void {
-  const now = new Date();
+  /* ================= GROUP + SORT ================= */
+  splitAppointments(list: any[]): void {
+    const now = new Date();
 
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
 
-  const todayEnd = new Date(now);
-  todayEnd.setHours(23, 59, 59, 999);
+    const todayEnd = new Date(now);
+    todayEnd.setHours(23, 59, 59, 999);
 
-  this.todayAppointments = [];
-  const tempMap = new Map<string, any[]>();
+    this.todayAppointments = [];
+    const tempMap = new Map<string, any[]>();
 
-  list.forEach(app => {
-    if (!app.appointmentTime) return;
+    list.forEach(app => {
+      if (!app.appointmentTime) return;
 
-    const dateObj = this.parseLocal(app.appointmentTime);
+      const dateObj = this.parseLocal(app.appointmentTime);
 
-    // ✅ STRICT "Today" range: 00:00 → 23:59 IST
-    if (dateObj >= todayStart && dateObj <= todayEnd) {
-      this.todayAppointments.push(app);
-    } 
-    // ✅ Everything AFTER today goes to Upcoming
-    else if (dateObj > todayEnd) {
-      const key = dateObj.toDateString();
-      if (!tempMap.has(key)) tempMap.set(key, []);
-      tempMap.get(key)!.push(app);
-    }
-  });
+      // ✅ Today bucket
+      if (dateObj >= todayStart && dateObj <= todayEnd) {
+        this.todayAppointments.push(app);
+      }
+      // ✅ Upcoming bucket
+      else if (dateObj > todayEnd) {
+        const key = dateObj.toDateString();
+        if (!tempMap.has(key)) tempMap.set(key, []);
+        tempMap.get(key)!.push(app);
+      }
+    });
 
-  this.todayAppointments.sort((a, b) =>
-    this.parseLocal(a.appointmentTime).getTime() -
-    this.parseLocal(b.appointmentTime).getTime()
-  );
-
-  tempMap.forEach(apps => {
-    apps.sort((a, b) =>
+    // ✅ Sort Today by time
+    this.todayAppointments.sort((a, b) =>
       this.parseLocal(a.appointmentTime).getTime() -
       this.parseLocal(b.appointmentTime).getTime()
     );
-  });
 
-  this.upcomingGrouped = new Map(
-    Array.from(tempMap.entries()).sort(
-      (a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime()
-    )
-  );
-}
+    // ✅ Sort each day card by time
+    tempMap.forEach(apps => {
+      apps.sort((a, b) =>
+        this.parseLocal(a.appointmentTime).getTime() -
+        this.parseLocal(b.appointmentTime).getTime()
+      );
+    });
 
+    // ✅ Sort day cards by date
+    this.upcomingGrouped = new Map(
+      Array.from(tempMap.entries()).sort((a, b) =>
+        new Date(a[0]).getTime() - new Date(b[0]).getTime()
+      )
+    );
+  }
 
   /* ================= STATUS ================= */
   updateCompletionStatus(app: any): void {
@@ -129,7 +133,7 @@ splitAppointments(list: any[]): void {
       (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
     // ✅ STRICT: must be MORE THAN 5 hours
-    return diffHours > 2;
+    return diffHours > 5;
   }
 
   editAppointment(app: any): void {
@@ -137,6 +141,8 @@ splitAppointments(list: any[]): void {
 
     this.selectedAppointment = app;
     this.rescheduleAppointmentId = app.id;
+
+    // datetime-local needs YYYY-MM-DDTHH:mm
     this.rescheduleTime = this.formatForInput(app.appointmentTime);
   }
 
@@ -146,15 +152,16 @@ splitAppointments(list: any[]): void {
     const selected = new Date(this.rescheduleTime);
     const now = new Date();
 
-    const diff =
+    const diffHours =
       (selected.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    if (selected <= now || diff <= 2) {
+    if (selected <= now || diffHours <= 5) {
       alert('Reschedule must be more than 5 hours from now');
       return;
     }
 
-    const formattedTime = this.rescheduleTime.replace('T', ' ') + ':00';
+    // ✅ Send ISO format for LocalDateTime: "YYYY-MM-DDTHH:mm:ss"
+    const formattedTime = this.rescheduleTime + ':00'; // keeps 'T'
 
     this.httpService
       .doctorRescheduleAppointment(this.selectedAppointment.id, formattedTime)
@@ -170,34 +177,35 @@ splitAppointments(list: any[]): void {
     this.selectedAppointment = null;
   }
 
+  /* ================= HELPERS ================= */
+
+  // ✅ Convert backend string LocalDateTime to JS Date in LOCAL time
   parseLocal(time: string | Date): Date {
-  // ✅ If already Date, return it
-  if (time instanceof Date) {
-    return time;
+    if (time instanceof Date) return time;
+
+    // supports:
+    // "2026-04-03T16:56:00"
+    // "2026-04-03 16:56:00"
+    const clean = time.substring(0, 19).replace('T', ' ');
+    const [datePart, timePart] = clean.split(' ');
+
+    if (!datePart || !timePart) return new Date(time);
+
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour = 0, minute = 0, second = 0] = timePart.split(':').map(Number);
+
+    // Construct LOCAL date (no UTC conversion)
+    return new Date(year, month - 1, day, hour, minute, second);
   }
 
-  // Normalize space/ISO format
-  const clean = time.substring(0, 19).replace('T', ' ');
-  const parts = clean.split(' ');
-
-  if (parts.length < 2) {
-    // fallback (very defensive)
-    return new Date(clean);
+  // datetime-local expects "YYYY-MM-DDTHH:mm"
+  formatForInput(time: string | Date): string {
+    const d = this.parseLocal(time);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
-  const [datePart, timePart] = parts;
-
-  const [year, month, day] = datePart.split('-').map(Number);
-  const [hour = 0, minute = 0, second = 0] = timePart.split(':').map(Number);
-
-  // ✅ Force LOCAL IST construction
-  return new Date(year, month - 1, day, hour, minute, second);
-}
-
-  formatForInput(time: string): string {
-    return time.substring(0, 16);
-  }
-
+  // min for datetime-local in local time
   getLocalDateTime(): string {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());

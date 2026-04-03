@@ -83,7 +83,7 @@ export class LoginComponent implements OnInit {
         this.authService.saveUserId(res.userId.toString());
 
         this.router.navigate(['/dashboard']);
-        setTimeout(() => window.location.reload(), 300);
+       // setTimeout(() => window.location.reload(), 300);
       },
       error => {
         this.showError = true;

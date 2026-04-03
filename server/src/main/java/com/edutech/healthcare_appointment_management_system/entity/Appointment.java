@@ -1,11 +1,15 @@
 package com.edutech.healthcare_appointment_management_system.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Appointment {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
@@ -14,26 +18,16 @@ public class Appointment {
     @ManyToOne
     private Doctor doctor;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date appointmentTime;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @Column(name = "appointment_time")
+    private LocalDateTime appointmentTime;
 
     private String status;
 
     @Column(name = "completionstatus", nullable = false)
-private String completionstatus = "PENDING";
+    private String completionstatus = "PENDING";
 
-
-    
-
-    public String getCompletionstatus() {
-        return completionstatus;
-    }
-
-    public void setCompletionstatus(String completionstatus) {
-        this.completionstatus = completionstatus;
-    }
-
-    public Appointment(){}
+    public Appointment() {}
 
     public Long getId() {
         return id;
@@ -59,11 +53,12 @@ private String completionstatus = "PENDING";
         this.doctor = doctor;
     }
 
-    public Date getAppointmentTime() {
+    public LocalDateTime getAppointmentTime() {
         return appointmentTime;
     }
 
-    public void setAppointmentTime(Date appointmentTime) {
+    // ✅ FIXED: setter must accept LocalDateTime
+    public void setAppointmentTime(LocalDateTime appointmentTime) {
         this.appointmentTime = appointmentTime;
     }
 
@@ -75,6 +70,11 @@ private String completionstatus = "PENDING";
         this.status = status;
     }
 
-    
+    public String getCompletionstatus() {
+        return completionstatus;
+    }
 
+    public void setCompletionstatus(String completionstatus) {
+        this.completionstatus = completionstatus;
+    }
 }

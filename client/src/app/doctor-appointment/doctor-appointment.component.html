@@ -41,7 +41,7 @@
       <ng-container *ngFor="let app of todayAppointments">
 
         <tr>
-          <td>{{ app.appointmentTime}}</td>
+          <td>{{ parseLocal(app.appointmentTime) | date:'dd MMM yyyy, hh:mm a' }}</td>
 
           <td>
             <strong>{{ app.patient?.username }}</strong><br>
