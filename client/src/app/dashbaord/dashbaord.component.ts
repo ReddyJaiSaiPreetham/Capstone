@@ -20,22 +20,16 @@ export class DashbaordComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // ✅ Route protection (works for both getter or method)
-    const isLoggedIn = typeof (this.authService as any).getLoginStatus === 'function'
-      ? (this.authService as any).getLoginStatus()
-      : (this.authService as any).getLoginStatus;
-
-    if (!isLoggedIn) {
-      this.router.navigate(['/login']);
+    // ✅ Strong protection: if token missing, never allow dashboard
+    if (!this.authService.getLoginStatus) {
+      this.router.navigate(['/login'], { replaceUrl: true });
       return;
     }
 
-    // ✅ Get role (works for both getter or method)
-    this.roleName = typeof (this.authService as any).getRole === 'function'
-      ? (this.authService as any).getRole()
-      : (this.authService as any).getRole;
+    // ✅ Role from AuthService getter
+    this.roleName = this.authService.getRole;
 
-    // ✅ Get username from JWT (sub claim)
+    // ✅ Username from JWT
     this.username = this.getUsernameFromToken();
 
     // ✅ Greeting based on local time
@@ -48,7 +42,7 @@ export class DashbaordComponent implements OnInit {
 
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.sub || 'User';
+      return payload?.sub || 'User';
     } catch {
       return 'User';
     }

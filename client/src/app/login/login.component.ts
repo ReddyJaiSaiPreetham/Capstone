@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { HttpService } from '../../services/http.service';
 import { AuthService } from '../../services/auth.service';
-
+import { NavigationStart, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -17,14 +17,29 @@ export class LoginComponent implements OnInit {
   showError: boolean = false;
   errorMessage: string = '';
 
-  constructor(
-    public router: Router,
-    public httpService: HttpService,
-    private formBuilder: FormBuilder,
-    private authService: AuthService
-  ) { }
+
+constructor(
+  public router: Router,
+  public httpService: HttpService,
+  private formBuilder: FormBuilder,
+  private authService: AuthService
+) {
+
+  // ✅ If login page is reached using Back/Forward, send user to Home and remove login from history
+  this.router.events
+    .pipe(filter(e => e instanceof NavigationStart))
+    .subscribe((e: any) => {
+      if (e.navigationTrigger === 'popstate' && e.url === '/login') {
+        // user pressed back/forward and landed on login
+        this.authService.logout();
+        this.router.navigate(['/home'], { replaceUrl: true });
+      }
+    });
+}
+
 
   ngOnInit(): void {
+    this.authService.logout();
 
     this.itemForm = this.formBuilder.group({
 
@@ -82,7 +97,7 @@ export class LoginComponent implements OnInit {
         this.authService.SetRole(res.role);
         this.authService.saveUserId(res.userId.toString());
 
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard'], {replaceUrl: true});
        // setTimeout(() => window.location.reload(), 300);
       },
       error => {

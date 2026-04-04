@@ -6,49 +6,56 @@ import { Injectable } from '@angular/core';
 export class AuthService {
 
   private token: string | null = null;
-  private isLoggedIn: boolean = false;
-  id: string | null | undefined;
+  private isLoggedInFlag: boolean = false;
 
   constructor() {}
 
-  // Method to save token received from login
-  saveToken(token: string) {
+  // ✅ Save token received from login
+  saveToken(token: string): void {
     this.token = token;
-    this.isLoggedIn = true;
-    // Optionally, you can save the token to local storage or a cookie for persistence
+    this.isLoggedInFlag = true;
     localStorage.setItem('token', token);
   }
 
-   SetRole(role:any)
-  {
-    localStorage.setItem('role',role);
+  // ✅ Save role
+  SetRole(role: any): void {
+    localStorage.setItem('role', role);
   }
 
-  get getRole ():string|null
-  {
+  // ✅ Get role
+  get getRole(): string | null {
     return localStorage.getItem('role');
   }
 
-  // Method to retrieve login status
-  get getLoginStatus(): boolean {
-  
-      return !!localStorage.getItem('token');
-   
+  // ✅ Save userId
+  saveUserId(userid: string): void {
+    localStorage.setItem('userId', userid);
   }
-  
+
+  // ✅ Read token
   getToken(): string | null {
-   this.token= localStorage.getItem('token');
+    this.token = localStorage.getItem('token');
     return this.token;
   }
- 
-  logout(){
+
+  // ✅ Existing getter (works)
+  get getLoginStatus(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  // ✅ NEW: Simple method (useful in app.component.ts)
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('token');
+  }
+
+  // ✅ Strong logout: clear everything related to session
+  logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-     this.token=null;
-     this.isLoggedIn=false
-   }
-   saveUserId(userid: string) {
-  
-    localStorage.setItem('userId',userid);
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username'); // if you store it anywhere
+
+    this.token = null;
+    this.isLoggedInFlag = false;
   }
 }
