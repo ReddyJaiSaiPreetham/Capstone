@@ -1,67 +1,173 @@
-
 <nav class="navbar">
   <div class="navbar-left">
     <span class="brand">HAM System</span>
-    <a routerLink="/schedule-appointment" class="nav-link">
-      Schedule Appointment
-    </a>
-    <a routerLink="/patient-appointment" class="nav-link active">
-      View Appointments
-    </a>
+    <a routerLink="/schedule-appointment" class="nav-link">Schedule Appointment</a>
+    <a routerLink="/patient-appointment" class="nav-link active">View Appointments</a>
     <a routerLink="/patient-medical-records" class="nav-link">Prescriptions</a>
   </div>
 </nav>
 
 <div class="container mt-4">
 
-  <div class="card">
-    <div class="card-header text-center">
-      <h4>Appointments</h4>
-    </div>
+  <!-- :white_check_mark: TODAY -->
+  <h4 class="section-title">Today's Appointments</h4>
 
-    <div class="card-body">
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Appointment Id</th>
+        <th>Appointment Time</th>
+        <th>Status</th>
+        <th>Doctor</th>
+        <th>Patient</th>
+      </tr>
+    </thead>
 
-      <table class="table table-bordered table-striped">
-        <thead class="table-dark">
-          <tr>
-            <th>Appointment Id</th>
-            <th>Appointment Time</th>
-            <th>Status</th>
-            <th>Doctor</th>
-            <th>Patient</th>
-          </tr>
-        </thead>
+    <tbody>
+      <!-- :white_check_mark: use paginated list -->
+      <tr *ngFor="let val of paginatedTodayAppointments">
+        <td>{{ val.id }}</td>
+        <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+        <td>{{ val.status }}</td>
+        <td>
+          <strong>{{ val.doctor.username }}</strong><br />
+          <small>{{ val.doctor.email }}</small>
+        </td>
+        <td>
+          <strong>{{ val.patient.username }}</strong><br />
+          <small>{{ val.patient.email }}</small>
+        </td>
+      </tr>
 
-        <tbody>
-          <tr *ngFor="let val of appointmentList">
-            <td>{{ val.id }}</td>
+      <tr *ngIf="todayAppointments.length === 0">
+        <td colspan="5" class="text-center">No today's appointments</td>
+      </tr>
+    </tbody>
+  </table>
 
-        
-            <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+  <!-- :white_check_mark: Pagination: TODAY -->
+  <nav *ngIf="todayAppointments.length > pageSize" class="mt-2">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="todayPage === 1">
+        <button class="page-link" (click)="changePage('today', todayPage - 1)">Prev</button>
+      </li>
 
-            <td>{{ val.status }}</td>
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ todayPage }} / {{ todayTotalPages }}</span>
+      </li>
 
-            <td>
-              <strong>{{ val.doctor.username }}</strong><br>
-              <small>{{ val.doctor.email }}</small>
-            </td>
+      <li class="page-item" [class.disabled]="todayPage === todayTotalPages">
+        <button class="page-link" (click)="changePage('today', todayPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
 
-            <td>
-              <strong>{{ val.patient.username }}</strong><br>
-              <small>{{ val.patient.email }}</small>
-            </td>
-          </tr>
 
-          <tr *ngIf="appointmentList.length === 0">
-            <td colspan="5" class="text-center">
-              No appointments available
-            </td>
-          </tr>
-        </tbody>
+  <!-- :white_check_mark: UPCOMING -->
+  <h4 class="section-title mt-4">Upcoming Appointments</h4>
 
-      </table>
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Appointment Id</th>
+        <th>Appointment Time</th>
+        <th>Status</th>
+        <th>Doctor</th>
+        <th>Patient</th>
+      </tr>
+    </thead>
 
-    </div>
-  </div>
+    <tbody>
+      <!-- :white_check_mark: use paginated list -->
+      <tr *ngFor="let val of paginatedUpcomingAppointments">
+        <td>{{ val.id }}</td>
+        <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+        <td>{{ val.status }}</td>
+        <td>
+          <strong>{{ val.doctor.username }}</strong><br />
+          <small>{{ val.doctor.email }}</small>
+        </td>
+        <td>
+          <strong>{{ val.patient.username }}</strong><br />
+          <small>{{ val.patient.email }}</small>
+        </td>
+      </tr>
+
+      <tr *ngIf="upcomingAppointments.length === 0">
+        <td colspan="5" class="text-center">No upcoming appointments</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- :white_check_mark: Pagination: UPCOMING -->
+  <nav *ngIf="upcomingAppointments.length > pageSize" class="mt-2">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="upcomingPage === 1">
+        <button class="page-link" (click)="changePage('upcoming', upcomingPage - 1)">Prev</button>
+      </li>
+
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ upcomingPage }} / {{ upcomingTotalPages }}</span>
+      </li>
+
+      <li class="page-item" [class.disabled]="upcomingPage === upcomingTotalPages">
+        <button class="page-link" (click)="changePage('upcoming', upcomingPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
+
+
+  <!-- :white_check_mark: PAST -->
+  <h4 class="section-title mt-4">Past Appointments</h4>
+
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Appointment Id</th>
+        <th>Appointment Time</th>
+        <th>Status</th>
+        <th>Doctor</th>
+        <th>Patient</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <!-- :white_check_mark: use paginated list -->
+      <tr *ngFor="let val of paginatedPastAppointments">
+        <td>{{ val.id }}</td>
+        <td>{{ formatAppointmentTime(val.appointmentTime) }}</td>
+        <td>{{ val.status }}</td>
+        <td>
+          <strong>{{ val.doctor.username }}</strong><br />
+          <small>{{ val.doctor.email }}</small>
+        </td>
+        <td>
+          <strong>{{ val.patient.username }}</strong><br />
+          <small>{{ val.patient.email }}</small>
+        </td>
+      </tr>
+
+      <tr *ngIf="pastAppointments.length === 0">
+        <td colspan="5" class="text-center">No past appointments</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- :white_check_mark: Pagination: PAST -->
+  <nav *ngIf="pastAppointments.length > pageSize" class="mt-2 mb-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="pastPage === 1">
+        <button class="page-link" (click)="changePage('past', pastPage - 1)">Prev</button>
+      </li>
+
+      <li class="page-item disabled">
+        <span class="page-link">Page {{ pastPage }} / {{ pastTotalPages }}</span>
+      </li>
+
+      <li class="page-item" [class.disabled]="pastPage === pastTotalPages">
+        <button class="page-link" (click)="changePage('past', pastPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
 
 </div>

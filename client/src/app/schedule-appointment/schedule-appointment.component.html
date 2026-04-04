@@ -19,6 +19,17 @@
 
   <h3>Available Doctors</h3>
 
+  <!-- Single Search Bar: Doctor OR Specialty -->
+<div class="search-wrapper">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search by doctor name or specialty..."
+    [(ngModel)]="searchText"
+    (input)="filterDoctors()"
+  />
+</div>
+
   <table class="doctors-table">
     <thead>
       <tr>
@@ -31,7 +42,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let doctor of doctorList">
+      <tr *ngFor="let doctor of pagedDoctorList">
         <td>{{ doctor.id }}</td>
         <td>{{ doctor.username }}</td>
         <td>{{ doctor.specialty }}</td>
@@ -43,11 +54,36 @@
         </td>
       </tr>
 
-      <tr *ngIf="doctorList.length === 0">
+      <tr *ngIf="pagedDoctorList.length === 0">
         <td colspan="5">No doctors available</td>
       </tr>
     </tbody>
   </table>
+
+ <!--  Pagination Controls -->
+<div class="pagination-wrapper" *ngIf="filteredDoctorList.length > 0">
+
+  <button class="page-btn"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1">
+    Prev
+  </button>
+
+  <!--  Page Numbers -->
+  <button class="page-number"
+          *ngFor="let p of [].constructor(totalPages); let i = index"
+          [class.active]="currentPage === (i + 1)"
+          (click)="goToPage(i + 1)">
+    {{ i + 1 }}
+  </button>
+
+  <button class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages">
+    Next
+  </button>
+
+</div>
 
   <!-- ================= SLOT BOOKING SECTION ================= -->
   <div *ngIf="selectedDoctor" class="add-appointment mt-4">
@@ -74,7 +110,7 @@
         No available slots for this date.
       </div>
 
-      <!-- ✅ slots are string[] -->
+      <!-- :white_check_mark: slots are string[] -->
       <div class="slot-grid" *ngIf="availableSlots.length > 0">
 
         <button *ngFor="let slot of availableSlots" class="slot-btn" [class.selected]="selectedSlotTime === slot.time"
