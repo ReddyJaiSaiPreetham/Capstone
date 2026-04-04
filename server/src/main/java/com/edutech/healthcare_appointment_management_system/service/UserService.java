@@ -19,12 +19,18 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     public UserService(UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
     public User registerUser(User user) {
+        String uname = user.getUsername() == null ? "" : user.getUsername().trim().toLowerCase();
+
+        // ✅ reserve admin usernames
+        if (uname.equals("admin") || uname.equals("admin1")) {
+            throw new RuntimeException("This username is reserved. Please choose another.");
+        }
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists!");
         }
@@ -34,6 +40,10 @@ public class UserService implements UserDetailsService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // ✅ Ensure new users are active by default
+        user.setActive(true);
+
         return userRepository.save(user);
     }
 
@@ -47,19 +57,29 @@ public class UserService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(
-                        () -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found: " + username));
+
+        // ✅ CRITICAL: Block login if Admin deactivated account
+        if (!user.isActive()) {
+            throw new RuntimeException("Account is deactivated. Please contact admin.");
+        }
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singleton(
-                        new SimpleGrantedAuthority(user.getRole())));
+                Collections.singleton(new SimpleGrantedAuthority(user.getRole()))
+        );
     }
 
-
-       public User updateUsername(String oldUsername, String newUsername) {
+    public User updateUsername(String oldUsername, String newUsername) {
         User user = getUserByUsername(oldUsername);
+
+        // ✅ Optional: prevent duplicate username
+        if (!oldUsername.equalsIgnoreCase(newUsername) && userRepository.existsByUsername(newUsername)) {
+            throw new RuntimeException("Username already exists!");
+        }
+
         user.setUsername(newUsername);
         return userRepository.save(user);
     }

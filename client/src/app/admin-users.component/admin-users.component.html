@@ -1,0 +1,68 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+
+    <a routerLink="/admin-doctors" class="nav-link">Admin - Doctors</a>
+    <a routerLink="/admin-receptionists" class="nav-link">Admin - Receptionists</a>
+    <a routerLink="/admin-users" class="nav-link active">Admin - Patients</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-top">
+    <h3 class="title">Admin: Registered Patients</h3>
+    <button class="btn btn-outline-primary" (click)="loadUsers()">Refresh</button>
+  </div>
+
+  <div class="search-row">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Search patient by name/email..."
+      [(ngModel)]="searchText"
+      (input)="applyFilter()"
+    />
+    <div class="small text-muted">
+      Total: <strong>{{ filtered.length }}</strong>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-muted">Loading patients...</div>
+
+  <div class="table-wrap" *ngIf="!loading">
+    <table class="table admin-table" *ngIf="filtered.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let u of paginated">
+          <td>{{ u.id }}</td>
+          <td><strong>{{ u.username }}</strong></td>
+          <td>{{ u.email }}</td>
+          <td>
+            <span class="status-badge badge-active">
+              ACTIVE
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filtered.length === 0" class="empty-box">
+      No patients found.
+    </div>
+  </div>
+
+  <!-- pagination -->
+  <div class="pagination-row" *ngIf="filtered.length > pageSize">
+    <button class="btn btn-sm btn-secondary" (click)="prev()" [disabled]="currentPage === 1">Prev</button>
+    <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+    <button class="btn btn-sm btn-secondary" (click)="next()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

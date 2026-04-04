@@ -18,12 +18,16 @@ import com.edutech.healthcare_appointment_management_system.entity.Patient;
 import com.edutech.healthcare_appointment_management_system.entity.Receptionist;
 import com.edutech.healthcare_appointment_management_system.entity.User;
 import com.edutech.healthcare_appointment_management_system.jwt.JwtUtil;
-import com.edutech.healthcare_appointment_management_system.repository.UserRepository;
 import com.edutech.healthcare_appointment_management_system.service.CaptchaService;
 import com.edutech.healthcare_appointment_management_system.service.UserService;
+
 @RestController
 @RequestMapping
 public class RegisterAndLoginController {
+
+    // ✅ HARDCODED ADMIN CREDENTIALS (NO DB ACCOUNT NEEDED)
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "Admin@123";
 
     @Autowired
     private UserService userService;
@@ -37,6 +41,7 @@ public class RegisterAndLoginController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    // ✅ PATIENT REGISTER
     @PostMapping("/api/patient/register")
     public ResponseEntity<?> registerPatient(@RequestBody Patient patient) {
         try {
@@ -47,57 +52,76 @@ public class RegisterAndLoginController {
         }
     }
 
+    // ✅ DOCTOR REGISTER
     @PostMapping("/api/doctors/register")
     public ResponseEntity<User> registerDoctor(@RequestBody Doctor doctor) {
         doctor.setRole("DOCTOR");
         return ResponseEntity.ok(userService.registerUser(doctor));
     }
 
+    // ✅ RECEPTIONIST REGISTER
     @PostMapping("/api/receptionist/register")
-public ResponseEntity<User> registerReceptionist(@RequestBody Receptionist receptionist) {
-    receptionist.setRole("RECEPTIONIST");
-    return ResponseEntity.ok(userService.registerUser(receptionist));
-}
+    public ResponseEntity<User> registerReceptionist(@RequestBody Receptionist receptionist) {
+        receptionist.setRole("RECEPTIONIST");
+        return ResponseEntity.ok(userService.registerUser(receptionist));
+    }
 
-@PostMapping("/api/user/login")
+    @PostMapping("/api/user/login")
 public ResponseEntity<LoginResponse> login(
         @Validated @RequestBody LoginRequest request,
         HttpServletRequest httpRequest) {
 
     try {
-
-        // ✅ 1️⃣ CAPTCHA VALIDATION FIRST
+        // ✅ 1) CAPTCHA VALIDATION FIRST
         String sessionId = httpRequest.getSession().getId();
-
-        boolean isCaptchaValid = captchaService.validateCaptcha(
-                sessionId,
-                request.getCaptcha()
-        );
+        boolean isCaptchaValid = captchaService.validateCaptcha(sessionId, request.getCaptcha());
 
         if (!isCaptchaValid) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(null); // or custom error message
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // ✅ 2️⃣ AUTHENTICATE USER
+        // ✅ 2) HARDCODED ADMIN LOGIN (BYPASS DB PASSWORD, BUT VERIFY DB ROLE)
+        if (ADMIN_USERNAME.equals(request.getUsername())
+                && ADMIN_PASSWORD.equals(request.getPassword())) {
+
+            // check admin exists in DB and is role ADMIN
+            User dbAdmin = userService.getUserByUsername(ADMIN_USERNAME);
+
+            if (!"ADMIN".equals(dbAdmin.getRole())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+            if (!dbAdmin.isActive()) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            LoginResponse response = new LoginResponse(
+                    dbAdmin.getId(),
+                    jwtUtil.generateToken(ADMIN_USERNAME),
+                    dbAdmin.getUsername(),
+                    dbAdmin.getEmail(),
+                    "ADMIN"
+            );
+
+            return ResponseEntity.ok(response);
+        }
+
+        // ✅ 3) NORMAL USER AUTHENTICATION (DB users)
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-            )
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()
+                )
         );
 
-        // ✅ 3️⃣ FETCH USER
+        // ✅ 4) FETCH USER + GENERATE JWT
         User user = userService.getUserByUsername(request.getUsername());
 
-        // ✅ 4️⃣ GENERATE JWT
         LoginResponse response = new LoginResponse(
-            user.getId(),
-            jwtUtil.generateToken(user.getUsername()),
-            user.getUsername(),
-            user.getEmail(),
-            user.getRole()
+                user.getId(),
+                jwtUtil.generateToken(user.getUsername()),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole()
         );
 
         return ResponseEntity.ok(response);
@@ -106,5 +130,4 @@ public ResponseEntity<LoginResponse> login(
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
-
 }

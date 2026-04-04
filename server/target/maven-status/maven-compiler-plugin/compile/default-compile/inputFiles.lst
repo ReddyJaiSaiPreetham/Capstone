@@ -6,6 +6,7 @@
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/DoctorRepository.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/dto/NotBlank.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/Doctor.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/service/AdminService.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/CaptchaController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/MedicalRecordRepository.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/dto/LoginResponse.java
@@ -19,6 +20,7 @@
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/dto/TimeDto.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/PrescriptionItem.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/PatientRepository.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/AdminController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/Receptionist.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/Appointment.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/ReceptionistRepository.java

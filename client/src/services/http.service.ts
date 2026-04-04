@@ -380,4 +380,65 @@ downloadPrescriptionPdf(recordId: number): Observable<Blob> {
     { headers, responseType: 'blob' }
   );
 }
+
+
+/* ===================== ADMIN ===================== */
+
+// ✅ Admin: get all users (optional)
+getAllUsersForAdmin(): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/admin/users`,
+    { headers }
+  );
+}
+
+// ✅ Admin: get all doctors
+getDoctorsForAdmin(): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/admin/doctors`,
+    { headers }
+  );
+}
+
+// ✅ Admin: get all receptionists
+getReceptionistsForAdmin(): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/admin/receptionists`,
+    { headers }
+  );
+}
+
+// ✅ Admin: get all patients (optional)
+getPatientsForAdmin(): Observable<any[]> {
+  const headers = this.getAuthHeaders();
+  return this.http.get<any[]>(
+    `${this.serverName}/api/admin/patients`,
+    { headers }
+  );
+}
+
+// ✅ Admin: activate user
+activateUserByAdmin(userId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.put(
+    `${this.serverName}/api/admin/users/${userId}/activate`,
+    {},
+    { headers }
+  );
+}
+
+// ✅ Admin: deactivate user
+deactivateUserByAdmin(userId: number): Observable<any> {
+  const headers = this.getAuthHeaders();
+  return this.http.put(
+    `${this.serverName}/api/admin/users/${userId}/deactivate`,
+    {},
+    { headers }
+  );
+}
+
+
 }

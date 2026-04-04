@@ -11,7 +11,7 @@ export class DashbaordComponent implements OnInit {
 
   roleName: string | null = null;
   username: string = '';
-  greeting: string = '';   // :white_check_mark: NEW
+  greeting: string = '';
 
   constructor(
     private authService: AuthService,
@@ -19,23 +19,29 @@ export class DashbaordComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // :white_check_mark: Route protection
-    if (!this.authService.getLoginStatus) {
+
+    // ✅ Route protection (works for both getter or method)
+    const isLoggedIn = typeof (this.authService as any).getLoginStatus === 'function'
+      ? (this.authService as any).getLoginStatus()
+      : (this.authService as any).getLoginStatus;
+
+    if (!isLoggedIn) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // :white_check_mark: Get role
-    this.roleName = this.authService.getRole;
+    // ✅ Get role (works for both getter or method)
+    this.roleName = typeof (this.authService as any).getRole === 'function'
+      ? (this.authService as any).getRole()
+      : (this.authService as any).getRole;
 
-    // :white_check_mark: Get username from JWT
+    // ✅ Get username from JWT (sub claim)
     this.username = this.getUsernameFromToken();
 
-    // :white_check_mark: Set greeting based on local time
+    // ✅ Greeting based on local time
     this.greeting = this.getGreetingByTime();
   }
 
-  /** :white_check_mark: Extract username from JWT (sub claim) */
   private getUsernameFromToken(): string {
     const token = localStorage.getItem('token');
     if (!token) return 'User';
@@ -48,18 +54,12 @@ export class DashbaordComponent implements OnInit {
     }
   }
 
-  /** :white_check_mark: Determine greeting using local time */
   private getGreetingByTime(): string {
     const hour = new Date().getHours();
 
-    if (hour >= 5 && hour < 12) {
-      return 'Good Morning';
-    } else if (hour >= 12 && hour < 17) {
-      return 'Good Afternoon';
-    } else if (hour >= 17 && hour < 21) {
-      return 'Good Evening';
-    } else {
-      return 'Good Night';
-    }
+    if (hour >= 5 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 17) return 'Good Afternoon';
+    if (hour >= 17 && hour < 21) return 'Good Evening';
+    return 'Good Night';
   }
 }

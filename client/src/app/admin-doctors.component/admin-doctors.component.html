@@ -1,0 +1,97 @@
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="brand">HAM System</span>
+
+    <a routerLink="/admin-doctors" class="nav-link">Admin - Doctors</a>
+    <a routerLink="/admin-receptionists" class="nav-link">Admin - Receptionists</a>
+    <a routerLink="/admin-users" class="nav-link active">Admin - Patients</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-top">
+    <h3 class="title">Admin: Manage Doctors</h3>
+    <button class="btn btn-outline-primary" (click)="loadDoctors()">Refresh</button>
+  </div>
+
+  <div class="search-row">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Search doctor by name/email/status..."
+      [(ngModel)]="searchText"
+      (input)="applyFilter()"
+    />
+
+    <div class="small text-muted">
+      Total: <strong>{{ filtered.length }}</strong>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-muted">Loading doctors...</div>
+
+  <div *ngIf="message" class="alert" [ngClass]="isError ? 'alert-danger' : 'alert-success'">
+    {{ message }}
+  </div>
+
+  <div class="table-wrap" *ngIf="!loading">
+    <table class="table doctors-table" *ngIf="filtered.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let d of paginated">
+          <td>{{ d.id }}</td>
+          <td>
+            <strong>{{ d.username }}</strong>
+          </td>
+          <td>{{ d.email }}</td>
+          <td>{{ d.role }}</td>
+
+          <td>
+            <span class="status-badge" [ngClass]="badgeClass(d.active)">
+              {{ statusLabel(d.active) }}
+            </span>
+          </td>
+
+          <td class="text-end">
+            <button
+              class="btn btn-sm"
+              [ngClass]="d.active ? 'btn-danger' : 'btn-success'"
+              (click)="toggleActive(d)"
+            >
+              {{ d.active ? 'Deactivate' : 'Activate' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="filtered.length === 0" class="empty-box">
+      No doctors found.
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="filtered.length > pageSize">
+    <button class="btn btn-sm btn-secondary" (click)="prev()" [disabled]="currentPage === 1">
+      Prev
+    </button>
+
+    <span class="page-info">
+      Page {{ currentPage }} / {{ totalPages }}
+    </span>
+
+    <button class="btn btn-sm btn-secondary" (click)="next()" [disabled]="currentPage === totalPages">
+      Next
+    </button>
+  </div>
+</div>

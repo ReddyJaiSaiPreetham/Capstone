@@ -20,6 +20,9 @@ import { ReceptionistScheduleAppointmentsComponent } from './receptionist-schedu
 import { HomeComponent } from './home/home.component';
 import { DoctorMedicalRecordComponent } from './doctor-medical-record/doctor-medical-record.component';
 import { PatientMedicalRecordsComponent } from './patient-medical-records/patient-medical-records.component';
+import { AdminDoctorsComponent } from './admin-doctors.component/admin-doctors.component';
+import { AdminReceptionistsComponent } from './admin-receptionists/admin-receptionists.component';
+import { AdminUsersComponent } from './admin-users.component/admin-users.component';
 
 
 
@@ -38,6 +41,9 @@ import { PatientMedicalRecordsComponent } from './patient-medical-records/patien
     HomeComponent,
     DoctorMedicalRecordComponent,
     PatientMedicalRecordsComponent,
+    AdminDoctorsComponent,
+    AdminReceptionistsComponent,
+    AdminUsersComponent,
 
     
   ],

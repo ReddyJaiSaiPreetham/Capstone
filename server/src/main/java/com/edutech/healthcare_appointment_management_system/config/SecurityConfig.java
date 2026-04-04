@@ -97,11 +97,12 @@ protected void configure(HttpSecurity http) throws Exception {
         ).hasAuthority("RECEPTIONIST")
 
         .antMatchers("/api/doctor/medicalrecords/**").hasAuthority("DOCTOR")
-.antMatchers("/api/patient/medicalrecords/**").hasAuthority("PATIENT")
+        .antMatchers("/api/patient/medicalrecords/**").hasAuthority("PATIENT")
 
         .antMatchers(HttpMethod.GET, "/api/receptionist/doctor/**").hasAuthority("RECEPTIONIST")
-        // ✅ PROFILE (ANY LOGGED-IN USER)
+        .antMatchers("/api/admin/**").hasAuthority("ADMIN")
         .antMatchers("/api/profile/**").authenticated()
+        
 
         .anyRequest().authenticated()
         .and()

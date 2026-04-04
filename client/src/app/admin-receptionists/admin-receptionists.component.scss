@@ -1,0 +1,96 @@
+/* Navbar */
+.navbar {
+  width: 100%;
+  background: #1e1e1e;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.brand {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  margin-right: 8px;
+}
+.nav-link {
+  color: #cfcfcf;
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: 0.2s;
+  &:hover { color: #fff; background: rgba(255,255,255,0.08); }
+}
+.nav-link.active {
+  color: #fff;
+  font-weight: 700;
+  background: rgba(255,255,255,0.12);
+}
+.logout {
+  background: #dc3545;
+  color: #fff !important;
+  padding: 6px 12px;
+  border-radius: 8px;
+  &:hover { background: #b02a37; }
+}
+
+/* Page */
+.container { padding: 20px; }
+.page-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.title { margin: 12px 0; font-weight: 900; }
+
+.search-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.small { font-size: 12px; }
+
+.table-wrap {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.06);
+  overflow-x: auto;
+}
+
+.admin-table { width: 100%; margin: 0; border-collapse: collapse; }
+.admin-table thead { background: #111827; color: #fff; }
+.admin-table th, .admin-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+.badge-active {
+  background: #e9f7ef;
+  color: #1e7e34;
+  border: 1px solid #b7ebc6;
+}
+.badge-inactive {
+  background: #fdecea;
+  color: #b02a37;
+  border: 1px solid #f5c6cb;
+}
+
+.empty-box { padding: 16px; color: #475569; }
+
+.pagination-row {
+  display: flex; justify-content: center; align-items: center; gap: 12px;
+  margin-top: 12px;
+}
+.page-info { font-weight: 800; }
+
+@media (max-width: 768px) {
+  .page-top { flex-direction: column; align-items: flex-start; }
+  .search-row { flex-direction: column; align-items: stretch; }
+}

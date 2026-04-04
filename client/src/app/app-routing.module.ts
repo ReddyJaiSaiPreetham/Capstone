@@ -13,6 +13,9 @@ import { ReceptionistScheduleAppointmentsComponent } from './receptionist-schedu
 import { HomeComponent } from './home/home.component';
 import { PatientMedicalRecordsComponent } from './patient-medical-records/patient-medical-records.component';
 import { DoctorMedicalRecordComponent } from './doctor-medical-record/doctor-medical-record.component';
+import { AdminDoctorsComponent } from './admin-doctors.component/admin-doctors.component';
+import { AdminReceptionistsComponent } from './admin-receptionists/admin-receptionists.component';
+import { AdminUsersComponent } from './admin-users.component/admin-users.component';
 
 
 
@@ -30,7 +33,12 @@ const routes: Routes = [
   { path: 'patient-medical-records', component: PatientMedicalRecordsComponent },
   { path: 'doctor-medical-record', component: DoctorMedicalRecordComponent },
   { path: 'doctor-medical-record/:recordId', component: DoctorMedicalRecordComponent },
-  
+  { path: 'admin-doctors', component: AdminDoctorsComponent },
+  { path: 'admin-receptionists', component: AdminReceptionistsComponent },
+  { path: 'admin-users', component: AdminUsersComponent },
+  //{ path: 'admin-users', component: AdminUsersComponent },
+// optional:
+
   // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   // { path: '**', redirectTo: '/dashboard', pathMatch: 'full' },
 
