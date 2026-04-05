@@ -1,65 +1,190 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
-    <a routerLink="/doctor-appointment" class="nav-link">Doctor Appointment</a>
-    <a routerLink="/doctor-availability" class="nav-link active">Doctor Availability</a>
-     <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+<div class="dash-root">
+
+  <!-- Animated background -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect width="32" height="32" rx="9" fill="white" fill-opacity="0.12"/>
+          <path d="M16 8v16M8 16h16" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">MedCore</span>
+      </div>
+      <div class="nav-links">
+        <a routerLink="/doctor-appointment" class="nav-link">
+          <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+            <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6 2v2M12 2v2M2 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Appointments
+        </a>
+        <a routerLink="/doctor-availability" class="nav-link active">
+          <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+            <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M9 5.5V9l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Availability
+        </a>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-doctor-badge">
+        <div class="nav-avatar">DR</div>
+        <div class="nav-doctor-info">
+          <span class="nav-doctor-name">Dr. Dashboard</span>
+          <span class="nav-doctor-role">Physician</span>
+        </div>
+      </div>
+      <a routerLink="/login" class="logout-btn">
+        <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+          <path d="M7 3H4a1 1 0 00-1 1v10a1 1 0 001 1h3M11 12l3-3-3-3M14 9H7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+  </nav>
+
+  <!-- ================= BODY ================= -->
+  <div class="dash-body">
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Availability Manager</h1>
+        <p class="page-sub">Toggle your time slots for each day — patients can only book available slots</p>
+      </div>
+
+      <!-- Date picker -->
+      <div class="date-picker-wrap">
+        <div class="date-input-group">
+          <svg class="date-icon" viewBox="0 0 18 18" fill="none" width="15" height="15">
+            <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6 2v2M12 2v2M2 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <input type="date"
+                 class="date-input"
+                 [(ngModel)]="selectedDate"
+                 [min]="minDate"
+                 [max]="maxDate"
+                 (change)="onDateChange()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert banner -->
+    <div class="alert-banner alert-success-banner" *ngIf="showMessage && !isError">
+      <svg viewBox="0 0 18 18" fill="none" width="15" height="15" style="flex-shrink:0">
+        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M6 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ responseMessage }}
+    </div>
+    <div class="alert-banner alert-error-banner" *ngIf="showMessage && isError">
+      <svg viewBox="0 0 18 18" fill="none" width="15" height="15" style="flex-shrink:0">
+        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M9 5.5v4M9 12.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      {{ responseMessage }}
+    </div>
+
+    <!-- Legend -->
+    <div class="legend-row">
+      <div class="legend-item">
+        <div class="legend-dot dot-available"></div>
+        <span>Available — click to block</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot dot-blocked"></div>
+        <span>Blocked — click to open</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot dot-booked"></div>
+        <span>Booked — locked by patient</span>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-bar" *ngIf="isPageLoading">
+      <div class="loading-pulse"></div>
+      Loading time slots…
+    </div>
+
+    <!-- Slot grid -->
+    <div class="slot-grid" *ngIf="!isPageLoading">
+      <button
+        *ngFor="let s of slots"
+        class="slot-card"
+        [class.slot-available]="s.status === 'AVAILABLE'"
+        [class.slot-blocked]="s.status === 'BLOCKED'"
+        [class.slot-booked]="s.status === 'BOOKED'"
+        [class.slot-loading]="s.loading"
+        (click)="toggleSlot(s)"
+        [disabled]="s.loading || s.status === 'BOOKED'">
+
+        <!-- Top row: time + status icon -->
+        <div class="slot-top">
+          <span class="slot-time">{{ s.label }}</span>
+          <span class="slot-state-icon">
+            <!-- Available: checkmark -->
+            <svg *ngIf="s.status === 'AVAILABLE' && !s.loading" viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <!-- Blocked: X -->
+            <svg *ngIf="s.status === 'BLOCKED' && !s.loading" viewBox="0 0 16 16" fill="none" width="14" height="14">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <!-- Booked: lock -->
+            <svg *ngIf="s.status === 'BOOKED' && !s.loading" viewBox="0 0 16 16" fill="none" width="13" height="13">
+              <rect x="2.5" y="7" width="11" height="8" rx="2" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M4.5 7V5a3.5 3.5 0 017 0v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            <!-- Loading: spinner -->
+            <span *ngIf="s.loading" class="slot-spinner"></span>
+          </span>
+        </div>
+
+        <!-- Status label -->
+        <div class="slot-label">
+          <span *ngIf="!s.loading && s.status === 'AVAILABLE'">Available</span>
+          <span *ngIf="!s.loading && s.status === 'BLOCKED'">Blocked</span>
+          <span *ngIf="!s.loading && s.status === 'BOOKED'">Booked</span>
+          <span *ngIf="s.loading">Updating…</span>
+        </div>
+
+        <!-- Booked patient info -->
+        <div class="slot-booked-info" *ngIf="s.status === 'BOOKED' && s.bookedPatientName">
+          <svg viewBox="0 0 14 14" fill="none" width="11" height="11">
+            <circle cx="7" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M2 12c0-2.761 2.239-5 5-5s5 2.239 5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          {{ s.bookedPatientName }}
+          <span class="appt-id">#{{ s.bookedAppointmentId }}</span>
+        </div>
+
+        <!-- Toggle hint on hover -->
+        <div class="slot-hover-hint" *ngIf="s.status !== 'BOOKED'">
+          {{ s.status === 'AVAILABLE' ? 'Click to block' : 'Click to open' }}
+        </div>
+
+      </button>
+    </div>
+
+    <!-- Note -->
+    <div class="slot-note">
+      <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+        <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+        <path d="M8 5.5v3M8 11h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+      </svg>
+      Slots run 9 AM – 9 PM in 1-hour intervals. Booked slots are locked and show the patient's name.
+    </div>
+
   </div>
-    <!-- <a routerLink="/doctor-medical-record" class="nav-link">Prescription</a> -->
-  </div>
-
-  
-</nav>
-
-<div class="container">
-  <h3 class="page-title">Doctor Availability (Time Slots)</h3>
-
-  <div *ngIf="showMessage" class="alert" [ngClass]="isError ? 'alert-danger' : 'alert-success'">
-    {{ responseMessage }}
-  </div>
-
-  <div class="date-row">
-    <label class="form-label">Select Date</label>
-    <input type="date"
-           class="form-control date-input"
-           [(ngModel)]="selectedDate"
-           [min]="minDate"
-           [max]="maxDate"
-           (change)="onDateChange()">
-  </div>
-
-  <div *ngIf="isPageLoading" class="loading-text">Loading slots...</div>
-
-  <div *ngIf="!isPageLoading" class="slot-grid">
-    <button
-      *ngFor="let s of slots"
-      class="slot-btn"
-      [ngClass]="{
-        'available': s.status === 'AVAILABLE',
-        'blocked': s.status === 'BLOCKED',
-        'booked': s.status === 'BOOKED'
-      }"
-      (click)="toggleSlot(s)"
-      [disabled]="s.loading || s.status === 'BOOKED'">
-
-      <span class="slot-time">{{ s.label }}</span>
-
-      <span class="slot-status" *ngIf="s.status === 'AVAILABLE'">Available</span>
-      <span class="slot-status" *ngIf="s.status === 'BLOCKED'">Blocked</span>
-
-      <span class="slot-status" *ngIf="s.status === 'BOOKED'">
-        BOOKED
-        <span class="booked-info" *ngIf="s.bookedPatientName">
-          — {{ s.bookedPatientName }} (Appt: {{ s.bookedAppointmentId }})
-        </span>
-      </span>
-
-      <span class="slot-status" *ngIf="s.loading">Updating...</span>
-    </button>
-  </div>
-
-  <p class="note">
-    Rules: Slots are 1 hour each (9AM–9PM). BOOKED slots are locked and show who booked them.
-  </p>
 </div>

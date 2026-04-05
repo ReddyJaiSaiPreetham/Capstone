@@ -304,4 +304,18 @@ export class DoctorAppointmentComponent implements OnInit {
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     return now.toISOString().slice(0, 16);
   }
+
+  get upcomingCount(): number {
+  let count = 0;
+  this.upcomingGrouped.forEach(apps => (count += apps.length));
+  return count;
+}
+ 
+get completedTodayCount(): number {
+  return this.todayAppointments.filter(a => a.completionstatus === 'COMPLETED').length;
+}
+ 
+get pendingTodayCount(): number {
+  return this.todayAppointments.filter(a => a.completionstatus !== 'COMPLETED').length;
+}
 }

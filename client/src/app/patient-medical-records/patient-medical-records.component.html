@@ -1,111 +1,280 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
-    <a routerLink="/schedule-appointment" class="nav-link">Schedule Appointment</a>
-    <a routerLink="/patient-appointment" class="nav-link">View Appointments</a>
-    <a routerLink="/patient-medical-records" class="nav-link active">Prescriptions</a>
-     <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
-  </div>
-  </div>
-</nav>
+<div class="dash-root">
 
-<div class="container">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
 
-  <h3 class="title">My Medical Records</h3>
-
-  <div *ngIf="loading" class="text-muted">Loading records...</div>
-
-  <div *ngIf="successMessage" class="alert alert-success mt-3">
-    {{ successMessage }}
-  </div>
-
-  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
-    {{ errorMessage }}
-  </div>
-
-  <!-- Records List -->
-  <div class="records-card" *ngIf="!loading && records.length > 0">
-    <table class="records-table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Doctor</th>
-          <th>Diagnosis</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr *ngFor="let r of records">
-          <td>{{ formatDateTime(r.recordDate) }}</td>
-          <td>{{ r.doctor?.username }}</td>
-          <td>{{ r.diagnosis }}</td>
-          <td class="text-end">
-            <button class="btn btn-sm btn-outline-primary me-2" (click)="viewRecord(r)">
-              View
-            </button>
-
-            <button class="btn btn-sm btn-success" (click)="downloadPdf(r.id)">
-              Download PDF
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- No records -->
-  <div *ngIf="!loading && records.length === 0" class="empty-box">
-    No medical records found.
-  </div>
-
-  <!-- Record Details Modal/Card -->
-  <div *ngIf="selectedRecord" class="detail-card">
-    <div class="detail-header">
-      <h4>Record Details</h4>
-      <button class="btn btn-sm btn-secondary" (click)="closeView()">Close</button>
-    </div>
-
-    <div class="detail-body">
-      <p><strong>Date:</strong> {{ formatDateTime(selectedRecord.recordDate) }}</p>
-      <p><strong>Doctor:</strong> {{ selectedRecord.doctor?.username }}</p>
-      <p><strong>Diagnosis:</strong> {{ selectedRecord.diagnosis }}</p>
-      <p><strong>Treatment / Notes:</strong> {{ selectedRecord.treatment }}</p>
-
-      <h5 class="mt-3">Prescription Medicines</h5>
-
-      <table class="med-table" *ngIf="selectedRecord.prescriptionItems?.length">
-        <thead>
-          <tr>
-            <th>Medicine</th>
-            <th>Dosage</th>
-            <th>Frequency</th>
-            <th>Days</th>
-            <th>Instructions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let m of selectedRecord.prescriptionItems">
-            <td>{{ m.medicineName }}</td>
-            <td>{{ m.dosage }}</td>
-            <td>{{ m.frequency }}</td>
-            <td>{{ m.days }}</td>
-            <td>{{ m.instructions }}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <div *ngIf="!selectedRecord.prescriptionItems?.length" class="text-danger">
-        No medicines added.
+  <!-- ================= NAVBAR ================= -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
+          <rect width="32" height="32" rx="9" fill="white" fill-opacity="0.12"/>
+          <path d="M16 8v16M8 16h16" stroke="white" stroke-width="2.8" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">MedCore</span>
       </div>
-
-      <div class="text-end mt-3">
-        <button class="btn btn-success" (click)="downloadPdf(selectedRecord.id)">
-          Download PDF
-        </button>
+      <div class="nav-links">
+        <a routerLink="/schedule-appointment" class="nav-link">
+          <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+            <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6 2v2M12 2v2M2 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M9 10V7M7.5 8.5H10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Schedule
+        </a>
+        <a routerLink="/patient-appointment" class="nav-link">
+          <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+            <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6 2v2M12 2v2M2 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            <circle cx="6" cy="12" r="1" fill="currentColor"/>
+            <circle cx="9" cy="12" r="1" fill="currentColor"/>
+          </svg>
+          Appointments
+        </a>
+        <a routerLink="/patient-medical-records" class="nav-link active">
+          <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+            <path d="M4 2h10a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          Prescriptions
+        </a>
       </div>
     </div>
-  </div>
+    <div class="nav-right">
+      <div class="nav-patient-badge">
+        <div class="nav-avatar">PT</div>
+        <div class="nav-info">
+          <span class="nav-name">Patient Portal</span>
+          <span class="nav-role">My Health Records</span>
+        </div>
+      </div>
+      <a routerLink="/login" class="logout-btn">
+        <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
+          <path d="M7 3H4a1 1 0 00-1 1v10a1 1 0 001 1h3M11 12l3-3-3-3M14 9H7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+  </nav>
 
+  <!-- ================= BODY ================= -->
+  <div class="dash-body">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">My Prescriptions</h1>
+        <p class="page-sub">View and download your medical records and prescription history</p>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="alert-banner alert-success-banner" *ngIf="successMessage">
+      <svg viewBox="0 0 18 18" fill="none" width="15" height="15" style="flex-shrink:0">
+        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M6 9l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ successMessage }}
+    </div>
+    <div class="alert-banner alert-error-banner" *ngIf="errorMessage">
+      <svg viewBox="0 0 18 18" fill="none" width="15" height="15" style="flex-shrink:0">
+        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M9 5.5v4M9 12.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-bar" *ngIf="loading">
+      <div class="loading-pulse"></div>
+      Loading your records…
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!loading && records.length === 0">
+      <svg viewBox="0 0 48 48" fill="none" width="42" height="42">
+        <path d="M10 6h28a2 2 0 012 2v32a2 2 0 01-2 2H10a2 2 0 01-2-2V8a2 2 0 012-2z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M16 16h16M16 22h16M16 28h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <p>No medical records found</p>
+      <span>Your prescriptions will appear here after appointments</span>
+    </div>
+
+    <!-- ===== RECORD LIST ===== -->
+    <div class="records-list" *ngIf="!loading && records.length > 0">
+
+      <div class="record-row"
+           *ngFor="let r of records"
+           [class.record-row-expanded]="selectedRecord?.id === r.id">
+
+        <!-- Record summary card -->
+        <div class="record-card" (click)="viewRecord(r)">
+
+          <!-- Left: date + icon -->
+          <div class="record-date-col">
+            <div class="record-icon">
+              <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+                <path d="M5 2h10a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M7 7h6M7 10h6M7 13h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="record-date">{{ formatDateTime(r.recordDate) }}</div>
+              <div class="record-id">Record #{{ r.id }}</div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="record-vdivider"></div>
+
+          <!-- Doctor -->
+          <div class="record-doctor-col">
+            <div class="record-col-label">Doctor</div>
+            <div class="record-doctor">
+              <div class="doctor-avatar">{{ r.doctor?.username?.charAt(0)?.toUpperCase() || 'D' }}</div>
+              <span class="doctor-name">{{ r.doctor?.username }}</span>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="record-vdivider"></div>
+
+          <!-- Diagnosis -->
+          <div class="record-diagnosis-col">
+            <div class="record-col-label">Diagnosis</div>
+            <div class="record-diagnosis">{{ r.diagnosis }}</div>
+          </div>
+
+          <!-- Actions -->
+          <div class="record-actions">
+            <button class="action-btn btn-view"
+                    (click)="viewRecord(r); $event.stopPropagation()"
+                    [class.btn-view-active]="selectedRecord?.id === r.id">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                <ellipse cx="8" cy="8" rx="6" ry="4" stroke="currentColor" stroke-width="1.3"/>
+                <circle cx="8" cy="8" r="1.8" fill="currentColor"/>
+              </svg>
+              {{ selectedRecord?.id === r.id ? 'Collapse' : 'View' }}
+            </button>
+            <button class="action-btn btn-download" (click)="downloadPdf(r.id); $event.stopPropagation()">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                <path d="M8 3v7M5.5 7.5L8 10l2.5-2.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 13h10" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+              PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- ===== EXPANDED DETAIL ===== -->
+        <div class="detail-panel" *ngIf="selectedRecord?.id === r.id">
+          <div class="detail-inner">
+
+            <!-- Header -->
+            <div class="detail-header">
+              <div class="detail-title">
+                <svg viewBox="0 0 18 18" fill="none" width="16" height="16">
+                  <path d="M4 2h10a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                Record Details
+              </div>
+              <button class="close-btn" (click)="closeView()">
+                <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                  <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Info grid -->
+            <div class="detail-info-grid">
+              <div class="detail-field">
+                <div class="detail-field-label">Date</div>
+                <div class="detail-field-value">{{ formatDateTime(selectedRecord.recordDate) }}</div>
+              </div>
+              <div class="detail-field">
+                <div class="detail-field-label">Doctor</div>
+                <div class="detail-field-value">{{ selectedRecord.doctor?.username }}</div>
+              </div>
+              <div class="detail-field">
+                <div class="detail-field-label">Diagnosis</div>
+                <div class="detail-field-value">{{ selectedRecord.diagnosis }}</div>
+              </div>
+              <div class="detail-field detail-field-wide">
+                <div class="detail-field-label">Treatment / Notes</div>
+                <div class="detail-field-value detail-notes">{{ selectedRecord.treatment }}</div>
+              </div>
+            </div>
+
+            <!-- Medicines -->
+            <div class="medicines-section">
+              <div class="medicines-title">
+                <svg viewBox="0 0 18 18" fill="none" width="15" height="15">
+                  <rect x="4" y="2" width="10" height="14" rx="3" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M4 9h10" stroke="currentColor" stroke-width="1.3"/>
+                  <circle cx="9" cy="5.5" r="1" fill="currentColor"/>
+                  <circle cx="9" cy="12.5" r="1" fill="currentColor"/>
+                </svg>
+                Prescription Medicines
+              </div>
+
+              <div class="no-meds" *ngIf="!selectedRecord.prescriptionItems?.length">
+                <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                  <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+                  <path d="M8 5v3M8 11h.01" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                </svg>
+                No medicines added to this prescription
+              </div>
+
+              <div class="med-grid" *ngIf="selectedRecord.prescriptionItems?.length">
+
+                <!-- Header row -->
+                <div class="med-header-row">
+                  <span>Medicine</span>
+                  <span>Dosage</span>
+                  <span>Frequency</span>
+                  <span>Days</span>
+                  <span>Instructions</span>
+                </div>
+
+                <!-- Medicine rows -->
+                <div class="med-row" *ngFor="let m of selectedRecord.prescriptionItems; let i = index"
+                     [style.animation-delay]="(i * 0.04) + 's'">
+                  <div class="med-cell">
+                    <div class="med-pill-icon">
+                      <svg viewBox="0 0 12 12" fill="none" width="10" height="10">
+                        <rect x="1" y="1" width="10" height="10" rx="2.5" stroke="currentColor" stroke-width="1.2"/>
+                        <path d="M1 6h10" stroke="currentColor" stroke-width="1.2"/>
+                      </svg>
+                    </div>
+                    <span class="med-name">{{ m.medicineName }}</span>
+                  </div>
+                  <div class="med-cell"><span class="med-badge med-badge-blue">{{ m.dosage }}</span></div>
+                  <div class="med-cell"><span class="med-badge med-badge-teal">{{ m.frequency }}</span></div>
+                  <div class="med-cell"><span class="med-badge med-badge-amber">{{ m.days }}d</span></div>
+                  <div class="med-cell med-instructions">{{ m.instructions }}</div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Detail footer -->
+            <div class="detail-footer">
+              <button class="action-btn btn-download btn-download-lg" (click)="downloadPdf(selectedRecord.id)">
+                <svg viewBox="0 0 18 18" fill="none" width="15" height="15">
+                  <path d="M9 3v9M6 9l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M3 15h12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                Download PDF
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /record-row -->
+    </div>
+
+  </div>
 </div>

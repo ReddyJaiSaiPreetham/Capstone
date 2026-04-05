@@ -17,18 +17,20 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   responseMessage: string = '';
   isError: boolean = false;
 
+  // ✅ NEW: separate title so OTP success ≠ "Account Created!"
+  popupTitle: string = '';
+
   // OTP state
   otpSent: boolean = false;
   otpRequested: boolean = false;
   sendingOtp: boolean = false;
 
-  otpCountdown: number = 0;     // OTP validity countdown (UI)
-  otpCooldown: number = 0;      // resend cooldown timer (anti-spam)
+  otpCountdown: number = 0;
+  otpCooldown: number = 0;
 
   private otpTimer: any;
   private cooldownTimer: any;
 
-  // UI extras
   showPassword: boolean = false;
   showTermsModal: boolean = false;
 
@@ -41,7 +43,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-
     this.itemForm = this.formBuilder.group({
       username: [
         '',
@@ -52,28 +53,18 @@ export class RegistrationComponent implements OnInit, OnDestroy {
           Validators.pattern('^[A-Za-z_][A-Za-z0-9_]*$')
         ]
       ],
-
       email: ['', [Validators.required, Validators.email]],
-
       password: [
         '',
         [
           Validators.required,
           Validators.minLength(8),
-          // ✅ IMPORTANT: In TS use '&' (NOT '&amp;')
           Validators.pattern('^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$')
         ]
       ],
-
       role: ['', Validators.required],
-
-      // ✅ OTP control disabled initially, enabled only after Send OTP success
       otp: [{ value: '', disabled: true }],
-
-      // ✅ Terms (required)
       terms: [false, Validators.requiredTrue],
-
-      // Doctor-only fields
       specialty: [''],
       availability: ['']
     });
@@ -84,14 +75,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
-
     if (this.otpTimer) clearInterval(this.otpTimer);
     if (this.cooldownTimer) clearInterval(this.cooldownTimer);
   }
 
   onRoleChange(): void {
     const sub = this.itemForm.get('role')?.valueChanges.subscribe(role => {
-
       const specialtyControl = this.itemForm.get('specialty');
       const availabilityControl = this.itemForm.get('availability');
 
@@ -112,15 +101,12 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     if (sub) this.subs.push(sub);
   }
 
-  /** ✅ If email changes after OTP request/sent, reset OTP state */
   private onEmailChangeResetOtp(): void {
     const emailCtrl = this.itemForm.get('email');
     if (!emailCtrl) return;
-
     const sub = emailCtrl.valueChanges.subscribe(() => {
-      this.resetOtpState(); // resets OTP + timers + disables OTP field
+      this.resetOtpState();
     });
-
     this.subs.push(sub);
   }
 
@@ -138,7 +124,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // ✅ prevent spam resend if cooldown active
     if (this.otpCooldown > 0) {
       this.showErrorMessage({ error: `Please wait ${this.otpCooldown}s to resend OTP.` });
       return;
@@ -154,17 +139,16 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         this.sendingOtp = false;
         this.otpSent = true;
 
-        // ✅ Enable OTP field + validators now
         const otpCtrl = this.itemForm.get('otp');
         otpCtrl?.enable();
         otpCtrl?.setValidators([Validators.required, Validators.pattern('^[0-9]{6}$')]);
         otpCtrl?.updateValueAndValidity();
 
-        this.showSuccess(res?.message || 'OTP sent to email ✅');
+        // ✅ OTP success — correct title "OTP Sent!"
+        this.showSuccess('OTP Sent!', res?.message || 'OTP sent to your email. Check your inbox or spam.');
 
-        // ✅ UI-only timers:
-        this.startOtpCountdown(300); // OTP valid 5 mins display
-        this.startOtpCooldown(30);   // resend cooldown 30 secs
+        this.startOtpCountdown(300);
+        this.startOtpCooldown(30);
       },
       error: (err) => {
         this.sendingOtp = false;
@@ -176,18 +160,13 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   private startOtpCountdown(seconds: number): void {
     this.otpCountdown = seconds;
-
     if (this.otpTimer) clearInterval(this.otpTimer);
-
     this.otpTimer = setInterval(() => {
       this.otpCountdown--;
       if (this.otpCountdown <= 0) {
         clearInterval(this.otpTimer);
         this.otpTimer = null;
-
-        // OTP expired in UI → force resend
         this.otpSent = false;
-
         const otpCtrl = this.itemForm.get('otp');
         otpCtrl?.reset();
         otpCtrl?.disable();
@@ -197,9 +176,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   private startOtpCooldown(seconds: number): void {
     this.otpCooldown = seconds;
-
     if (this.cooldownTimer) clearInterval(this.cooldownTimer);
-
     this.cooldownTimer = setInterval(() => {
       this.otpCooldown--;
       if (this.otpCooldown <= 0) {
@@ -209,21 +186,23 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  private showSuccess(msg: string): void {
+  // ✅ UPDATED: takes title as first param
+  private showSuccess(title: string, msg: string): void {
     this.showMessage = true;
     this.isError = false;
+    this.popupTitle = title;
     this.responseMessage = msg;
   }
 
   private showErrorMessage(err: any): void {
     this.showMessage = true;
     this.isError = true;
+    this.popupTitle = 'Something Went Wrong';
 
     const backendMsg = err?.error;
 
     if (typeof backendMsg === 'string') {
       this.responseMessage = backendMsg;
-
       if (backendMsg.toLowerCase().includes('username')) {
         this.itemForm.get('username')?.setErrors({ usernameExists: true });
       }
@@ -234,12 +213,10 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   }
 
   onRegister(): void {
-
     this.showMessage = false;
     this.responseMessage = '';
     this.isError = false;
 
-    // remove usernameExists error if present
     const usernameControl = this.itemForm.get('username');
     if (usernameControl?.errors?.['usernameExists']) {
       const errs = { ...usernameControl.errors };
@@ -247,13 +224,11 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       usernameControl.setErrors(Object.keys(errs).length ? errs : null);
     }
 
-    // ✅ Must send OTP first
     if (!this.otpSent) {
       this.showErrorMessage({ error: 'Please send OTP first and then register.' });
       return;
     }
 
-    // ✅ OTP must be valid
     const otpCtrl = this.itemForm.get('otp');
     if (!otpCtrl || otpCtrl.invalid) {
       otpCtrl?.markAsTouched();
@@ -261,7 +236,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // ✅ Terms must be accepted
     const termsCtrl = this.itemForm.get('terms');
     if (!termsCtrl || termsCtrl.invalid) {
       termsCtrl?.markAsTouched();
@@ -269,22 +243,16 @@ export class RegistrationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // ✅ other validations
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
       return;
     }
 
-    // getRawValue includes disabled fields too (otp might be enabled now anyway)
     const data = { ...this.itemForm.getRawValue() };
-
     const otp = data.otp;
     delete data.otp;
-
-    // remove terms from payload (backend doesn't need it)
     delete data.terms;
 
-    // remove doctor-only fields if role is not DOCTOR
     if (data.role !== 'DOCTOR') {
       delete data.specialty;
       delete data.availability;
@@ -293,7 +261,8 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     if (data.role === 'PATIENT') {
       this.bookService.registerPatient(data, otp).subscribe({
         next: () => {
-          this.showSuccess('Patient registered successfully ✅');
+          // ✅ Registration success — correct title "Account Created!"
+          this.showSuccess('Account Created!', 'Patient registered successfully. You can now sign in.');
           this.itemForm.reset();
           this.resetOtpState();
         },
@@ -304,7 +273,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     if (data.role === 'DOCTOR') {
       this.bookService.registerDoctors(data, otp).subscribe({
         next: () => {
-          this.showSuccess('Doctor registered successfully ✅');
+          this.showSuccess('Account Created!', 'Doctor registered successfully. You can now sign in.');
           this.itemForm.reset();
           this.resetOtpState();
         },
@@ -315,7 +284,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     if (data.role === 'RECEPTIONIST') {
       this.bookService.registerReceptionist(data, otp).subscribe({
         next: () => {
-          this.showSuccess('Receptionist registered successfully ✅');
+          this.showSuccess('Account Created!', 'Receptionist registered successfully. You can now sign in.');
           this.itemForm.reset();
           this.resetOtpState();
         },
@@ -324,36 +293,18 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** ✅ Terms modal controls (for enhanced UI) */
-  openTerms(): void {
-    this.showTermsModal = true;
-  }
+  openTerms(): void { this.showTermsModal = true; }
+  openPrivacy(): void { this.showTermsModal = true; }
+  closeTerms(): void { this.showTermsModal = false; }
 
-  openPrivacy(): void {
-    this.showTermsModal = true; // you can create a separate modal later
-  }
-
-  closeTerms(): void {
-    this.showTermsModal = false;
-  }
-
-  /** ✅ Reset OTP + timers + disable field */
   private resetOtpState(): void {
     this.otpSent = false;
     this.otpRequested = false;
-
     this.otpCountdown = 0;
     this.otpCooldown = 0;
 
-    if (this.otpTimer) {
-      clearInterval(this.otpTimer);
-      this.otpTimer = null;
-    }
-
-    if (this.cooldownTimer) {
-      clearInterval(this.cooldownTimer);
-      this.cooldownTimer = null;
-    }
+    if (this.otpTimer) { clearInterval(this.otpTimer); this.otpTimer = null; }
+    if (this.cooldownTimer) { clearInterval(this.cooldownTimer); this.cooldownTimer = null; }
 
     const otpCtrl = this.itemForm.get('otp');
     otpCtrl?.reset();
@@ -361,8 +312,4 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     otpCtrl?.disable();
     otpCtrl?.updateValueAndValidity();
   }
-
-
- 
-
 }

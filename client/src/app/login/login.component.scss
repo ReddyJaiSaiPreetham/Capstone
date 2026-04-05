@@ -1,6 +1,3 @@
-/* =============================================
-   HOST + RESET
-   ============================================= */
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
 :host {
@@ -39,29 +36,23 @@
 }
 
 .orb-1 {
-  width: 520px;
-  height: 520px;
+  width: 520px; height: 520px;
   background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
-  top: -160px;
-  left: -100px;
+  top: -160px; left: -100px;
   animation: drift1 12s ease-in-out infinite alternate;
 }
 
 .orb-2 {
-  width: 400px;
-  height: 400px;
+  width: 400px; height: 400px;
   background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-  bottom: -80px;
-  left: 30%;
+  bottom: -80px; left: 30%;
   animation: drift2 15s ease-in-out infinite alternate;
 }
 
 .orb-3 {
-  width: 300px;
-  height: 300px;
+  width: 300px; height: 300px;
   background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 70%);
-  top: 20%;
-  right: -60px;
+  top: 20%; right: -60px;
   animation: drift3 10s ease-in-out infinite alternate;
 }
 
@@ -92,7 +83,7 @@
 }
 
 /* =============================================
-   SHELL (TWO-COLUMN)
+   SHELL
    ============================================= */
 .login-shell {
   position: relative;
@@ -111,13 +102,14 @@
   padding: 48px 56px;
   flex-direction: column;
   justify-content: space-between;
+  flex-shrink: 0;
 }
 
 @media (min-width: 900px) {
   .left-panel { display: flex; }
 }
 
-/* Brand */
+/* Brand / Logo */
 .brand {
   display: flex;
   align-items: center;
@@ -125,16 +117,32 @@
 }
 
 .brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 1px;
 }
 
 .brand-name {
   font-family: 'Sora', sans-serif;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #fff;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.4px;
+}
+
+.brand-sub {
+  font-size: 10px;
+  font-weight: 400;
+  color: #38bdf8;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
 }
 
 /* Heading */
@@ -148,12 +156,12 @@
 
 .left-heading {
   font-family: 'Sora', sans-serif;
-  font-size: clamp(38px, 4.5vw, 58px);
+  font-size: clamp(36px, 4vw, 54px);
   font-weight: 700;
   color: #fff;
   line-height: 1.12;
   letter-spacing: -1.5px;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 .left-heading em {
@@ -163,12 +171,12 @@
 }
 
 .left-sub {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 300;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.7;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.75;
   max-width: 380px;
-  margin-bottom: 48px;
+  margin-bottom: 40px;
 }
 
 /* Stats */
@@ -176,6 +184,7 @@
   display: flex;
   align-items: center;
   gap: 28px;
+  margin-bottom: 28px;
 }
 
 .stat {
@@ -193,10 +202,10 @@
 }
 
 .stat-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
-  color: rgba(255,255,255,0.4);
-  letter-spacing: 0.3px;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
@@ -204,6 +213,25 @@
   width: 1px;
   height: 36px;
   background: rgba(255,255,255,0.12);
+}
+
+/* Trust badges */
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  padding: 6px 12px;
+  border-radius: 100px;
 }
 
 /* Testimonial */
@@ -235,14 +263,14 @@
 
 .testimonial-text {
   font-size: 14px;
-  color: rgba(255,255,255,0.85);
-  line-height: 1.5;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.55;
   margin-bottom: 6px;
 }
 
 .testimonial-author {
   font-size: 12px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.32);
 }
 
 /* =============================================
@@ -254,6 +282,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px 20px;
+  overflow-y: auto;
 }
 
 @media (min-width: 900px) {
@@ -297,7 +326,7 @@
 
 .form-header p {
   font-size: 14px;
-  color: rgba(255,255,255,0.45);
+  color: rgba(255,255,255,0.42);
   font-weight: 300;
 }
 
@@ -312,7 +341,7 @@
   display: block;
   font-size: 13px;
   font-weight: 500;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.62);
   margin-bottom: 8px;
   letter-spacing: 0.2px;
 }
@@ -326,7 +355,7 @@
   left: 13px;
   top: 50%;
   transform: translateY(-50%);
-  color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.28);
   pointer-events: none;
   width: 18px;
   height: 18px;
@@ -352,7 +381,7 @@
 
 .input-wrap input::placeholder,
 .captcha-input-wrap input::placeholder {
-  color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.2);
 }
 
 .input-wrap input:hover,
@@ -409,7 +438,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255,255,255,0.38);
   padding: 2px;
   display: flex;
   align-items: center;
@@ -490,7 +519,7 @@
   text-align: center;
   margin-top: 24px;
   font-size: 13px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.32);
 }
 
 .register-prompt a {
@@ -510,7 +539,7 @@
    ============================================= */
 @media (max-width: 480px) {
   .form-card {
-    padding: 28px 22px;
+    padding: 28px 20px;
     border-radius: 18px;
   }
 

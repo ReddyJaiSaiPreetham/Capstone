@@ -1,113 +1,461 @@
-<!-- TOP NAVBAR -->
-<header class="top-nav">
-  <div class="nav-container">
-    <div class="logo">
-      <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png" alt="HealthEase Logo" />
-      <span>HealthEase</span>
-    </div>
+<div class="home-page">
 
-    <div class="nav-actions">
-      <button routerLink="/login" class="btn-outline">Login</button>
-      <button routerLink="/registration" class="btn-primary">Register</button>
+  <!-- Animated background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- TOP NAVBAR -->
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="logo">
+        <div class="logo-icon">
+          <!-- Medicare Hospital Logo: shield with ECG heartbeat pulse -->
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="shieldGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+              <linearGradient id="glowGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+                <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+              </linearGradient>
+            </defs>
+            <!-- Shield background -->
+            <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z" fill="url(#glowGrad)" stroke="url(#shieldGrad)" stroke-width="1.4"/>
+            <!-- ECG / heartbeat line inside shield -->
+            <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22" stroke="url(#shieldGrad)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="logo-text-group">
+          <span class="logo-name">Medicare</span>
+          <span class="logo-sub">Hospital</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a (click)="scrollTo('services')" class="nav-link">Services</a>
+        <a (click)="scrollTo('departments')" class="nav-link">Departments</a>
+        <a (click)="scrollTo('stats')" class="nav-link">About</a>
+        <a (click)="scrollTo('how')" class="nav-link">How It Works</a>
+      </nav>
+      <div class="nav-actions">
+        <button routerLink="/login" class="btn-outline">Sign In</button>
+        <button routerLink="/registration" class="btn-primary">Register</button>
+      </div>
+      <button class="nav-mobile-menu" (click)="toggleMobileMenu()">
+        <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="nav-mobile-panel">
+      <a (click)="scrollTo('services')">Services</a>
+      <a (click)="scrollTo('departments')">Departments</a>
+      <a (click)="scrollTo('stats')">About</a>
+      <a (click)="scrollTo('how')">How It Works</a>
+      <div class="mobile-actions">
+        <button routerLink="/login" class="btn-outline">Sign In</button>
+        <button routerLink="/registration" class="btn-primary">Register</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-bg-image"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Trusted by 12,000+ patients across India
+      </div>
+      <h1 class="hero-heading">
+        Advanced Care,<br>
+        <em>Close to Home.</em>
+      </h1>
+      <p class="hero-sub">
+        Medicare Hospital brings world-class medical expertise, cutting-edge technology, and compassionate care — all under one roof.
+      </p>
+      <div class="hero-cta">
+        <button routerLink="/registration" class="btn-hero-primary">
+          Book Appointment
+          <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+            <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button routerLink="/login" class="btn-hero-outline">
+          Patient Portal
+        </button>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-item">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M9 12l2 2 4-4" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="7" stroke="#38bdf8" stroke-width="1.5"/></svg>
+          NABH Accredited
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M9 12l2 2 4-4" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="7" stroke="#38bdf8" stroke-width="1.5"/></svg>
+          24/7 Emergency
+        </div>
+        <div class="trust-item">
+          <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M9 12l2 2 4-4" stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="10" r="7" stroke="#38bdf8" stroke-width="1.5"/></svg>
+          ISO 9001:2015
+        </div>
+      </div>
+    </div>
+    <div class="hero-card-float">
+      <div class="float-card">
+        <div class="float-icon">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+            <rect x="3" y="4" width="18" height="18" rx="3" stroke="#38bdf8" stroke-width="1.5"/>
+            <path d="M8 2v4M16 2v4M3 10h18" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="float-label">Next Available</p>
+          <p class="float-value">Today, 3:30 PM</p>
+        </div>
+      </div>
+      <div class="float-card float-card-2">
+        <div class="float-icon float-icon-green">
+          <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+            <circle cx="12" cy="8" r="4" stroke="#4ade80" stroke-width="1.5"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#4ade80" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <p class="float-label">Specialists Online</p>
+          <p class="float-value">48 Doctors</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMERGENCY BANNER -->
+  <div class="emergency-banner">
+    <div class="emergency-inner">
+      <span class="emergency-pulse"></span>
+      <strong>Emergency Helpline:</strong>
+      <span class="emg-number">1800-MEDICARE (1800-633-227)</span>
+      <span class="emg-divider">|</span>
+      <span>Ambulance: <strong>108</strong></span>
+      <span class="emg-divider">|</span>
+      <span>Available 24 × 7, 365 days</span>
     </div>
   </div>
-</header>
 
-<!-- HERO SECTION -->
-<section class="hero">
-  <div class="hero-overlay"></div>
-
-  <div class="hero-content">
-    <h1>Smart Healthcare Appointments</h1>
-    <p>
-      Book doctor appointments, manage schedules, and simplify healthcare
-      workflows — all in one place.
-    </p>
-    <button class="btn-primary big">Get Started</button>
-  </div>
-</section>
-
-<!-- SERVICES -->
-<section class="services">
-  <h2>Our Services</h2>
-
-  <div class="service-grid">
-    <div class="service-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/2966/2966486.png" alt="Appointments" />
-      <h3>Appointments</h3>
-      <p>Book and manage doctor appointments easily.</p>
+  <!-- SERVICES SECTION -->
+  <section class="services" id="services">
+    <div class="section-inner">
+      <div class="section-label">What We Offer</div>
+      <h2 class="section-heading">Comprehensive <em>Hospital Services</em></h2>
+      <p class="section-sub">From emergency care to specialized treatments, we deliver end-to-end healthcare for every patient.</p>
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <circle cx="20" cy="20" r="18" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <path d="M20 12v16M12 20h16" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Emergency Care</h3>
+          <p>Round-the-clock critical and trauma care with fully-equipped resuscitation bays and rapid response teams.</p>
+          <span class="service-tag">24/7 Available</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <rect x="6" y="10" width="28" height="22" rx="4" stroke="#38bdf8" stroke-width="1.5"/>
+              <path d="M14 6v8M26 6v8M6 20h28" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>OPD Appointments</h3>
+          <p>Book outpatient consultations with specialist doctors across 30+ departments in minutes.</p>
+          <span class="service-tag">Online Booking</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <path d="M8 32V16l12-8 12 8v16" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="15" y="22" width="10" height="10" rx="1" stroke="#38bdf8" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3>In-Patient Ward</h3>
+          <p>Comfortable, air-conditioned rooms with dedicated nursing staff and real-time monitoring systems.</p>
+          <span class="service-tag">300+ Beds</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <ellipse cx="20" cy="20" rx="12" ry="8" stroke="#38bdf8" stroke-width="1.5"/>
+              <circle cx="20" cy="20" r="3" stroke="#38bdf8" stroke-width="1.5"/>
+              <path d="M8 20H4M36 20h-4M20 8V4M20 36v-4" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Advanced Diagnostics</h3>
+          <p>In-house MRI, CT scan, PET scan, and a full-fledged pathology lab with same-day report delivery.</p>
+          <span class="service-tag">NABL Certified</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <path d="M20 8c-6.627 0-12 5.373-12 12 0 4.418 2.386 8.283 5.932 10.396" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M20 8c6.627 0 12 5.373 12 12 0 4.418-2.386 8.283-5.932 10.396" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 3"/>
+              <circle cx="20" cy="20" r="5" stroke="#38bdf8" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <h3>Surgical Suite</h3>
+          <p>5 modular operation theatres with robotic-assisted surgery capabilities and laminar airflow systems.</p>
+          <span class="service-tag">Robotic Surgery</span>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+              <path d="M10 28s2-8 10-8 10 8 10 8" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+              <circle cx="20" cy="14" r="5" stroke="#38bdf8" stroke-width="1.5"/>
+              <path d="M14 34h12" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <h3>Patient Portal</h3>
+          <p>Secure digital access to prescriptions, lab reports, appointment history, and billing records online.</p>
+          <span class="service-tag">256-bit Secure</span>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="service-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/3870/3870822.png" alt="Doctors" />
-      <h3>Doctors</h3>
-      <p>Check doctor availability and schedules.</p>
+  <!-- DEPARTMENTS -->
+  <section class="departments" id="departments">
+    <div class="section-inner">
+      <div class="section-label">Specialisations</div>
+      <h2 class="section-heading">Our <em>Departments</em></h2>
+      <p class="section-sub">Multidisciplinary teams of expert clinicians across 30+ specialities.</p>
+      <div class="dept-grid">
+        <div class="dept-card">
+          <span class="dept-icon">🫀</span>
+          <span>Cardiology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🧠</span>
+          <span>Neurology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🦴</span>
+          <span>Orthopaedics</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🫁</span>
+          <span>Pulmonology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🍼</span>
+          <span>Paediatrics</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🤰</span>
+          <span>Gynaecology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">👁️</span>
+          <span>Ophthalmology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🦷</span>
+          <span>Dental</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🩺</span>
+          <span>General Medicine</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🔬</span>
+          <span>Oncology</span>
+        </div>
+        <div class="dept-card">
+          <span class="dept-icon">🩻</span>
+          <span>Radiology</span>
+        </div>
+        <div class="dept-card dept-card-more">
+          <span class="dept-icon">+</span>
+          <span>20 More</span>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="service-card">
-      <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png" alt="Records" />
-      <h3>Records</h3>
-      <p>Secure access to medical history.</p>
+  <!-- PLATFORM STATS -->
+  <section class="platform-stats" id="stats">
+    <div class="section-inner stats-inner">
+      <div class="stats-text">
+        <div class="section-label">By The Numbers</div>
+        <h2 class="section-heading">A Hospital You Can <em>Trust</em></h2>
+        <p class="section-sub">Decades of clinical excellence with a patient-first philosophy guiding every decision we make.</p>
+        <div class="stats-cta">
+          <button routerLink="/registration" class="btn-primary">
+            Get Started Today
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <span class="stat-icon">👨‍⚕️</span>
+          <h3>500+</h3>
+          <p>Specialist Doctors</p>
+        </div>
+        <div class="stat-box">
+          <h3>25K+</h3>
+          <p>Patients Served Yearly</p>
+        </div>
+        <div class="stat-box">
+          <h3>30+</h3>
+          <p>Departments</p>
+        </div>
+        <div class="stat-box">
+          <h3>98%</h3>
+          <p>Patient Satisfaction</p>
+        </div>
+        <div class="stat-box">
+          <h3>15+</h3>
+          <p>Years of Excellence</p>
+        </div>
+        <div class="stat-box">
+          <h3>24/7</h3>
+          <p>Emergency Services</p>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- PLATFORM STATS -->
-<section class="platform-stats">
-  <div class="stats-container">
-
-    <div class="stat-box">
-      <h3>25,000+</h3>
-      <p>Registered Users</p>
+  <!-- HOW IT WORKS -->
+  <section class="how-it-works" id="how">
+    <div class="section-inner">
+      <div class="section-label">Getting Started</div>
+      <h2 class="section-heading">Book Your Appointment <em>in Minutes</em></h2>
+      <p class="section-sub">Our streamlined digital portal makes accessing world-class healthcare effortless.</p>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-connector"></div>
+          <span class="step-number">01</span>
+          <h3>Create Your Account</h3>
+          <p>Register as a patient with your basic details. Verification takes under 60 seconds via OTP.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-connector"></div>
+          <span class="step-number">02</span>
+          <h3>Choose a Specialist</h3>
+          <p>Browse doctors by department, availability, and expertise. Read profiles and patient reviews.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-connector"></div>
+          <span class="step-number">03</span>
+          <h3>Confirm & Visit</h3>
+          <p>Get an instant confirmation with appointment details. Track status and access records post-visit.</p>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="stat-box">
-      <h3>1,200+</h3>
-      <p>Doctors</p>
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <div class="section-inner">
+      <div class="section-label">Patient Stories</div>
+      <h2 class="section-heading">Voices of <em>Recovery</em></h2>
+      <div class="testimonial-grid">
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"The cardiac team at Medicare Hospital gave me a second chance at life. From diagnosis to surgery, every step was handled with precision and compassion."</p>
+          <div class="t-author">
+            <div class="t-avatar">RK</div>
+            <div>
+              <p class="t-name">Rajesh Kumar</p>
+              <p class="t-role">Cardiac Surgery Patient</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card t-featured">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"Booking my mother's ortho appointment through the portal was incredibly easy. The doctors were thorough and the facilities are world-class. Highly recommend."</p>
+          <div class="t-author">
+            <div class="t-avatar">SP</div>
+            <div>
+              <p class="t-name">Sunita Pillai</p>
+              <p class="t-role">Orthopaedic Patient's Daughter</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <p class="t-text">"The NICU team handled our newborn's critical condition with remarkable expertise. We'll forever be grateful to the paediatrics department."</p>
+          <div class="t-author">
+            <div class="t-avatar">AM</div>
+            <div>
+              <p class="t-name">Anjali Mehta</p>
+              <p class="t-role">NICU Parent</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <div class="stat-box">
-      <h3>50,000+</h3>
-      <p>Appointments Booked</p>
+  <!-- CTA SECTION -->
+  <section class="cta-section">
+    <div class="cta-inner">
+      <div class="cta-orb"></div>
+      <div class="section-label">Start Today</div>
+      <h2 class="cta-heading">Your Health Is Our <em>Priority</em></h2>
+      <p class="cta-sub">Join thousands of patients who trust Medicare Hospital for compassionate, expert medical care.</p>
+      <div class="cta-buttons">
+        <button routerLink="/registration" class="btn-hero-primary">
+          Register as Patient
+          <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
+            <path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button routerLink="/login" class="btn-hero-outline">
+          Sign In to Portal
+        </button>
+      </div>
     </div>
+  </section>
 
-    <div class="stat-box">
-      <h3>150+</h3>
-      <p>Clinics & Hospitals</p>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo-icon logo-icon-sm">
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="shieldGradFooter" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+              <linearGradient id="glowGradFooter" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+                <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+              </linearGradient>
+            </defs>
+            <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z" fill="url(#glowGradFooter)" stroke="url(#shieldGradFooter)" stroke-width="1.4"/>
+            <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22" stroke="url(#shieldGradFooter)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div>
+          <p class="footer-logo-name">Medicare Hospital</p>
+          <p class="footer-tagline">Healing with Heart · NABH Accredited</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#departments">Departments</a>
+        <a href="#stats">About Us</a>
+        <a href="#how">Contact</a>
+        <a routerLink="/login">Patient Login</a>
+        <a routerLink="/registration">Register</a>
+      </div>
+      <p class="footer-copy">© 2026 Medicare Hospital. All rights reserved. | Emergency: 1800-MEDICARE</p>
     </div>
+  </footer>
 
-  </div>
-</section>
-
-
-<!-- HOW IT WORKS -->
-<section class="how-it-works">
-  <h2>How HealthEase Works</h2>
-
-  <div class="steps-grid">
-    <div class="step-card">
-      <span class="step-number">1</span>
-      <h3>Create an Account</h3>
-      <p>Register as a patient or doctor to get started.</p>
-    </div>
-
-    <div class="step-card">
-      <span class="step-number">2</span>
-      <h3>Book Appointment</h3>
-      <p>Select a doctor and book an appointment easily.</p>
-    </div>
-
-    <div class="step-card">
-      <span class="step-number">3</span>
-      <h3>Manage & Track</h3>
-      <p>View appointment status and medical records securely.</p>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- FOOTER -->
-<footer class="footer">
-  <p>© 2026 HealthEase. All rights reserved.</p>
-</footer>
+</div>

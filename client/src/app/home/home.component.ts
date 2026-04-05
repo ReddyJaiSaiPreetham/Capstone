@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, ElementRef, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
 @Component({
@@ -6,22 +6,7 @@ import { isPlatformBrowser } from '@angular/common';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
-
-  words = ['Smart Appointments', 'Doctor Bookings', 'Patient Care', 'Health Records'];
-  wordIndex = 0;
-  currentWord = this.words[0];
-
-  slides = [
-    { icon: '🩺', label: 'Book a Doctor Instantly' },
-    { icon: '📋', label: 'Manage Patient Records' },
-    { icon: '🏥', label: 'Trusted Healthcare Network' }
-  ];
-  activeSlide = 0;
-
-  private wordTimer: any;
-  private slideTimer: any;
-  private observer?: IntersectionObserver;
+export class HomeComponent {
 
   private isBrowser: boolean;
 
@@ -32,57 +17,23 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isBrowser = isPlatformBrowser(platformId);
   }
 
-  ngOnInit(): void {
-    // ✅ Start timers only in browser
+  toggleMobileMenu(): void {
     if (!this.isBrowser) return;
-
-    this.wordTimer = setInterval(() => {
-      this.wordIndex = (this.wordIndex + 1) % this.words.length;
-      this.currentWord = this.words[this.wordIndex];
-    }, 2500);
-
-    this.slideTimer = setInterval(() => {
-      this.activeSlide = (this.activeSlide + 1) % this.slides.length;
-    }, 3000);
-  }
-
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-
-    // ✅ Safely observe elements inside this component only
     const host: HTMLElement = this.elRef.nativeElement;
-    const revealEls = host.querySelectorAll('.reveal');
-
-    if (!revealEls || revealEls.length === 0) return;
-
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          (e.target as HTMLElement).classList.add('visible');
-        }
-      });
-    }, { threshold: 0.12 });
-
-    revealEls.forEach((el) => this.observer!.observe(el));
-  }
-
-  ngOnDestroy(): void {
-    // ✅ Clear timers safely
-    if (this.wordTimer) clearInterval(this.wordTimer);
-    if (this.slideTimer) clearInterval(this.slideTimer);
-
-    // ✅ Disconnect observer safely
-    if (this.observer) this.observer.disconnect();
+    const nav = host.querySelector('.top-nav');
+    if (nav) nav.classList.toggle('nav-open');
   }
 
   scrollTo(sectionId: string): void {
     if (!this.isBrowser) return;
-
     const host: HTMLElement = this.elRef.nativeElement;
     const element = host.querySelector(`#${sectionId}`) as HTMLElement | null;
-
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const top = element.getBoundingClientRect().top + window.scrollY - 68;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
+    const nav = host.querySelector('.top-nav');
+    if (nav) nav.classList.remove('nav-open');
   }
+
 }

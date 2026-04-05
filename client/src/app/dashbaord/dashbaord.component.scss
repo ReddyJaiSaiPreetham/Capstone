@@ -1,11 +1,23 @@
-/* ===== NAVBAR ===== */
+/* ================= CORE ================= */
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ================= TOP NAVBAR ================= */
 .dash-nav {
   height: 56px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px 22px;
-  background: rgba(255,255,255,0.92);
+  background: rgba(255,255,255,0.94);
   border-bottom: 1px solid rgba(15,23,42,0.08);
   backdrop-filter: blur(10px);
   position: sticky;
@@ -13,6 +25,7 @@
   z-index: 20;
 }
 
+/* Brand */
 .brand {
   display: flex;
   align-items: center;
@@ -23,8 +36,8 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #2563eb;
-  box-shadow: 0 0 0 6px rgba(37,99,235,0.10);
+  background: var(--accent);
+  box-shadow: 0 0 0 6px rgba(0,0,0,0.06);
 }
 
 .brand-text {
@@ -33,6 +46,7 @@
   color: #0f172a;
 }
 
+/* Nav right */
 .nav-right {
   display: flex;
   align-items: center;
@@ -45,8 +59,8 @@
   gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(37,99,235,0.10);
-  border: 1px solid rgba(37,99,235,0.20);
+  background: rgba(0,0,0,0.04);
+  border: 1px solid rgba(15,23,42,0.12);
   color: #0f172a;
   font-weight: 900;
   font-size: 12px;
@@ -56,13 +70,13 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2563eb;
+  background: var(--accent);
 }
 
-.nav-user .user-name {
+.user-name {
   font-weight: 800;
-  color: rgba(15,23,42,0.75);
   font-size: 13px;
+  color: rgba(15,23,42,0.75);
 }
 
 .btn-logout {
@@ -70,36 +84,37 @@
   background: #fff;
   color: #0f172a;
   border-radius: 12px;
-  padding: 8px 12px;
+  padding: 8px 14px;
   font-weight: 900;
   cursor: pointer;
   transition: 0.15s ease;
 }
 
 .btn-logout:hover {
+  background: rgba(15,23,42,0.05);
   transform: translateY(-1px);
-  background: rgba(15,23,42,0.04);
 }
 
-/* ===== DASH SHELL ===== */
+/* ================= DASH SHELL ================= */
 .dash-shell {
   min-height: calc(100vh - 56px);
   display: grid;
   grid-template-columns: 1fr 1.1fr;
-  gap: 24px;
-  padding: 40px;
+  gap: 28px;
+  padding: 42px;
   align-items: center;
 }
 
-/* ===== LEFT ===== */
+/* ================= LEFT CONTENT ================= */
 .dash-left {
   max-width: 640px;
 }
 
 .tiny-title {
   font-weight: 900;
+  letter-spacing: 0.4px;
+  font-size: 13px;
   color: rgba(15,23,42,0.55);
-  letter-spacing: 0.3px;
   margin-bottom: 10px;
 }
 
@@ -111,9 +126,13 @@
   line-height: 1.05;
 }
 
+.accent {
+  color: var(--accent);
+}
+
 .dash-desc {
   font-size: 18px;
-  color: rgba(15,23,42,0.72);
+  color: rgba(15,23,42,0.7);
   line-height: 1.7;
   margin-bottom: 18px;
 }
@@ -129,7 +148,7 @@
   padding-left: 28px;
   margin: 12px 0;
   font-size: 16px;
-  color: rgba(15,23,42,0.70);
+  color: rgba(15,23,42,0.72);
   font-weight: 700;
 }
 
@@ -145,7 +164,7 @@
   box-shadow: 0 0 0 6px rgba(0,0,0,0.04);
 }
 
-/* ===== RIGHT CARD ===== */
+/* ================= HERO CARD ================= */
 .dash-right {
   display: flex;
   justify-content: center;
@@ -153,19 +172,17 @@
 
 .hero-card {
   width: min(620px, 100%);
-  background: rgba(255,255,255,0.82);
+  background: rgba(255,255,255,0.92);
   border: 1px solid rgba(15,23,42,0.08);
   border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 18px 55px rgba(2, 6, 23, 0.12);
-  backdrop-filter: blur(10px);
+  padding: 22px;
+  box-shadow: 0 18px 55px rgba(2,6,23,0.12);
 }
 
 .hero-head {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -180,13 +197,12 @@
   font-size: 26px;
   font-weight: 1000;
   color: #0f172a;
-  margin: 6px 0 2px;
 }
 
 .hero-sub {
   font-size: 14px;
   font-weight: 700;
-  color: rgba(15,23,42,0.60);
+  color: rgba(15,23,42,0.6);
 }
 
 .role-pill {
@@ -199,7 +215,6 @@
   border-radius: 999px;
   background: #fff;
   border: 1px solid rgba(15,23,42,0.08);
-  color: rgba(15,23,42,0.85);
 }
 
 .pill-dot {
@@ -209,7 +224,7 @@
   background: var(--accent);
 }
 
-/* Actions */
+/* ================= ACTION BUTTONS ================= */
 .hero-actions {
   display: grid;
   gap: 12px;
@@ -219,9 +234,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 14px 14px;
+  padding: 14px;
   border-radius: 14px;
-  font-weight: 1000;
+  font-weight: 900;
   font-size: 16px;
   text-decoration: none;
   transition: 0.15s ease;
@@ -233,64 +248,58 @@
   border: 1px solid var(--accent);
 }
 
-.hero-btn.primary:hover {
-  filter: brightness(1.03);
-  transform: translateY(-1px);
-}
-
 .hero-btn.outline {
   background: #fff;
   color: var(--accent);
-  border: 1px solid rgba(37,99,235,0.45);
+  border: 1px solid rgba(0,0,0,0.25);
 }
 
-.hero-btn.outline:hover {
-  background: rgba(37,99,235,0.06);
+.hero-btn:hover {
   transform: translateY(-1px);
 }
 
-/* Accent variable per role */
+/* ================= ROLE ACCENTS ================= */
 .theme-patient { --accent: #2563eb; }
 .theme-doctor { --accent: #16a34a; }
 .theme-receptionist { --accent: #f59e0b; }
 .theme-admin { --accent: #dc2626; }
 
-/* Light/blue background like reference (role tint) */
+/* ================= ROLE BACKGROUNDS ================= */
 .theme-patient {
   background:
-    radial-gradient(820px 420px at 12% 22%, rgba(37,99,235,0.14), transparent 60%),
-    linear-gradient(120deg, #eef6ff 0%, #f7fbff 60%, #ffffff 100%);
-}
-.theme-doctor {
-  background:
-    radial-gradient(820px 420px at 12% 22%, rgba(22,163,74,0.14), transparent 60%),
-    linear-gradient(120deg, #effff6 0%, #f8fffb 60%, #ffffff 100%);
-}
-.theme-receptionist {
-  background:
-    radial-gradient(820px 420px at 12% 22%, rgba(245,158,11,0.14), transparent 60%),
-    linear-gradient(120deg, #fff7e8 0%, #fffaf3 60%, #ffffff 100%);
-}
-.theme-admin {
-  background:
-    radial-gradient(820px 420px at 12% 22%, rgba(220,38,38,0.12), transparent 60%),
-    linear-gradient(120deg, #ffeded 0%, #fff7f7 60%, #ffffff 100%);
+    radial-gradient(800px 420px at 15% 25%, rgba(37,99,235,0.12), transparent 60%),
+    linear-gradient(120deg, #eef6ff 0%, #ffffff 100%);
 }
 
-/* Responsive */
+.theme-doctor {
+  background:
+    radial-gradient(800px 420px at 15% 25%, rgba(22,163,74,0.12), transparent 60%),
+    linear-gradient(120deg, #effff6 0%, #ffffff 100%);
+}
+
+.theme-receptionist {
+  background:
+    radial-gradient(800px 420px at 15% 25%, rgba(245,158,11,0.14), transparent 60%),
+    linear-gradient(120deg, #fff7e8 0%, #ffffff 100%);
+}
+
+.theme-admin {
+  background:
+    radial-gradient(800px 420px at 15% 25%, rgba(220,38,38,0.12), transparent 60%),
+    linear-gradient(120deg, #ffeded 0%, #ffffff 100%);
+}
+
+/* ================= RESPONSIVE ================= */
 @media (max-width: 992px) {
   .dash-shell {
     grid-template-columns: 1fr;
     padding: 22px;
-    gap: 18px;
   }
   .dash-title { font-size: 36px; }
-  .dash-desc { font-size: 16px; }
 }
 
 @media (max-width: 576px) {
   .dash-shell { padding: 16px; }
   .hero-greet { font-size: 20px; }
-  .hero-btn { font-size: 15px; padding: 12px; }
-  .nav-user { display: none; } /* keep navbar clean on small screens */
+  .nav-user { display: none; }
 }
