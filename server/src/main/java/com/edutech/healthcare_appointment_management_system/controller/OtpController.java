@@ -14,10 +14,10 @@ public class OtpController {
     @Autowired
     private EmailOtpService emailOtpService;
 
-    // POST /api/otp/send?email=...&purpose=REGISTRATION
+    // POST /api/otp/send?email=abc@gmail.com&purpose=REGISTRATION
     @PostMapping("/send")
     public ResponseEntity<?> sendOtp(@RequestParam String email,
-                                    @RequestParam(defaultValue = "REGISTRATION") String purpose) {
+                                     @RequestParam(defaultValue = "REGISTRATION") String purpose) {
         emailOtpService.sendOtp(email, purpose);
         return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
     }

@@ -35,9 +35,9 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Username already exists!");
         }
 
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already exists!");
-        }
+        // if (userRepository.existsByEmail(user.getEmail())) {
+        //     throw new RuntimeException("Email already exists!");
+        // }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
