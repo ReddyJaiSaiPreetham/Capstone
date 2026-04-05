@@ -98,7 +98,7 @@ public class EmailOtpService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, StandardCharsets.UTF_8.name());
 
             helper.setTo(toEmail);
-            helper.setSubject("HAM System - Email Verification OTP");
+            helper.setSubject("Medicare Hospitals - Email Verification OTP");
 
             if (fromEmail != null && !fromEmail.isEmpty()) {
                 helper.setFrom(fromEmail);
@@ -116,7 +116,7 @@ public class EmailOtpService {
                           "</svg>" +
                         "</div>" +
                         "<div>" +
-                          "<div style='font-size:18px;font-weight:800;letter-spacing:0.3px;'>HAM System</div>" +
+                          "<div style='font-size:18px;font-weight:800;letter-spacing:0.3px;'>Medicare Hospitals</div>" +
                           "<div style='font-size:12px;opacity:0.9;'>Healthcare Appointment Management</div>" +
                         "</div>" +
                       "</div>" +
@@ -142,7 +142,7 @@ public class EmailOtpService {
                     "</div>" +
 
                     "<div style='padding:12px 18px;background:#f8fafc;border-top:1px solid #eef2f7;font-size:12px;color:#64748b;'>" +
-                      "© " + java.time.Year.now() + " HAM System • Automated message" +
+                      "© " + java.time.Year.now() + " Medicare Hospitals • Automated message" +
                     "</div>" +
 
                   "</div>" +
