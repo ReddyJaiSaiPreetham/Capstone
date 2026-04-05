@@ -1,120 +1,232 @@
+<!-- ================= TOP NAVBAR ================= -->
+<nav class="dash-nav">
+  <div class="nav-left">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span class="brand-text">HAM System</span>
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="nav-chip" *ngIf="roleName">
+      <span class="chip-dot"></span>
+      {{ roleName }}
+    </div>
+
+    <div class="nav-user">
+      <span class="user-name">{{ username }}</span>
+    </div>
+
+    <button class="btn-logout" (click)="logout()">
+      Logout
+    </button>
+  </div>
+</nav>
+
 <!-- ================= PATIENT DASHBOARD ================= -->
-<div *ngIf="roleName === 'PATIENT'" class="dashboard-bg patient-bg">
-  <div class="dashboard-layout dashboard-left">
-    <div class="dashboard-hero">
+<div *ngIf="roleName === 'PATIENT'" class="dash-shell theme-patient">
+  <div class="dash-left">
+    <div class="tiny-title">HAM System</div>
 
-      <h1 class="welcome-user">
-        {{ greeting }}, <span>{{ username }}</span> 👋
-      </h1>
+    <h1 class="dash-title">
+      Patient <span class="accent">Dashboard</span>
+    </h1>
 
-      <p class="subtitle">
-        Book appointments, view medical records, and track your healthcare journey.
-      </p>
+    <p class="dash-desc">
+      Book appointments, view prescriptions, and manage your health records.
+    </p>
 
-      <div class="dashboard-actions">
-        <a routerLink="/schedule-appointment" class="btn btn-primary">
-          <i class="bi bi-calendar-plus me-2"></i>
+    <ul class="dash-points">
+      <li>Slot-based appointment booking</li>
+      <li>Prescription history + PDF download</li>
+      <li>Secure access with OTP + JWT</li>
+    </ul>
+  </div>
+
+  <div class="dash-right">
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-kicker">WELCOME</div>
+          <div class="hero-greet">
+            {{ greeting }}, <span class="accent">{{ username }}</span>
+          </div>
+          <div class="hero-sub">Choose an action to continue</div>
+        </div>
+
+        <div class="role-pill">
+          <span class="pill-dot"></span>
+          PATIENT
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/schedule-appointment" class="hero-btn primary">
           Schedule Appointment
         </a>
 
-        <a routerLink="/patient-appointment" class="btn btn-outline-light">
-          <i class="bi bi-eye me-2"></i>
+        <a routerLink="/patient-appointment" class="hero-btn outline">
           View Appointments
         </a>
 
-        <a routerLink="/patient-medical-records" class="btn btn-outline-light">
-          <i class="bi bi-file-earmark-medical me-2"></i>
+        <a routerLink="/patient-medical-records" class="hero-btn outline">
           Prescriptions
         </a>
       </div>
-
     </div>
   </div>
 </div>
 
 <!-- ================= DOCTOR DASHBOARD ================= -->
-<div *ngIf="roleName === 'DOCTOR'" class="dashboard-bg doctor-bg">
-  <div class="dashboard-hero">
+<div *ngIf="roleName === 'DOCTOR'" class="dash-shell theme-doctor">
+  <div class="dash-left">
+    <div class="tiny-title">HAM System</div>
 
-    <h1 class="welcome-user">
-      {{ greeting }}, <span>{{ username }}</span> 👋
+    <h1 class="dash-title">
+      Doctor <span class="accent">Dashboard</span>
     </h1>
 
-    <p class="subtitle">
-      Manage availability and consult patients
+    <p class="dash-desc">
+      Manage your availability, view appointments, and provide prescriptions.
     </p>
 
-    <div class="dashboard-actions">
-      <a routerLink="/doctor-availability" class="btn btn-success">
-        <i class="bi bi-clock-history me-2"></i>
-        Update Availability
-      </a>
+    <ul class="dash-points">
+      <li>Availability slots (9 AM – 9 PM)</li>
+      <li>Appointments (today + upcoming)</li>
+      <li>Create & edit prescriptions</li>
+    </ul>
+  </div>
 
-      <a routerLink="/doctor-appointment" class="btn btn-outline-light">
-        <i class="bi bi-clipboard2-pulse me-2"></i>
-        View Appointments
-      </a>
+  <div class="dash-right">
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-kicker">WELCOME</div>
+          <div class="hero-greet">
+            {{ greeting }}, <span class="accent">{{ username }}</span>
+          </div>
+          <div class="hero-sub">Choose an action to continue</div>
+        </div>
+
+        <div class="role-pill">
+          <span class="pill-dot"></span>
+          DOCTOR
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/doctor-availability" class="hero-btn primary">
+          Update Availability
+        </a>
+
+        <a routerLink="/doctor-appointment" class="hero-btn outline">
+          View Appointments
+        </a>
+      </div>
     </div>
-
   </div>
 </div>
 
 <!-- ================= RECEPTIONIST DASHBOARD ================= -->
-<div *ngIf="roleName === 'RECEPTIONIST'" class="dashboard-bg receptionist-bg">
-  <div class="dashboard-hero">
+<div *ngIf="roleName === 'RECEPTIONIST'" class="dash-shell theme-receptionist">
+  <div class="dash-left">
+    <div class="tiny-title">HAM System</div>
 
-    <h1 class="welcome-user">
-      {{ greeting }}, <span>{{ username }}</span> 👋
+    <h1 class="dash-title">
+      Reception <span class="accent">Dashboard</span>
     </h1>
 
-    <p class="subtitle">
-      Handle patient scheduling and coordination
+    <p class="dash-desc">
+      Schedule appointments and coordinate patient visits smoothly.
     </p>
 
-    <div class="dashboard-actions">
-      <a routerLink="/receptionist-schedule-appointments" class="btn btn-warning">
-        <i class="bi bi-calendar-event me-2"></i>
-        Schedule Appointment
-      </a>
+    <ul class="dash-points">
+      <li>Slot-based scheduling</li>
+      <li>Reschedule and manage appointments</li>
+      <li>Hospital workflow support</li>
+    </ul>
+  </div>
 
-      <a routerLink="/receptionist-appointments" class="btn btn-outline-light">
-        <i class="bi bi-list-check me-2"></i>
-        View / Reschedule Appointments
-      </a>
+  <div class="dash-right">
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-kicker">WELCOME</div>
+          <div class="hero-greet">
+            {{ greeting }}, <span class="accent">{{ username }}</span>
+          </div>
+          <div class="hero-sub">Choose an action to continue</div>
+        </div>
+
+        <div class="role-pill">
+          <span class="pill-dot"></span>
+          RECEPTIONIST
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/receptionist-schedule-appointments" class="hero-btn primary">
+          Schedule Appointment
+        </a>
+
+        <a routerLink="/receptionist-appointments" class="hero-btn outline">
+          View / Reschedule Appointments
+        </a>
+      </div>
     </div>
-
   </div>
 </div>
 
 <!-- ================= ADMIN DASHBOARD ================= -->
-<div *ngIf="roleName === 'ADMIN'" class="dashboard-bg admin-bg">
-  <div class="dashboard-hero">
+<div *ngIf="roleName === 'ADMIN'" class="dash-shell theme-admin">
+  <div class="dash-left">
+    <div class="tiny-title">HAM System</div>
 
-    <h1 class="welcome-user">
-      {{ greeting }}, <span>{{ username }}</span> 👋
+    <h1 class="dash-title">
+      Admin <span class="accent">Dashboard</span>
     </h1>
 
-    <p class="subtitle">
-      Manage hospital staff accounts (activate/deactivate) and monitor users.
+    <p class="dash-desc">
+      Control staff access and monitor users securely.
     </p>
 
-    <div class="dashboard-actions">
-      <a routerLink="/admin-doctors" class="btn btn-danger">
-        <i class="bi bi-person-badge me-2"></i>
-        Manage Doctors
-      </a>
+    <ul class="dash-points">
+      <li>Activate / Deactivate Doctors</li>
+      <li>Activate / Deactivate Receptionists</li>
+      <li>View patient list</li>
+    </ul>
+  </div>
 
-      <a routerLink="/admin-receptionists" class="btn btn-outline-light">
-        <i class="bi bi-people me-2"></i>
-        Manage Receptionists
-      </a>
+  <div class="dash-right">
+    <div class="hero-card">
+      <div class="hero-head">
+        <div>
+          <div class="hero-kicker">WELCOME</div>
+          <div class="hero-greet">
+            {{ greeting }}, <span class="accent">{{ username }}</span>
+          </div>
+          <div class="hero-sub">Choose an action to continue</div>
+        </div>
 
-      <!-- optional -->
-      <a routerLink="/admin-users" class="btn btn-outline-light">
-        <i class="bi bi-person-lines-fill me-2"></i>
-        View All Users
-      </a>
+        <div class="role-pill">
+          <span class="pill-dot"></span>
+          ADMIN
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <a routerLink="/admin-doctors" class="hero-btn primary">
+          Manage Doctors
+        </a>
+
+        <a routerLink="/admin-receptionists" class="hero-btn outline">
+          Manage Receptionists
+        </a>
+
+        <a routerLink="/admin-users" class="hero-btn outline">
+          View All Users
+        </a>
+      </div>
     </div>
-
   </div>
 </div>

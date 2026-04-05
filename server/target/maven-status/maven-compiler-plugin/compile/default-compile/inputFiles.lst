@@ -1,4 +1,5 @@
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/dto/Size.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/EmailOtpRepository.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/service/PrescriptionPdfService.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/PrescriptionItemRepository.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/MedicalRecord.java
@@ -25,14 +26,17 @@
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/Appointment.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/ReceptionistRepository.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/ProfileController.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/EmailOtp.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/PatientMedicalRecordController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/jwt/JwtUtil.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/DoctorAvailabilitySlot.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/service/DoctorService.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/config/Configurations.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/OtpController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/entity/User.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/service/MedicalRecordService.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/HealthcareAppointmentManagementSystemApplication.java
+/home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/service/EmailOtpService.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/DoctorMedicalRecordController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/controller/PatientController.java
 /home/coder/app/server/src/main/java/com/edutech/healthcare_appointment_management_system/repository/DoctorAvailabilitySlotRepository.java

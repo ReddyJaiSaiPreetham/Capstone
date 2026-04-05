@@ -56,4 +56,10 @@ export class DashbaordComponent implements OnInit {
     if (hour >= 17 && hour < 21) return 'Good Evening';
     return 'Good Night';
   }
+
+
+  logout(): void {
+  this.authService.logout();
+  this.router.navigate(['/login'], { replaceUrl: true});
+  }
 }

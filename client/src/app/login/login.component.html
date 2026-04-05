@@ -1,120 +1,126 @@
-<div class="login-page">
-  <div class="login-overlay"></div>
+<div class="min-h-screen bg-cover bg-center flex items-center justify-center"
+     style="background-image: url('https://images.pexels.com/photos/305565/pexels-photo-305565.jpeg')">
 
-  <div class="login-wrapper">
-    <div class="login-form">
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/60"></div>
 
-      <h3 class="text-center mb-2">
-        HEALTHCARE APPOINTMENT
-        <br />
-        MANAGEMENT SYSTEM
-      </h3>
+  <!-- Card -->
+  <div class="relative z-10 w-full max-w-md p-8 bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl text-white">
 
-      <p class="text-center subtitle">
-        Please enter your login credentials
-      </p>
+    <!-- Title -->
+    <h2 class="text-2xl font-bold text-center mb-2">
+      Healthcare Appointment Management System
+    </h2>
 
-      <form [formGroup]="itemForm" (ngSubmit)="onLogin()">
+    <p class="text-center text-sm text-gray-200 mb-6">
+      Please enter your login credentials
+    </p>
 
-        <!-- Username -->
-        <div class="mb-3">
-          <label class="form-label">Username</label>
+    <form [formGroup]="itemForm" (ngSubmit)="onLogin()">
 
-          <input type="text" class="form-control"
-                 formControlName="username"
-                 placeholder="Enter username">
+      <!-- Username -->
+      <div class="mb-4">
+        <label class="block text-sm mb-1">Username</label>
 
-          <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
-            Username is required
-          </small>
+        <input type="text"
+               formControlName="username"
+               placeholder="Enter username"
+               class="w-full p-3 rounded-lg bg-white/20 border border-white/40 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400">
 
-          <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['minlength']">
-            Minimum 4 characters required
-          </small>
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['required']">
+          Username is required
+        </small>
 
-          <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['maxlength']">
-            Maximum 20 characters allowed
-          </small>
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('username')?.errors?.['minlength']">
+          Minimum 4 characters required
+        </small>
 
-          <small class="text-danger"
-            *ngIf="itemForm.get('username')?.touched && itemForm.get('username')?.errors?.['pattern']">
-            Username must start with a letter or underscore and can contain only letters, numbers, and underscore
-          </small>
-        </div>
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('username')?.errors?.['maxlength']">
+          Maximum 20 characters allowed
+        </small>
 
-        <!-- Password -->
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-
-          <input type="password" class="form-control"
-                 formControlName="password"
-                 placeholder="Enter password">
-
-          <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['required']">
-            Password is required
-          </small>
-
-          <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['minlength']">
-            Password must be at least 8 characters
-          </small>
-
-          <small class="text-danger"
-            *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['pattern']">
-            Password must include at least 1 uppercase letter, 1 number, and 1 special character
-          </small>
-        </div>
-
-        <!-- Captcha -->
-        <div class="mb-3">
-          <label class="form-label">Captcha</label>
-
-          <div class="d-flex align-items-center mb-2 captcha-row">
-            <span class="captcha-box me-3">
-              {{ captcha }}
-            </span>
-
-            <button type="button"
-                    class="btn btn-sm btn-outline-light captcha-btn"
-                    (click)="loadCaptcha()">
-              Refresh
-            </button>
-          </div>
-
-          <input type="text" class="form-control"
-                 formControlName="captcha"
-                 placeholder="Enter captcha">
-
-          <small class="text-danger"
-            *ngIf="itemForm.get('captcha')?.touched && itemForm.get('captcha')?.invalid">
-            Captcha is required
-          </small>
-        </div>
-
-        <!-- Error -->
-        <div *ngIf="showError" class="alert alert-danger text-center">
-          {{ errorMessage }}
-        </div>
-
-        <!-- Login -->
-        <div class="d-grid mt-3">
-          <button class="btn login-btn" type="submit">
-            LOGIN
-          </button>
-        </div>
-      </form>
-
-      <div class="text-center mt-3 register-link">
-        <span>Don’t have an account?</span>
-        <a class="ms-1 text-decoration-none" routerLink="/registration">
-          Register here
-        </a>
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('username')?.errors?.['pattern']">
+          Invalid username format
+        </small>
       </div>
 
-    </div>
+      <!-- Password -->
+      <div class="mb-4">
+        <label class="block text-sm mb-1">Password</label>
+
+        <input type="password"
+               formControlName="password"
+               placeholder="Enter password"
+               class="w-full p-3 rounded-lg bg-white/20 border border-white/40 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400">
+
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('password')?.touched && itemForm.get('password')?.errors?.['required']">
+          Password is required
+        </small>
+
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('password')?.errors?.['minlength']">
+          Minimum 8 characters required
+        </small>
+
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('password')?.errors?.['pattern']">
+          Must include uppercase, number, special character
+        </small>
+      </div>
+
+      <!-- Captcha -->
+      <div class="mb-4">
+        <label class="block text-sm mb-1">Captcha</label>
+
+        <div class="flex items-center gap-3 mb-2">
+          <span class="px-4 py-2 border border-white/40 rounded-lg font-bold tracking-widest bg-white/10">
+            {{ captcha }}
+          </span>
+
+          <button type="button"
+                  (click)="loadCaptcha()"
+                  class="text-sm px-3 py-1 border border-white/40 rounded-lg hover:bg-white/20 transition">
+            Refresh
+          </button>
+        </div>
+
+        <input type="text"
+               formControlName="captcha"
+               placeholder="Enter captcha"
+               class="w-full p-3 rounded-lg bg-white/20 border border-white/40 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400">
+
+        <small class="text-red-300 text-xs"
+          *ngIf="itemForm.get('captcha')?.touched && itemForm.get('captcha')?.invalid">
+          Captcha is required
+        </small>
+      </div>
+
+      <!-- Error -->
+      <div *ngIf="showError"
+           class="bg-red-500/20 border border-red-400 text-red-200 text-center p-2 rounded-lg mb-3">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Button -->
+      <button type="submit"
+              class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition duration-300">
+        Login
+      </button>
+    </form>
+
+    <!-- Register -->
+    <p class="text-center text-sm text-gray-300 mt-4">
+      Don’t have an account?
+      <a routerLink="/registration"
+         class="text-green-400 font-semibold hover:underline">
+        Register here
+      </a>
+    </p>
+
   </div>
 </div>

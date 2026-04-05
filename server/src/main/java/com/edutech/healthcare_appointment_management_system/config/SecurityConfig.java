@@ -52,7 +52,8 @@ protected void configure(HttpSecurity http) throws Exception {
                 "/api/patient/register",
                 "/api/doctors/register",
                 "/api/receptionist/register",
-                "/api/captcha"
+                "/api/captcha",
+                "/api/otp/**"
         ).permitAll()
 
         // ✅ PATIENT APIs

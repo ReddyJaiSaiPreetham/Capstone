@@ -20,7 +20,7 @@ import com.edutech.healthcare_appointment_management_system.entity.User;
 import com.edutech.healthcare_appointment_management_system.jwt.JwtUtil;
 import com.edutech.healthcare_appointment_management_system.service.CaptchaService;
 import com.edutech.healthcare_appointment_management_system.service.UserService;
-
+import com.edutech.healthcare_appointment_management_system.service.EmailOtpService;
 @RestController
 @RequestMapping
 public class RegisterAndLoginController {
@@ -41,30 +41,33 @@ public class RegisterAndLoginController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ✅ PATIENT REGISTER
-    @PostMapping("/api/patient/register")
-    public ResponseEntity<?> registerPatient(@RequestBody Patient patient) {
-        try {
-            patient.setRole("PATIENT");
-            return ResponseEntity.ok(userService.registerUser(patient));
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
+    @Autowired
+    private EmailOtpService emailOtpService;
 
-    // ✅ DOCTOR REGISTER
-    @PostMapping("/api/doctors/register")
-    public ResponseEntity<User> registerDoctor(@RequestBody Doctor doctor) {
-        doctor.setRole("DOCTOR");
-        return ResponseEntity.ok(userService.registerUser(doctor));
+   @PostMapping("/api/patient/register")
+public ResponseEntity<?> registerPatient(@RequestParam String otp, @RequestBody Patient patient) {
+    try {
+        emailOtpService.verifyRegistrationOtpOrThrow(patient.getEmail(), otp);
+        patient.setRole("PATIENT");
+        return ResponseEntity.ok(userService.registerUser(patient));
+    } catch (RuntimeException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
     }
+}
 
-    // ✅ RECEPTIONIST REGISTER
-    @PostMapping("/api/receptionist/register")
-    public ResponseEntity<User> registerReceptionist(@RequestBody Receptionist receptionist) {
-        receptionist.setRole("RECEPTIONIST");
-        return ResponseEntity.ok(userService.registerUser(receptionist));
-    }
+   @PostMapping("/api/doctors/register")
+public ResponseEntity<User> registerDoctor(@RequestParam String otp, @RequestBody Doctor doctor) {
+    emailOtpService.verifyRegistrationOtpOrThrow(doctor.getEmail(), otp);
+    doctor.setRole("DOCTOR");
+    return ResponseEntity.ok(userService.registerUser(doctor));
+}
+
+   @PostMapping("/api/receptionist/register")
+public ResponseEntity<User> registerReceptionist(@RequestParam String otp, @RequestBody Receptionist receptionist) {
+    emailOtpService.verifyRegistrationOtpOrThrow(receptionist.getEmail(), otp);
+    receptionist.setRole("RECEPTIONIST");
+    return ResponseEntity.ok(userService.registerUser(receptionist));
+}
 
     @PostMapping("/api/user/login")
 public ResponseEntity<LoginResponse> login(
@@ -130,4 +133,7 @@ public ResponseEntity<LoginResponse> login(
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
+
+
+ 
 }

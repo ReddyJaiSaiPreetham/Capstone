@@ -1,182 +1,208 @@
-/* =========================
-   NO SCROLL + FULL SCREEN
-   ========================= */
+/* Background */
+.reg-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(900px 520px at 18% 18%, rgba(34,197,94,.25), transparent 62%),
+    radial-gradient(850px 500px at 85% 28%, rgba(59,130,246,.20), transparent 62%),
+    linear-gradient(120deg, #050b1a 0%, #070a12 35%, #0b1220 100%);
+  z-index: -2;
+}
+
+.reg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.32);
+  backdrop-filter: blur(2px);
+  z-index: -1;
+}
+
+/* Left panel */
+.reg-left {
+  padding: 56px;
+  color: #fff;
+  background: rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.left-wrap { max-width: 560px; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 8px rgba(34,197,94,0.12);
+}
+
+.brand-text {
+  font-weight: 800;
+  letter-spacing: .3px;
+  opacity: .95;
+  font-size: 16px;
+}
+
+.left-title {
+  margin-top: 18px;
+  font-weight: 900;
+  font-size: 40px;
+}
+
+.left-subtitle {
+  margin: 6px 0 0;
+  font-size: 18px;
+  opacity: 0.8;
+}
+
+.illus-card {
+  margin-top: 20px;
+  border-radius: 18px;
+  padding: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.illus { width: 100%; height: auto; display: block; }
+
+.left-note {
+  margin-top: 16px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
 :host {
   position: fixed;
   inset: 0;
   display: block;
-  overflow: hidden; /* ✅ prevents scroll inside this route */
-  background: transparent;
+  overflow: hidden;  /* ✅ stops full page scroll */
 }
 
-/* In case body scroll still appears due to global styles */
+/* Prevent body scroll while on registration route */
 :host ::ng-deep body {
   overflow: hidden !important;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-/* =========================
-   BACKGROUND IMAGE
-   ========================= */
-.login-page {
-  width: 100%;
+/* Ensure our page takes full height */
+.reg-page,
+.container-fluid,
+.row {
   height: 100%;
-  position: relative;
-
-  background-image: url('https://images.pexels.com/photos/305565/pexels-photo-305565.jpeg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
-/* Dark overlay like reference */
-.login-overlay {
-  position: absolute;
+/* Fix background to viewport */
+.reg-bg,
+.reg-overlay {
+  position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
 }
 
-/* =========================
-   CENTER FORM (NO CARD)
-   ========================= */
-.login-wrapper {
-  position: relative;
-  z-index: 2;
-
-  width: 100%;
+/* Right side panel must center without causing page scroll */
+.reg-right {
   height: 100%;
-  padding: 16px;
-
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.login-form {
-  width: 100%;
-  max-width: 440px;
-
-  color: #fff;
-
-  /* IMPORTANT: no white background */
-  background: transparent;
+/* ✅ KEY FIX: limit card height and scroll only inside card-body */
+.reg-card {
+  max-height: calc(100vh - 40px); /* keep small margin */
+  overflow: hidden;
+  border-radius: 18px;
 }
 
-/* Heading + text */
-.login-form h3 {
-  color: #fff;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+.reg-card .card-body {
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;          /* ✅ internal scroll only */
+  overscroll-behavior: contain;
 }
 
-.subtitle {
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
-  margin-bottom: 24px;
+/* smoother internal scrolling */
+.reg-card .card-body::-webkit-scrollbar {
+  width: 8px;
 }
-
-/* Labels */
-.login-form .form-label {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 13px;
-  margin-bottom: 6px;
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
-}
-
-/* =========================
-   INPUTS: FULL TRANSPARENT
-   ========================= */
-.login-form .form-control {
-  background: transparent !important; /* ✅ no white */
-  color: #fff !important;
-
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 10px;
-
-  padding: 10px 12px;
-  outline: none;
-
-  /* helps readability over image */
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
-}
-
-/* Placeholder */
-.login-form .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.65);
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
-}
-
-/* Focus */
-.login-form .form-control:focus {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
-}
-
-/* Captcha row */
-.captcha-row {
-  gap: 10px;
-}
-
-/* Captcha box – transparent too */
-.captcha-box {
-  background: transparent;
-  color: #fff;
-
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  border-radius: 8px;
-
-  padding: 6px 12px;
-  font-weight: 800;
-  letter-spacing: 3px;
-
-  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
-}
-
-/* Refresh button */
-.captcha-btn {
+.reg-card .card-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
   border-radius: 8px;
 }
 
-/* Login button */
-.login-btn {
-  background: #22c55e;
-  color: #052e16;
-  font-weight: 700;
+/* OTP input styling */
+.otp-input {
+  letter-spacing: 6px;
+  font-weight: 800;
+}
 
+/* doctor section */
+.doctor-card {
+  background: rgba(13,110,253,0.05);
+  border: 1px solid rgba(13,110,253,0.14);
+}
+
+/* Terms modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.60);
+  z-index: 1050;
+}
+
+.terms-modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, calc(100% - 28px));
+  background: #0b1220;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.55);
+  z-index: 1060;
+  color: #fff;
+}
+
+.terms-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.terms-head h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.x-btn {
+  background: transparent;
   border: none;
-  border-radius: 10px;
-  padding: 10px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
 }
 
-/* Register link */
-.register-link {
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+.terms-body {
+  padding: 14px 16px;
+  color: rgba(255,255,255,0.88);
+  font-size: 14px;
+  line-height: 1.55;
+  max-height: 320px;
+  overflow: auto;
 }
 
-.register-link a {
-  color: #22c55e;
-  font-weight: 700;
-}
+.terms-body ol { margin: 0; padding-left: 18px; }
+.terms-body li { margin: 8px 0; }
 
-/* Validation messages */
-.text-danger {
-  font-size: 12px;
-}
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-@media (max-width: 480px) {
-  .login-wrapper {
-    padding: 12px;
-  }
-
-  .login-form h3 {
-    font-size: 18px;
-  }
+.terms-foot {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: flex-end;
 }
