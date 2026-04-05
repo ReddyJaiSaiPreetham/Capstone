@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-type SlotDto = { time: string; display: string }; // from backend: {time, display}
+type SlotDto = { time: string; display: string };
 
 @Component({
   selector: 'app-receptionist-appointments',
@@ -15,13 +15,15 @@ export class ReceptionistAppointmentsComponent implements OnInit {
 
   responseMessage: string = '';
   appointmentList: any[] = [];
-  isAdded: boolean = false;
+  filteredAppointments: any[] = [];
+
+  isAdded: boolean = false; // reschedule form visible
 
   searchText: string = '';
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  totalPages: number = 0;
+  totalPages: number = 1;
 
   // ✅ Slot reschedule state
   selectedAppointment: any = null;
@@ -32,13 +34,23 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   selectedSlotTime: string = '';
   loadingSlots: boolean = false;
 
+  // ✅ NEW: Today / Upcoming / Past sections
+  todayAppointments: any[] = [];
+  upcomingGrouped: Map<string, any[]> = new Map();
+  pastGrouped: Map<string, any[]> = new Map();
+
+  // ✅ Default hidden
+  showToday: boolean = true;
+  showUpcoming: boolean = false;
+  showPast: boolean = false;
+
   constructor(
     public httpService: HttpService,
     private formBuilder: FormBuilder
   ) {
     this.itemForm = this.formBuilder.group({
       id: ['', Validators.required],
-      time: ['', Validators.required] // will be set when user picks a slot
+      time: ['', Validators.required]
     });
   }
 
@@ -68,37 +80,50 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   getAppointments(): void {
     this.httpService.getAllAppointments().subscribe((data: any[]) => {
       this.appointmentList = Array.isArray(data) ? data : [];
-      this.totalPages = Math.ceil(this.appointmentList.length / this.itemsPerPage);
-      this.currentPage = 1;
+      this.applySearch(); // ✅ builds filtered + today/upcoming/past
     });
   }
 
-  /* ===================== PAGINATION + SEARCH ===================== */
-  get paginatedAppointments(): any[] {
+  /* ===================== SEARCH (AUTO SHOW SECTIONS) ===================== */
+  onSearchChange(): void {
+    // When user searches, automatically show all sections
+    const hasSearch = (this.searchText || '').trim().length > 0;
+    if (hasSearch) {
+      this.showToday = true;
+      this.showUpcoming = true;
+      this.showPast = true;
+    }
+    this.currentPage = 1;
+    this.applySearch();
+  }
 
-    const search = (this.searchText || '').toLowerCase();
+  private applySearch(): void {
+    const search = (this.searchText || '').toLowerCase().trim();
 
-    const filtered = this.appointmentList.filter(item => {
+    this.filteredAppointments = this.appointmentList.filter(item => {
       const p = (item.patient?.username || '').toLowerCase();
+      const pe = (item.patient?.email || '').toLowerCase();
       const d = (item.doctor?.username || '').toLowerCase();
-      return p.includes(search) || d.includes(search);
+      const de = (item.doctor?.email || '').toLowerCase();
+      return p.includes(search) || pe.includes(search) || d.includes(search) || de.includes(search);
     });
 
-    this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
-
-    // ✅ keep page in range
+    this.totalPages = Math.max(1, Math.ceil(this.filteredAppointments.length / this.itemsPerPage));
     if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
 
+    // ✅ Build Today/Upcoming/Past based on filtered list
+    this.splitAppointments(this.filteredAppointments);
+  }
+
+  /* ===================== PAGINATION ===================== */
+  get paginatedAppointments(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-
-    return filtered.slice(startIndex, endIndex);
+    return this.filteredAppointments.slice(startIndex, endIndex);
   }
 
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
   previousPage(): void {
@@ -109,8 +134,86 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     if (this.currentPage < this.totalPages) this.currentPage++;
   }
 
-  /* ===================== RESCHEDULE (SLOT BASED) ===================== */
+  /* ===================== TODAY / UPCOMING / PAST SPLIT ===================== */
+  private splitAppointments(list: any[]): void {
+    const now = new Date();
 
+    const todayStart = new Date(now);
+    todayStart.setHours(0, 0, 0, 0);
+
+    const todayEnd = new Date(now);
+    todayEnd.setHours(23, 59, 59, 999);
+
+    this.todayAppointments = [];
+    const upcomingMap = new Map<string, any[]>();
+    const pastMap = new Map<string, any[]>();
+
+    list.forEach(app => {
+      if (!app?.appointmentTime) return;
+
+      const dt = this.parseLocal(app.appointmentTime);
+
+      // Today
+      if (dt >= todayStart && dt <= todayEnd) {
+        this.todayAppointments.push(app);
+        return;
+      }
+
+      // Upcoming
+      if (dt > todayEnd) {
+        const key = dt.toDateString();
+        if (!upcomingMap.has(key)) upcomingMap.set(key, []);
+        upcomingMap.get(key)!.push(app);
+        return;
+      }
+
+      // Past
+      if (dt < todayStart) {
+        const key = dt.toDateString();
+        if (!pastMap.has(key)) pastMap.set(key, []);
+        pastMap.get(key)!.push(app);
+      }
+    });
+
+    // Sort Today ascending time
+    this.todayAppointments.sort((a, b) =>
+      this.parseLocal(a.appointmentTime).getTime() - this.parseLocal(b.appointmentTime).getTime()
+    );
+
+    // Sort Upcoming within each day ascending
+    upcomingMap.forEach(arr => {
+      arr.sort((a, b) =>
+        this.parseLocal(a.appointmentTime).getTime() - this.parseLocal(b.appointmentTime).getTime()
+      );
+    });
+
+    // Sort Past within each day descending (latest first)
+    pastMap.forEach(arr => {
+      arr.sort((a, b) =>
+        this.parseLocal(b.appointmentTime).getTime() - this.parseLocal(a.appointmentTime).getTime()
+      );
+    });
+
+    // Upcoming days ascending
+    this.upcomingGrouped = new Map(
+      Array.from(upcomingMap.entries()).sort((a, b) =>
+        new Date(a[0]).getTime() - new Date(b[0]).getTime()
+      )
+    );
+
+    // Past days descending
+    this.pastGrouped = new Map(
+      Array.from(pastMap.entries()).sort((a, b) =>
+        new Date(b[0]).getTime() - new Date(a[0]).getTime()
+      )
+    );
+  }
+
+  toggleToday(): void { this.showToday = !this.showToday; }
+  toggleUpcoming(): void { this.showUpcoming = !this.showUpcoming; }
+  togglePast(): void { this.showPast = !this.showPast; }
+
+  /* ===================== RESCHEDULE (SLOT BASED) ===================== */
   editAppointment(item: any): void {
     this.responseMessage = '';
     this.isAdded = true;
@@ -119,7 +222,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.selectedSlotTime = '';
     this.availableSlots = [];
 
-    // default date = appointment date (if exists), else today
     if (item?.appointmentTime) {
       const d = this.parseLocal(item.appointmentTime);
       this.selectedDate = this.toDateOnly(d);
@@ -127,10 +229,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       this.selectedDate = this.minDate;
     }
 
-    // patch id
     this.itemForm.patchValue({ id: item.id, time: '' });
-
-    // load available slots for that doctor
     this.fetchAvailableSlots();
   }
 
@@ -150,7 +249,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
 
     this.httpService.getReceptionistAvailableSlots(doctorId, this.selectedDate).subscribe({
       next: (slots: any) => {
-        // expected: [{time, display}]
         this.availableSlots = Array.isArray(slots) ? slots : [];
         this.loadingSlots = false;
       },
@@ -165,8 +263,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
 
   selectSlot(slot: SlotDto): void {
     this.selectedSlotTime = slot.time;
-
-    // ✅ set form control for validators
     this.itemForm.patchValue({ time: slot.time });
     this.itemForm.get('time')?.markAsTouched();
   }
@@ -179,7 +275,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       return;
     }
 
-    // ✅ backend expects "YYYY-MM-DDTHH:mm:ss"
     const slotForBackend =
       this.selectedSlotTime.length === 16 ? this.selectedSlotTime + ':00' : this.selectedSlotTime;
 
@@ -214,7 +309,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   }
 
   /* ===================== DISPLAY TIME ===================== */
-
   formatTime(time: string): string {
     if (!time) return '';
     const d = this.parseLocal(time);
@@ -234,7 +328,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     return `${day}-${month}-${year} ${displayHour}:${minute} ${ampm}`;
   }
 
-  // supports "YYYY-MM-DDTHH:mm:ss" or "YYYY-MM-DD HH:mm:ss"
   private parseLocal(time: string): Date {
     const clean = (time || '').substring(0, 19).replace('T', ' ');
     const [datePart, timePart] = clean.split(' ');
@@ -247,7 +340,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   }
 
   /* ===================== DELETE ===================== */
-
   deleteAppointment(id: number): void {
     if (!confirm('Are you sure you want to delete this appointment?')) return;
 

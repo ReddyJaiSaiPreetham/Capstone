@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpService } from '../../services/http.service';
 import { Router } from '@angular/router';
+import { HttpService } from '../../services/http.service';
 
 @Component({
   selector: 'app-doctor-appointment',
@@ -13,6 +13,11 @@ export class DoctorAppointmentComponent implements OnInit {
 
   todayAppointments: any[] = [];
   upcomingGrouped: Map<string, any[]> = new Map();
+
+  // ✅ NEW: past (previous) appointments
+  pastGrouped: Map<string, any[]> = new Map();
+  showPast: boolean = true;
+  pastDaysLimit: number = 30; // ✅ show last 30 days only (set to 365 or remove limit logic if you want all)
 
   // Date search
   selectedDate: string = '';
@@ -53,6 +58,7 @@ export class DoctorAppointmentComponent implements OnInit {
         this.allAppointments = [];
         this.todayAppointments = [];
         this.upcomingGrouped = new Map();
+        this.pastGrouped = new Map();
         this.loading = false;
         this.errorMessage = 'Failed to load appointments';
       }
@@ -61,11 +67,10 @@ export class DoctorAppointmentComponent implements OnInit {
 
   /* ================= SEARCH ================= */
   private selectedDateToLocalDateString(value: string): string {
-    // value like "2026-04-02"
     const parts = value.split('-').map(Number);
     if (parts.length !== 3) return new Date(value).toDateString();
     const [y, m, d] = parts;
-    return new Date(y, m - 1, d).toDateString(); // local date safely
+    return new Date(y, m - 1, d).toDateString();
   }
 
   applyFilter(): void {
@@ -99,45 +104,80 @@ export class DoctorAppointmentComponent implements OnInit {
     todayEnd.setHours(23, 59, 59, 999);
 
     this.todayAppointments = [];
-    const tempMap = new Map<string, any[]>();
+    const upcomingMap = new Map<string, any[]>();
+    const pastMap = new Map<string, any[]>();
+
+    // ✅ past limit (last N days)
+    const pastLimitDate = new Date(todayStart);
+    pastLimitDate.setDate(pastLimitDate.getDate() - this.pastDaysLimit);
 
     list.forEach(app => {
       if (!app.appointmentTime) return;
 
       const dateObj = this.parseLocal(app.appointmentTime);
 
-      // Today bucket
+      // ✅ Today
       if (dateObj >= todayStart && dateObj <= todayEnd) {
         this.todayAppointments.push(app);
+        return;
       }
-      // Upcoming bucket
-      else if (dateObj > todayEnd) {
+
+      // ✅ Upcoming
+      if (dateObj > todayEnd) {
         const key = dateObj.toDateString();
-        if (!tempMap.has(key)) tempMap.set(key, []);
-        tempMap.get(key)!.push(app);
+        if (!upcomingMap.has(key)) upcomingMap.set(key, []);
+        upcomingMap.get(key)!.push(app);
+        return;
+      }
+
+      // ✅ Past
+      // If you want ALL past (no limit), remove the if check below and always add
+      if (dateObj >= pastLimitDate) {
+        const key = dateObj.toDateString();
+        if (!pastMap.has(key)) pastMap.set(key, []);
+        pastMap.get(key)!.push(app);
       }
     });
 
-    // Sort Today by time
+    // ✅ Sort Today by time ascending
     this.todayAppointments.sort((a, b) =>
       this.parseLocal(a.appointmentTime).getTime() -
       this.parseLocal(b.appointmentTime).getTime()
     );
 
-    // Sort each day card by time
-    tempMap.forEach(apps => {
+    // ✅ Sort Upcoming each day by time ascending
+    upcomingMap.forEach(apps => {
       apps.sort((a, b) =>
         this.parseLocal(a.appointmentTime).getTime() -
         this.parseLocal(b.appointmentTime).getTime()
       );
     });
 
-    // Sort day cards by date
+    // ✅ Sort Past each day by time descending (latest first)
+    pastMap.forEach(apps => {
+      apps.sort((a, b) =>
+        this.parseLocal(b.appointmentTime).getTime() -
+        this.parseLocal(a.appointmentTime).getTime()
+      );
+    });
+
+    // ✅ Upcoming days ascending (nearest future first)
     this.upcomingGrouped = new Map(
-      Array.from(tempMap.entries()).sort((a, b) =>
+      Array.from(upcomingMap.entries()).sort((a, b) =>
         new Date(a[0]).getTime() - new Date(b[0]).getTime()
       )
     );
+
+    // ✅ Past days descending (most recent past first)
+    this.pastGrouped = new Map(
+      Array.from(pastMap.entries()).sort((a, b) =>
+        new Date(b[0]).getTime() - new Date(a[0]).getTime()
+      )
+    );
+  }
+
+  togglePast(): void {
+    this.showPast = !this.showPast;
   }
 
   /* ================= STATUS ================= */
@@ -155,7 +195,6 @@ export class DoctorAppointmentComponent implements OnInit {
 
   /* ================= PRESCRIPTION ================= */
   openPrescription(app: any): void {
-    // Recommended rule: allow only when appointment is completed
     if (app?.completionstatus !== 'COMPLETED') {
       alert('Please mark appointment as COMPLETED before adding prescription');
       return;
@@ -167,14 +206,13 @@ export class DoctorAppointmentComponent implements OnInit {
       return;
     }
 
-    // doctorId from local storage (your system uses this)
     const doctorId = localStorage.getItem('userId');
 
     this.router.navigate(['/doctor-medical-record'], {
       queryParams: {
         patientId: patientId,
         doctorId: doctorId,
-        appointmentId: app?.id // optional for future linking
+        appointmentId: app?.id
       }
     });
   }
@@ -191,7 +229,6 @@ export class DoctorAppointmentComponent implements OnInit {
 
     const diffHours = (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
-    // STRICT: must be MORE THAN 5 hours
     return diffHours > 5;
   }
 
@@ -200,8 +237,6 @@ export class DoctorAppointmentComponent implements OnInit {
 
     this.selectedAppointment = app;
     this.rescheduleAppointmentId = app.id;
-
-    // datetime-local needs YYYY-MM-DDTHH:mm
     this.rescheduleTime = this.formatForInput(app.appointmentTime);
   }
 
@@ -218,7 +253,6 @@ export class DoctorAppointmentComponent implements OnInit {
       return;
     }
 
-    // Send ISO LocalDateTime: "YYYY-MM-DDTHH:mm:ss"
     const formattedTime = this.rescheduleTime + ':00';
 
     this.httpService
@@ -245,11 +279,9 @@ export class DoctorAppointmentComponent implements OnInit {
 
   /* ================= HELPERS ================= */
 
-  // Convert backend LocalDateTime string -> JS Date in LOCAL time
   parseLocal(time: string | Date): Date {
     if (time instanceof Date) return time;
 
-    // supports: "2026-04-03T16:56:00" or "2026-04-03 16:56:00"
     const clean = time.substring(0, 19).replace('T', ' ');
     const [datePart, timePart] = clean.split(' ');
 
@@ -261,14 +293,12 @@ export class DoctorAppointmentComponent implements OnInit {
     return new Date(year, month - 1, day, hour, minute, second);
   }
 
-  // datetime-local expects "YYYY-MM-DDTHH:mm"
   formatForInput(time: string | Date): string {
     const d = this.parseLocal(time);
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
-  // min for datetime-local in local time
   getLocalDateTime(): string {
     const now = new Date();
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());

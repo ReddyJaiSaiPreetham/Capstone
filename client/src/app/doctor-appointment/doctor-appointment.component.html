@@ -4,24 +4,25 @@
     <span class="brand">HAM System</span>
     <a routerLink="/doctor-appointment" class="nav-link active">Doctor Appointment</a>
     <a routerLink="/doctor-availability" class="nav-link">Doctor Availability</a>
-    <!-- <a routerLink="/doctor-medical-record" class="nav-link">Prescription</a> -->
+  </div>
+
+  <div class="navbar-right">
+    <!-- Login page auto-logout can handle session clearing -->
+    <a routerLink="/login" class="nav-link logout">Logout</a>
   </div>
 </nav>
 
 <div class="container">
   <div class="top-row">
     <h3 class="page-title">Doctor Dashboard</h3>
-
-    <!-- Loading -->
     <div *ngIf="loading" class="text-muted small">Loading...</div>
   </div>
 
-  <!-- Error -->
   <div *ngIf="errorMessage" class="alert alert-danger mt-2">
     {{ errorMessage }}
   </div>
 
-  <!-- ✅ SEARCH -->
+  <!-- SEARCH -->
   <div class="search-row">
     <div class="search-left">
       <input type="date" [(ngModel)]="selectedDate" class="form-control date-input">
@@ -30,7 +31,7 @@
     </div>
 
     <div class="search-right text-muted small">
-      Tip: Complete appointment to enable Prescription.
+      Complete appointment to enable prescription.
     </div>
   </div>
 
@@ -79,25 +80,19 @@
           </td>
 
           <td class="text-end actions-cell">
-            <!-- ✅ Prescription -->
-            <button
-              class="btn btn-sm btn-success me-2"
-              [disabled]="app.completionstatus !== 'COMPLETED'"
-              (click)="openPrescription(app)">
+            <button class="btn btn-sm btn-success me-2"
+                    [disabled]="app.completionstatus !== 'COMPLETED'"
+                    (click)="openPrescription(app)">
               Prescription
             </button>
 
-            <!-- ✅ Reschedule -->
             <button *ngIf="canReschedule(app)"
                     class="btn btn-sm btn-warning"
                     (click)="editAppointment(app)">
               Reschedule
             </button>
 
-            <small *ngIf="!canReschedule(app)" class="text-danger d-block">
-              Not allowed
-            </small>
-
+            <small *ngIf="!canReschedule(app)" class="text-danger d-block">Not allowed</small>
             <small *ngIf="app.completionstatus !== 'COMPLETED'" class="text-muted d-block">
               Complete to add prescription
             </small>
@@ -165,7 +160,6 @@
 
           <button class="btn btn-sm btn-primary" (click)="updateCompletionStatus(app)">Save</button>
 
-          <!-- ✅ Prescription -->
           <button class="btn btn-sm btn-success"
                   [disabled]="app.completionstatus !== 'COMPLETED'"
                   (click)="openPrescription(app)">
@@ -184,8 +178,10 @@
         </div>
       </div>
 
-      <!-- Inline reschedule for upcoming -->
-      <div *ngIf="rescheduleAppointmentId === app.id" class="inline-reschedule-card">
+      <!-- Inline reschedule -->
+      <div *ngIf="rescheduleAppointmentId === app.id"
+           class="inline-reschedule-card">
+
         <div class="inline-top">
           <div class="inline-title">Reschedule Appointment</div>
           <div class="inline-note text-muted">Must be &gt; 5 hours from now</div>
@@ -207,4 +203,56 @@
 
     </ng-container>
   </div>
+
+  <!-- ================= PAST ================= -->
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <h4 class="section-title m-0">Past Appointments</h4>
+
+    <button class="btn btn-outline-dark btn-sm" (click)="togglePast()">
+      {{ showPast ? 'Hide' : 'Show' }}
+    </button>
+  </div>
+
+  <div *ngIf="showPast">
+
+    <div *ngIf="pastGrouped.size === 0" class="empty-box">
+      No past appointments (last {{ pastDaysLimit }} days).
+    </div>
+
+    <div *ngFor="let entry of pastGrouped | keyvalue" class="day-card past-card">
+      <div class="day-header">
+        {{ entry.key }}
+        <span class="past-tag">PAST</span>
+      </div>
+
+      <ng-container *ngFor="let app of entry.value">
+
+        <div class="appointment-row">
+          <div class="appointment-info">
+            <div class="time">{{ parseLocal(app.appointmentTime) | date:'hh:mm a' }}</div>
+
+            <div class="patient">
+              <strong>{{ app.patient?.username }}</strong>
+              <small>{{ app.patient?.email }}</small>
+            </div>
+          </div>
+
+          <div class="appointment-actions">
+            <span class="badge"
+                  [ngClass]="app.completionstatus === 'COMPLETED' ? 'bg-success' : 'bg-secondary'">
+              {{ app.completionstatus }}
+            </span>
+
+            <button class="btn btn-sm btn-success"
+                    [disabled]="app.completionstatus !== 'COMPLETED'"
+                    (click)="openPrescription(app)">
+              Prescription
+            </button>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+
 </div>
