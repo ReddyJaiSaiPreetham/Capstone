@@ -27,10 +27,12 @@
           </svg>
           Appointments
         </a>
+
         <a routerLink="/doctor-availability" class="nav-link">
           <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
             <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
-            <path d="M9 5.5V9l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M9 5.5V9l2.5 2.5" stroke="currentColor" stroke-width="1.4"
+                  stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           Availability
         </a>
@@ -45,9 +47,11 @@
           <span class="nav-doctor-role">Physician</span>
         </div>
       </div>
+
       <a routerLink="/login" class="logout-btn">
         <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-          <path d="M7 3H4a1 1 0 00-1 1v10a1 1 0 001 1h3M11 12l3-3-3-3M14 9H7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 3H4a1 1 0 00-1 1v10a1 1 0 001 1h3M11 12l3-3-3-3M14 9H7"
+                stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         Logout
       </a>
@@ -61,7 +65,7 @@
     <div class="page-header">
       <div class="page-title-wrap">
         <h1 class="page-title">Doctor Dashboard</h1>
-        <p class="page-sub">Manage appointments, prescriptions & reschedules</p>
+        <p class="page-sub">Manage appointments, prescriptions and reschedules</p>
       </div>
 
       <div class="search-bar">
@@ -70,8 +74,9 @@
             <rect x="2" y="3" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
             <path d="M6 2v2M12 2v2M2 8h14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
           </svg>
-          <input type="date" [(ngModel)]="selectedDate" class="search-date-input" placeholder="Filter by date">
+          <input type="date" [(ngModel)]="selectedDate" class="search-date-input">
         </div>
+
         <button class="btn-search" (click)="applyFilter()">
           <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
             <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.4"/>
@@ -79,16 +84,13 @@
           </svg>
           Search
         </button>
+
         <button class="btn-clear" (click)="clearFilter()">Clear</button>
       </div>
     </div>
 
     <!-- Error -->
     <div class="error-banner" *ngIf="errorMessage">
-      <svg viewBox="0 0 18 18" fill="none" width="15" height="15" style="flex-shrink:0">
-        <circle cx="9" cy="9" r="6.5" stroke="currentColor" stroke-width="1.4"/>
-        <path d="M9 5.5v4M9 12.5h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
       {{ errorMessage }}
     </div>
 
@@ -106,11 +108,13 @@
           <div class="stat-label">Today</div>
         </div>
       </div>
+
       <div class="stat-card">
         <div class="stat-icon stat-icon-teal">
           <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
             <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 6v4l3 3" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div>
@@ -118,11 +122,13 @@
           <div class="stat-label">Upcoming</div>
         </div>
       </div>
+
       <div class="stat-card">
         <div class="stat-icon stat-icon-green">
           <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
             <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-            <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <div>
@@ -130,6 +136,7 @@
           <div class="stat-label">Completed</div>
         </div>
       </div>
+
       <div class="stat-card">
         <div class="stat-icon stat-icon-amber">
           <svg viewBox="0 0 20 20" fill="none" width="18" height="18">
@@ -144,7 +151,7 @@
       </div>
     </div>
 
-    <!-- ===== TODAY'S APPOINTMENTS ===== -->
+    <!-- ===== TODAY ===== -->
     <div class="section-header">
       <div class="section-title-wrap">
         <div class="section-dot dot-blue"></div>
@@ -154,31 +161,22 @@
     </div>
 
     <div class="empty-state" *ngIf="!todayAppointments.length">
-      <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
-        <rect x="5" y="7" width="30" height="27" rx="4" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M13 5v4M27 5v4M5 16h30" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="14" cy="25" r="1.5" fill="currentColor"/>
-        <circle cx="20" cy="25" r="1.5" fill="currentColor"/>
-        <circle cx="26" cy="25" r="1.5" fill="currentColor"/>
-      </svg>
       <p>No appointments scheduled for today</p>
     </div>
 
     <div class="appt-cards" *ngIf="todayAppointments.length">
       <ng-container *ngFor="let app of todayAppointments">
+
         <div class="appt-card" [class.appt-completed]="app.completionstatus === 'COMPLETED'">
 
-          <!-- Time column -->
           <div class="appt-time-col">
             <div class="appt-time">{{ parseLocal(app.appointmentTime) | date:'hh:mm' }}</div>
             <div class="appt-ampm">{{ parseLocal(app.appointmentTime) | date:'a' }}</div>
             <div class="appt-date-small">{{ parseLocal(app.appointmentTime) | date:'dd MMM' }}</div>
           </div>
 
-          <!-- Divider line -->
           <div class="appt-divider" [class.divider-green]="app.completionstatus === 'COMPLETED'"></div>
 
-          <!-- Patient info -->
           <div class="appt-patient">
             <div class="patient-avatar">{{ app.patient?.username?.charAt(0)?.toUpperCase() || 'P' }}</div>
             <div>
@@ -187,15 +185,13 @@
             </div>
           </div>
 
-          <!-- Status selector -->
           <div class="appt-status-col">
-            <div class="status-label-row">
-              <span class="status-pill"
-                    [class.status-completed]="app.completionstatus === 'COMPLETED'"
-                    [class.status-pending]="app.completionstatus !== 'COMPLETED'">
-                {{ app.completionstatus === 'COMPLETED' ? '✓ Completed' : '⏳ Pending' }}
-              </span>
-            </div>
+            <span class="status-pill"
+                  [class.status-completed]="app.completionstatus === 'COMPLETED'"
+                  [class.status-pending]="app.completionstatus !== 'COMPLETED'">
+              {{ app.completionstatus === 'COMPLETED' ? 'Completed' : 'Pending' }}
+            </span>
+
             <div class="status-select-row">
               <select [(ngModel)]="app.completionstatus"
                       [ngModelOptions]="{ standalone: true }"
@@ -207,63 +203,85 @@
             </div>
           </div>
 
-          <!-- Actions -->
           <div class="appt-actions">
             <button class="action-btn btn-prescription"
                     [class.btn-disabled]="app.completionstatus !== 'COMPLETED'"
                     [disabled]="app.completionstatus !== 'COMPLETED'"
-                    (click)="openPrescription(app)"
-                    title="{{ app.completionstatus !== 'COMPLETED' ? 'Mark complete first' : 'Open prescription' }}">
-              <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-                <path d="M4 2h10a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/>
-                <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-              </svg>
+                    (click)="openPrescription(app)">
               Prescription
             </button>
 
             <button class="action-btn btn-reschedule"
                     *ngIf="canReschedule(app)"
                     (click)="editAppointment(app)">
-              <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-                <path d="M3.5 10a6.5 6.5 0 101.2-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                <path d="M3.5 6V10H7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
               Reschedule
             </button>
 
             <span class="locked-badge" *ngIf="!canReschedule(app) && app.completionstatus !== 'COMPLETED'">
-              <svg viewBox="0 0 14 14" fill="none" width="11" height="11">
-                <rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-                <path d="M4.5 6V4.5a2.5 2.5 0 015 0V6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-              </svg>
               Locked
             </span>
           </div>
         </div>
 
-        <!-- Inline reschedule panel -->
+        <!-- ===== SLOT-BASED RESCHEDULE PANEL ===== -->
         <div class="reschedule-panel" *ngIf="rescheduleAppointmentId === app.id">
           <div class="reschedule-inner">
+
             <div class="reschedule-header">
-              <div class="reschedule-title">
-                <svg viewBox="0 0 18 18" fill="none" width="15" height="15">
-                  <path d="M3.5 10a6.5 6.5 0 101.2-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                  <path d="M3.5 6V10H7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Reschedule Appointment
-              </div>
-              <span class="reschedule-rule">Must be &gt; 5 hours from now</span>
+              <div class="reschedule-title">Reschedule Appointment</div>
+              <span class="reschedule-rule">Must be more than 2 hours from now</span>
             </div>
+
             <div class="reschedule-body">
-              <input type="datetime-local"
-                     [(ngModel)]="rescheduleTime"
-                     [min]="minDateTime"
-                     [ngModelOptions]="{ standalone: true }"
-                     class="reschedule-input">
-              <div class="reschedule-actions">
-                <button class="btn-update" (click)="submitReschedule()">Update</button>
-                <button class="btn-cancel-rs" (click)="cancelReschedule()">Cancel</button>
+
+              <!-- Left: Date -->
+              <div class="rs-date-block">
+                <div class="rs-label">Select Date</div>
+                <input type="date"
+                       class="rs-date-input"
+                       [(ngModel)]="rescheduleDate"
+                       [ngModelOptions]="{ standalone: true }"
+                       [min]="minRescheduleDate"
+                       [max]="maxRescheduleDate"
+                       (change)="onRescheduleDateChange()">
               </div>
+
+              <!-- Right: Slots + Actions -->
+              <div class="rs-slot-block">
+                <div class="rs-label">Available Slots</div>
+
+                <div class="rs-loading" *ngIf="loadingSlots">Loading slots...</div>
+
+                <div *ngIf="!loadingSlots">
+
+                  <div class="rs-empty" *ngIf="!hasAnySlotsReturned">
+                    No slots returned by server for this date.
+                  </div>
+
+                  <div class="rs-empty" *ngIf="hasAnySlotsReturned && !hasAvailableSlots">
+                    Slots exist but none are available.
+                  </div>
+
+                  <div class="slot-grid" *ngIf="availableSlots.length > 0">
+                    <button type="button"
+                            class="slot-btn"
+                            *ngFor="let slot of availableSlots"
+                            [class.selected]="selectedSlotTime === slot.time"
+                            (click)="selectSlot(slot)">
+                      {{ slot.display }}
+                    </button>
+                  </div>
+
+                  <div class="rs-actions">
+                    <button class="btn-update" (click)="submitReschedule()" [disabled]="!selectedSlotTime">
+                      Update
+                    </button>
+                    <button class="btn-cancel-rs" (click)="cancelReschedule()">Cancel</button>
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -280,30 +298,24 @@
     </div>
 
     <div class="empty-state" *ngIf="upcomingGrouped.size === 0">
-      <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
-        <circle cx="20" cy="20" r="14" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M20 13v7l5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
       <p>No upcoming appointments scheduled</p>
     </div>
 
     <div *ngFor="let entry of upcomingGrouped | keyvalue" class="day-group">
-      <div class="day-label">
-        <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
-          <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.3"/>
-          <path d="M5 2v2M11 2v2M2 7h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-        </svg>
-        {{ entry.key }}
-      </div>
+      <div class="day-label">{{ entry.key }}</div>
 
       <div class="appt-cards">
         <ng-container *ngFor="let app of entry.value">
+
           <div class="appt-card" [class.appt-completed]="app.completionstatus === 'COMPLETED'">
+
             <div class="appt-time-col">
               <div class="appt-time">{{ parseLocal(app.appointmentTime) | date:'hh:mm' }}</div>
               <div class="appt-ampm">{{ parseLocal(app.appointmentTime) | date:'a' }}</div>
             </div>
+
             <div class="appt-divider" [class.divider-green]="app.completionstatus === 'COMPLETED'"></div>
+
             <div class="appt-patient">
               <div class="patient-avatar">{{ app.patient?.username?.charAt(0)?.toUpperCase() || 'P' }}</div>
               <div>
@@ -311,74 +323,106 @@
                 <div class="patient-email">{{ app.patient?.email }}</div>
               </div>
             </div>
+
             <div class="appt-status-col">
               <span class="status-pill"
                     [class.status-completed]="app.completionstatus === 'COMPLETED'"
                     [class.status-pending]="app.completionstatus !== 'COMPLETED'">
-                {{ app.completionstatus === 'COMPLETED' ? '✓ Completed' : '⏳ Pending' }}
+                {{ app.completionstatus === 'COMPLETED' ? 'Completed' : 'Pending' }}
               </span>
+
               <div class="status-select-row">
-                <select [(ngModel)]="app.completionstatus" [ngModelOptions]="{ standalone: true }" class="status-select">
+                <select [(ngModel)]="app.completionstatus"
+                        [ngModelOptions]="{ standalone: true }"
+                        class="status-select">
                   <option value="PENDING">Pending</option>
                   <option value="COMPLETED">Completed</option>
                 </select>
                 <button class="btn-save" (click)="updateCompletionStatus(app)">Save</button>
               </div>
             </div>
+
             <div class="appt-actions">
               <button class="action-btn btn-prescription"
                       [class.btn-disabled]="app.completionstatus !== 'COMPLETED'"
                       [disabled]="app.completionstatus !== 'COMPLETED'"
                       (click)="openPrescription(app)">
-                <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-                  <path d="M4 2h10a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/>
-                  <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
                 Prescription
               </button>
-              <button class="action-btn btn-reschedule" *ngIf="canReschedule(app)" (click)="editAppointment(app)">
-                <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-                  <path d="M3.5 10a6.5 6.5 0 101.2-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                  <path d="M3.5 6V10H7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+
+              <button class="action-btn btn-reschedule"
+                      *ngIf="canReschedule(app)"
+                      (click)="editAppointment(app)">
                 Reschedule
               </button>
+
               <span class="locked-badge" *ngIf="!canReschedule(app)">
-                <svg viewBox="0 0 14 14" fill="none" width="11" height="11">
-                  <rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
-                  <path d="M4.5 6V4.5a2.5 2.5 0 015 0V6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
-                </svg>
                 Locked
               </span>
             </div>
           </div>
 
-          <!-- Inline reschedule -->
+          <!-- Same slot-based reschedule panel -->
           <div class="reschedule-panel" *ngIf="rescheduleAppointmentId === app.id">
             <div class="reschedule-inner">
+
               <div class="reschedule-header">
-                <div class="reschedule-title">
-                  <svg viewBox="0 0 18 18" fill="none" width="15" height="15">
-                    <path d="M3.5 10a6.5 6.5 0 101.2-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                    <path d="M3.5 6V10H7.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  Reschedule Appointment
-                </div>
-                <span class="reschedule-rule">Must be &gt; 5 hours from now</span>
+                <div class="reschedule-title">Reschedule Appointment</div>
+                <span class="reschedule-rule">Must be more than 2 hours from now</span>
               </div>
+
               <div class="reschedule-body">
-                <input type="datetime-local"
-                       [(ngModel)]="rescheduleTime"
-                       [min]="minDateTime"
-                       [ngModelOptions]="{ standalone: true }"
-                       class="reschedule-input">
-                <div class="reschedule-actions">
-                  <button class="btn-update" (click)="submitReschedule()">Update</button>
-                  <button class="btn-cancel-rs" (click)="cancelReschedule()">Cancel</button>
+
+                <div class="rs-date-block">
+                  <div class="rs-label">Select Date</div>
+                  <input type="date"
+                         class="rs-date-input"
+                         [(ngModel)]="rescheduleDate"
+                         [ngModelOptions]="{ standalone: true }"
+                         [min]="minRescheduleDate"
+                         [max]="maxRescheduleDate"
+                         (change)="onRescheduleDateChange()">
                 </div>
+
+                <div class="rs-slot-block">
+                  <div class="rs-label">Available Slots</div>
+
+                  <div class="rs-loading" *ngIf="loadingSlots">Loading slots...</div>
+
+                  <div *ngIf="!loadingSlots">
+
+                    <div class="rs-empty" *ngIf="!hasAnySlotsReturned">
+                      No slots returned by server for this date.
+                    </div>
+
+                    <div class="rs-empty" *ngIf="hasAnySlotsReturned && !hasAvailableSlots">
+                      Slots exist but none are available.
+                    </div>
+
+                    <div class="slot-grid" *ngIf="availableSlots.length > 0">
+                      <button type="button"
+                              class="slot-btn"
+                              *ngFor="let slot of availableSlots"
+                              [class.selected]="selectedSlotTime === slot.time"
+                              (click)="selectSlot(slot)">
+                        {{ slot.display }}
+                      </button>
+                    </div>
+
+                    <div class="rs-actions">
+                      <button class="btn-update" (click)="submitReschedule()" [disabled]="!selectedSlotTime">
+                        Update
+                      </button>
+                      <button class="btn-cancel-rs" (click)="cancelReschedule()">Cancel</button>
+                    </div>
+
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
+
         </ng-container>
       </div>
     </div>
@@ -390,12 +434,8 @@
         <h2 class="section-title">Past Appointments</h2>
         <span class="past-sub">(last {{ pastDaysLimit }} days)</span>
       </div>
+
       <button class="toggle-past-btn" (click)="togglePast()">
-        <svg viewBox="0 0 16 16" fill="none" width="13" height="13"
-             [style.transform]="showPast ? 'rotate(180deg)' : 'rotate(0deg)'"
-             style="transition:transform 0.25s">
-          <path d="M3 5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
         {{ showPast ? 'Hide' : 'Show' }}
       </button>
     </div>
@@ -407,10 +447,6 @@
 
       <div *ngFor="let entry of pastGrouped | keyvalue" class="day-group">
         <div class="day-label day-label-past">
-          <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
-            <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/>
-            <path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
           {{ entry.key }}
           <span class="past-tag">PAST</span>
         </div>
@@ -421,7 +457,9 @@
               <div class="appt-time past-time">{{ parseLocal(app.appointmentTime) | date:'hh:mm' }}</div>
               <div class="appt-ampm">{{ parseLocal(app.appointmentTime) | date:'a' }}</div>
             </div>
+
             <div class="appt-divider divider-gray"></div>
+
             <div class="appt-patient">
               <div class="patient-avatar avatar-gray">{{ app.patient?.username?.charAt(0)?.toUpperCase() || 'P' }}</div>
               <div>
@@ -429,22 +467,20 @@
                 <div class="patient-email">{{ app.patient?.email }}</div>
               </div>
             </div>
+
             <div class="appt-status-col">
               <span class="status-pill"
                     [class.status-completed]="app.completionstatus === 'COMPLETED'"
                     [class.status-pending]="app.completionstatus !== 'COMPLETED'">
-                {{ app.completionstatus === 'COMPLETED' ? '✓ Completed' : '⏳ Pending' }}
+                {{ app.completionstatus === 'COMPLETED' ? 'Completed' : 'Pending' }}
               </span>
             </div>
+
             <div class="appt-actions">
               <button class="action-btn btn-prescription"
                       [class.btn-disabled]="app.completionstatus !== 'COMPLETED'"
                       [disabled]="app.completionstatus !== 'COMPLETED'"
                       (click)="openPrescription(app)">
-                <svg viewBox="0 0 18 18" fill="none" width="14" height="14">
-                  <path d="M4 2h10a1 1 0 011 1v12a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.3"/>
-                  <path d="M6 6h6M6 9h6M6 12h4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
-                </svg>
                 View Rx
               </button>
             </div>
@@ -453,11 +489,11 @@
       </div>
     </div>
 
-    <!-- Loading overlay -->
+    <!-- Loading -->
     <div class="loading-bar" *ngIf="loading">
       <div class="loading-pulse"></div>
-      <span>Loading appointments…</span>
+      <span>Loading appointments...</span>
     </div>
 
-  </div><!-- /dash-body -->
-</div><!-- /dash-root -->
+  </div>
+</div>

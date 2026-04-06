@@ -1,235 +1,359 @@
 <div class="dash-body">
-<!-- ================= TOP NAVBAR ================= -->
-<nav class="dash-nav">
-  <div class="nav-left">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span class="brand-text">HAM System</span>
+
+  <!-- ================= TOP NAVBAR ================= -->
+  <nav class="dash-nav">
+    <div class="nav-left">
+      <!-- Medicare Hospital Brand (same logo as login/register) -->
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="dashShieldGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#38bdf8"/>
+              </linearGradient>
+              <linearGradient id="dashGlowGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+                <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+              </linearGradient>
+            </defs>
+            <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z"
+                  fill="url(#dashGlowGrad)" stroke="url(#dashShieldGrad)" stroke-width="1.4"/>
+            <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22"
+                      stroke="url(#dashShieldGrad)" stroke-width="1.8"
+                      stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">Medicare</span>
+          <span class="brand-sub">Hospital</span>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="nav-right">
-    <div class="nav-chip" *ngIf="roleName">
-      <span class="chip-dot"></span>
-      {{ roleName }}
-    </div>
+    <div class="nav-right">
 
-    <div class="nav-user">
-      <span class="user-name">{{ username }}</span>
-    </div>
+      <!-- Role chip
+      <div class="nav-chip" *ngIf="roleName">
+        <span class="chip-dot"></span>
+        {{ roleName }}
+      </div> -->
 
-    <button class="btn-logout" (click)="logout()">
-      Logout
-    </button>
-  </div>
-</nav>
-
-<!-- ================= PATIENT DASHBOARD ================= -->
-<div *ngIf="roleName === 'PATIENT'" class="dash-shell theme-patient">
-  <div class="dash-left">
-    <div class="tiny-title">HAM System</div>
-
-    <h1 class="dash-title">
-      Patient <span class="accent">Dashboard</span>
-    </h1>
-
-    <p class="dash-desc">
-      Book appointments, view prescriptions, and manage your health records.
-    </p>
-
-    <ul class="dash-points">
-      <li>Slot-based appointment booking</li>
-      <li>Prescription history + PDF download</li>
-      <li>Secure access with OTP + JWT</li>
-    </ul>
-  </div>
-
-  <div class="dash-right">
-    <div class="hero-card">
-      <div class="hero-head">
-        <div>
-          <div class="hero-kicker">WELCOME</div>
-          <div class="hero-greet">
-            {{ greeting }}, <span class="accent">{{ username }}</span>
+      <!-- Profile button + dropdown -->
+      <div class="nav-profile" [class.open]="showProfile">
+        <button class="profile-trigger" (click)="toggleProfile()">
+          <div class="avatar-circle">
+            {{ username ? username.charAt(0).toUpperCase() : 'U' }}
           </div>
-          <div class="hero-sub">Choose an action to continue</div>
-        </div>
+          <span class="nav-username">{{ username }}</span>
+          <svg class="caret-icon" viewBox="0 0 20 20" fill="none" width="14" height="14"
+               [class.rotated]="showProfile">
+            <path d="M5 8l5 5 5-5" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
 
-        <div class="role-pill">
-          <span class="pill-dot"></span>
-          PATIENT
-        </div>
-      </div>
-
-      <div class="hero-actions">
-        <a routerLink="/schedule-appointment" class="hero-btn primary">
-          Schedule Appointment
-        </a>
-
-        <a routerLink="/patient-appointment" class="hero-btn outline">
-          View Appointments
-        </a>
-
-        <a routerLink="/patient-medical-records" class="hero-btn outline">
-          Prescriptions
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= DOCTOR DASHBOARD ================= -->
-<div *ngIf="roleName === 'DOCTOR'" class="dash-shell theme-doctor">
-  <div class="dash-left">
-    <div class="tiny-title">HAM System</div>
-
-    <h1 class="dash-title">
-      Doctor <span class="accent">Dashboard</span>
-    </h1>
-
-    <p class="dash-desc">
-      Manage your availability, view appointments, and provide prescriptions.
-    </p>
-
-    <ul class="dash-points">
-      <li>Availability slots (9 AM – 9 PM)</li>
-      <li>Appointments (today + upcoming)</li>
-      <li>Create & edit prescriptions</li>
-    </ul>
-  </div>
-
-  <div class="dash-right">
-    <div class="hero-card">
-      <div class="hero-head">
-        <div>
-          <div class="hero-kicker">WELCOME</div>
-          <div class="hero-greet">
-            {{ greeting }}, <span class="accent">{{ username }}</span>
+        <!-- Profile dropdown -->
+        <div class="profile-dropdown" *ngIf="showProfile">
+          <div class="dropdown-header">
+            <div class="dropdown-avatar">
+              {{ username ? username.charAt(0).toUpperCase() : 'U' }}
+            </div>
+            <div>
+              <div class="dropdown-name">{{ username }}</div>
+              <div class="dropdown-role">{{ roleName }}</div>
+            </div>
           </div>
-          <div class="hero-sub">Choose an action to continue</div>
-        </div>
 
-        <div class="role-pill">
-          <span class="pill-dot"></span>
-          DOCTOR
-        </div>
-      </div>
+          <div class="dropdown-divider"></div>
 
-      <div class="hero-actions">
-        <a routerLink="/doctor-availability" class="hero-btn primary">
-          Update Availability
-        </a>
-
-        <a routerLink="/doctor-appointment" class="hero-btn outline">
-          View Appointments
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= RECEPTIONIST DASHBOARD ================= -->
-<div *ngIf="roleName === 'RECEPTIONIST'" class="dash-shell theme-receptionist">
-  <div class="dash-left">
-    <div class="tiny-title">HAM System</div>
-
-    <h1 class="dash-title">
-      Reception <span class="accent">Dashboard</span>
-    </h1>
-
-    <p class="dash-desc">
-      Schedule appointments and coordinate patient visits smoothly.
-    </p>
-
-    <ul class="dash-points">
-      <li>Slot-based scheduling</li>
-      <li>Reschedule and manage appointments</li>
-      <li>Hospital workflow support</li>
-    </ul>
-  </div>
-
-  <div class="dash-right">
-    <div class="hero-card">
-      <div class="hero-head">
-        <div>
-          <div class="hero-kicker">WELCOME</div>
-          <div class="hero-greet">
-            {{ greeting }}, <span class="accent">{{ username }}</span>
+          <div class="dropdown-field">
+            <label class="dropdown-label">
+              <svg viewBox="0 0 20 20" fill="none" width="13" height="13">
+                <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6"
+                      stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              Update Username
+            </label>
+            <input
+              class="dropdown-input"
+              type="text"
+              [(ngModel)]="username"
+              placeholder="New username"
+            />
           </div>
-          <div class="hero-sub">Choose an action to continue</div>
-        </div>
 
-        <div class="role-pill">
-          <span class="pill-dot"></span>
-          RECEPTIONIST
-        </div>
-      </div>
-
-      <div class="hero-actions">
-        <a routerLink="/receptionist-schedule-appointments" class="hero-btn primary">
-          Schedule Appointment
-        </a>
-
-        <a routerLink="/receptionist-appointments" class="hero-btn outline">
-          View / Reschedule Appointments
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ================= ADMIN DASHBOARD ================= -->
-<div *ngIf="roleName === 'ADMIN'" class="dash-shell theme-admin">
-  <div class="dash-left">
-    <div class="tiny-title">HAM System</div>
-
-    <h1 class="dash-title">
-      Admin <span class="accent">Dashboard</span>
-    </h1>
-
-    <p class="dash-desc">
-      Control staff access and monitor users securely.
-    </p>
-
-    <ul class="dash-points">
-      <li>Activate / Deactivate Doctors</li>
-      <li>Activate / Deactivate Receptionists</li>
-      <li>View patient list</li>
-    </ul>
-  </div>
-
-  <div class="dash-right">
-    <div class="hero-card">
-      <div class="hero-head">
-        <div>
-          <div class="hero-kicker">WELCOME</div>
-          <div class="hero-greet">
-            {{ greeting }}, <span class="accent">{{ username }}</span>
+          <div class="dropdown-actions">
+            <button class="dropdown-save" (click)="updateUsername()">
+              <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+                <path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.8"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Save
+            </button>
+            <button class="dropdown-cancel" (click)="toggleProfile()">
+              Cancel
+            </button>
           </div>
-          <div class="hero-sub">Choose an action to continue</div>
-        </div>
-
-        <div class="role-pill">
-          <span class="pill-dot"></span>
-          ADMIN
         </div>
       </div>
+      <!-- Dropdown backdrop -->
+      <div class="profile-backdrop" *ngIf="showProfile" (click)="toggleProfile()"></div>
 
-      <div class="hero-actions">
-        <a routerLink="/admin-doctors" class="hero-btn primary">
-          Manage Doctors
-        </a>
+      <button class="btn-logout" (click)="logout()">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M13 7l3 3-3 3M16 10H8" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 4H5a1 1 0 00-1 1v10a1 1 0 001 1h3" stroke="currentColor"
+                stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Logout
+      </button>
+    </div>
+  </nav>
 
-        <a routerLink="/admin-receptionists" class="hero-btn outline">
-          Manage Receptionists
-        </a>
+  <!-- ================= PATIENT DASHBOARD ================= -->
+  <div *ngIf="roleName === 'PATIENT'" class="dash-shell theme-patient">
+    <div class="dash-left">
+      <div class="tiny-title">Medicare Hospital</div>
 
-        <a routerLink="/admin-users" class="hero-btn outline">
-          View All Users
-        </a>
+      <h1 class="dash-title">
+        Your Health, <span class="accent">Simplified</span>
+      </h1>
+
+      <p class="dash-desc">
+        Book appointments, view prescriptions, and manage your health records.
+      </p>
+
+      <ul class="dash-points">
+        <li>Slot-based appointment booking</li>
+        <li>Prescription history + PDF download</li>
+        <li>Secure access with OTP</li>
+      </ul>
+    </div>
+
+    <div class="dash-right">
+      <div class="hero-card">
+        <div class="hero-head">
+          <div>
+            <div class="hero-kicker">WELCOME</div>
+            <div class="hero-greet">
+              {{ greeting }}, <span class="accent">{{ username }}</span>
+            </div>
+            <div class="hero-sub">Choose an action to continue</div>
+          </div>
+          <div class="role-pill role-pill--patient">
+            <span class="pill-dot"></span>
+            PATIENT
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a routerLink="/schedule-appointment" class="hero-btn primary">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 2v4M13 2v4M3 9h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M10 13h.01M10 11v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Schedule Appointment
+          </a>
+          <a routerLink="/patient-appointment" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <path d="M4 6h12M4 10h8M4 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            View Appointments
+          </a>
+          <a routerLink="/patient-medical-records" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <path d="M6 2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z"
+                    stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 7h4M8 10h4M8 13h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Prescriptions
+          </a>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <!-- ================= DOCTOR DASHBOARD ================= -->
+  <div *ngIf="roleName === 'DOCTOR'" class="dash-shell theme-doctor">
+    <div class="dash-left">
+      <div class="tiny-title">Medicare Hospital</div>
+
+      <h1 class="dash-title">
+        Your Activity <span class="accent">Today</span>
+      </h1>
+
+      <p class="dash-desc">
+        Manage your availability, view appointments, and provide prescriptions.
+      </p>
+
+      <ul class="dash-points">
+        <li>Availability slots (9 AM – 9 PM)</li>
+        <li>Appointments (today + upcoming)</li>
+        <li>Create &amp; edit prescriptions</li>
+      </ul>
+    </div>
+
+    <div class="dash-right">
+      <div class="hero-card">
+        <div class="hero-head">
+          <div>
+            <div class="hero-kicker">WELCOME</div>
+            <div class="hero-greet">
+              {{ greeting }}, <span class="accent">{{ username }}</span>
+            </div>
+            <div class="hero-sub">Choose an action to continue</div>
+          </div>
+          <div class="role-pill role-pill--doctor">
+            <span class="pill-dot"></span>
+            DOCTOR
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a routerLink="/doctor-availability" class="hero-btn primary">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M10 7v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Update Availability
+          </a>
+          <a routerLink="/doctor-appointment" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <path d="M4 6h12M4 10h8M4 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            View Appointments
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= RECEPTIONIST DASHBOARD ================= -->
+  <div *ngIf="roleName === 'RECEPTIONIST'" class="dash-shell theme-receptionist">
+    <div class="dash-left">
+      <div class="tiny-title">Medicare Hospital</div>
+
+      <h1 class="dash-title">
+        Registration <span class="accent">Overview</span>
+      </h1>
+
+      <p class="dash-desc">
+        Schedule appointments and coordinate patient visits smoothly.
+      </p>
+
+      <ul class="dash-points">
+        <li>Slot-based scheduling</li>
+        <li>Reschedule and manage appointments</li>
+        <li>Hospital workflow support</li>
+      </ul>
+    </div>
+
+    <div class="dash-right">
+      <div class="hero-card">
+        <div class="hero-head">
+          <div>
+            <div class="hero-kicker">WELCOME</div>
+            <div class="hero-greet">
+              {{ greeting }}, <span class="accent">{{ username }}</span>
+            </div>
+            <div class="hero-sub">Choose an action to continue</div>
+          </div>
+          <div class="role-pill role-pill--reception">
+            <span class="pill-dot"></span>
+            RECEPTIONIST
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a routerLink="/receptionist-schedule-appointments" class="hero-btn primary">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M7 2v4M13 2v4M3 9h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Schedule Appointment
+          </a>
+          <a routerLink="/receptionist-appointments" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <path d="M4 6h12M4 10h8M4 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            View / Reschedule Appointments
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN DASHBOARD ================= -->
+  <div *ngIf="roleName === 'ADMIN'" class="dash-shell theme-admin">
+    <div class="dash-left">
+      <div class="tiny-title">Medicare Hospital</div>
+
+      <h1 class="dash-title">
+        Admin <span class="accent">Dashboard</span>
+      </h1>
+
+      <p class="dash-desc">
+        Control staff access and monitor users securely.
+      </p>
+
+      <ul class="dash-points">
+        <li>Activate / Deactivate Doctors</li>
+        <li>Activate / Deactivate Receptionists</li>
+        <li>View patient list</li>
+      </ul>
+    </div>
+
+    <div class="dash-right">
+      <div class="hero-card">
+        <div class="hero-head">
+          <div>
+            <div class="hero-kicker">WELCOME</div>
+            <div class="hero-greet">
+              {{ greeting }}, <span class="accent">{{ username }}</span>
+            </div>
+            <div class="hero-sub">Choose an action to continue</div>
+          </div>
+          <div class="role-pill role-pill--admin">
+            <span class="pill-dot"></span>
+            ADMIN
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a routerLink="/admin-doctors" class="hero-btn primary">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M2 17c0-3.314 2.686-6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M15 11v6M12 14h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Manage Doctors
+          </a>
+          <a routerLink="/admin-receptionists" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M3 17c0-3.314 3.134-6 7-6s7 2.686 7 6"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            Manage Receptionists
+          </a>
+          <a routerLink="/admin-users" class="hero-btn outline">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <circle cx="6" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="14" cy="8" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M1 17c0-2.761 2.239-5 5-5M14 12c2.761 0 5 2.239 5 5"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M8 17c0-2.761 1.343-5 3-5s3 2.239 3 5"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            View All Users
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
