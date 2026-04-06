@@ -121,7 +121,7 @@
         <div class="testimonial-avatar">SP</div>
         <div>
           <p class="testimonial-text">"Registering took under a minute. The OTP flow is seamless and very secure."</p>
-          <p class="testimonial-author">Dr. Sneha Pillai · Cardiologist, Medicare Hospital</p>
+          <p class="testimonial-author">Preetham · Admin, Medicare Hospital</p>
         </div>
       </div>
     </div>
@@ -153,55 +153,6 @@
               <small *ngIf="itemForm.get('username')?.errors?.['maxlength']">Max 20 characters.</small>
               <small *ngIf="itemForm.get('username')?.errors?.['pattern']">Only letters, numbers &amp; _ allowed.</small>
               <small *ngIf="itemForm.get('username')?.errors?.['usernameExists']">Username already taken.</small>
-            </div>
-          </div>
-
-          <!-- Email + OTP button -->
-          <div class="field">
-            <label>Email</label>
-            <div class="email-row">
-              <div class="input-wrap" style="flex:1;min-width:0">
-                <svg class="input-icon" viewBox="0 0 20 20" fill="none">
-                  <path d="M3 5h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/>
-                  <path d="M2 6l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <input type="email" formControlName="email" placeholder="you@example.com">
-              </div>
-              <button class="otp-btn" type="button" (click)="sendOtp()"
-                      [disabled]="sendingOtp || otpCooldown > 0 || itemForm.get('email')?.invalid">
-                <span *ngIf="sendingOtp" class="spinner"></span>
-                <span *ngIf="!sendingOtp">
-                  {{ otpCooldown > 0 ? ('Resend ' + otpCooldown + 's') : (otpSent ? 'Resend' : 'Send OTP') }}
-                </span>
-                <span *ngIf="sendingOtp">Sending…</span>
-              </button>
-            </div>
-            <div class="field-errors" *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
-              <small *ngIf="itemForm.get('email')?.errors?.['required']">Email is required.</small>
-              <small *ngIf="itemForm.get('email')?.errors?.['email']">Enter a valid email.</small>
-            </div>
-            <div class="otp-sent-note" *ngIf="otpSent">
-              <svg viewBox="0 0 20 20" fill="none" width="14" height="14" style="flex-shrink:0">
-                <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              OTP sent — check your inbox or spam
-              <span *ngIf="otpCountdown > 0" class="otp-timer"> · valid {{ otpCountdown }}s</span>
-            </div>
-          </div>
-
-          <!-- OTP -->
-          <div class="field" *ngIf="itemForm.get('email')?.valid && (otpSent || otpRequested)">
-            <label>One-Time Password</label>
-            <div class="input-wrap">
-              <svg class="input-icon" viewBox="0 0 20 20" fill="none">
-                <rect x="3" y="9" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <input class="otp-input" type="text" maxlength="6" formControlName="otp" placeholder="• • • • • •">
-            </div>
-            <div class="field-errors" *ngIf="itemForm.get('otp')?.touched && itemForm.get('otp')?.invalid">
-              <small>OTP must be exactly 6 digits.</small>
             </div>
           </div>
 
@@ -298,6 +249,54 @@
                   <small>Availability is required.</small>
                 </div>
               </div>
+            </div>
+          </div>
+          <!-- Email + OTP button -->
+          <div class="field">
+            <label>Email</label>
+            <div class="email-row">
+              <div class="input-wrap" style="flex:1;min-width:0">
+                <svg class="input-icon" viewBox="0 0 20 20" fill="none">
+                  <path d="M3 5h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M2 6l8 6 8-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <input type="email" formControlName="email" placeholder="you@example.com">
+              </div>
+              <button class="otp-btn" type="button" (click)="sendOtp()"
+                      [disabled]="sendingOtp || otpCooldown > 0 || itemForm.get('email')?.invalid">
+                <span *ngIf="sendingOtp" class="spinner"></span>
+                <span *ngIf="!sendingOtp">
+                  {{ otpCooldown > 0 ? ('Resend ' + otpCooldown + 's') : (otpSent ? 'Resend' : 'Send OTP') }}
+                </span>
+                <span *ngIf="sendingOtp">Sending…</span>
+              </button>
+            </div>
+            <div class="field-errors" *ngIf="itemForm.get('email')?.touched && itemForm.get('email')?.invalid">
+              <small *ngIf="itemForm.get('email')?.errors?.['required']">Email is required.</small>
+              <small *ngIf="itemForm.get('email')?.errors?.['email']">Enter a valid email.</small>
+            </div>
+            <div class="otp-sent-note" *ngIf="otpSent">
+              <svg viewBox="0 0 20 20" fill="none" width="14" height="14" style="flex-shrink:0">
+                <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              OTP sent — check your inbox or spam
+              <span *ngIf="otpCountdown > 0" class="otp-timer"> · valid {{ otpCountdown }}s</span>
+            </div>
+          </div>
+
+          <!-- OTP -->
+          <div class="field" *ngIf="itemForm.get('email')?.valid && (otpSent || otpRequested)">
+            <label>One-Time Password</label>
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="9" width="14" height="9" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 9V6a3 3 0 016 0v3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <input class="otp-input" type="text" maxlength="6" formControlName="otp" placeholder="• • • • • •">
+            </div>
+            <div class="field-errors" *ngIf="itemForm.get('otp')?.touched && itemForm.get('otp')?.invalid">
+              <small>OTP must be exactly 6 digits.</small>
             </div>
           </div>
 

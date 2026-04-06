@@ -219,7 +219,9 @@ prevPage(): void {
       .subscribe({
         next: (res: any) => {
           // backend returns {message:"Appointment Scheduled"} OR plain string
-          this.successMessage = (res?.message || res || 'Appointment Scheduled') + ' :white_check_mark:';
+          this.successMessage = (res?.message || res || 'Appointment Scheduled') + ' ✅'
+
+;
           this.selectedSlotTime = '';
           this.fetchAvailableSlots(); // remove booked slot
         },
@@ -262,4 +264,16 @@ prevPage(): void {
     const displayHour = hour % 12 === 0 ? 12 : hour % 12;
     return `${String(displayHour).padStart(2, '0')}:00 ${ampm}`;
   }
+
+  isMobileMenuOpen: boolean = false;
+
+    toggleMobileMenu(): void {
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
+
+  
+  closeMobileMenu(): void {
+      this.isMobileMenuOpen = false;
+    }
+
 }

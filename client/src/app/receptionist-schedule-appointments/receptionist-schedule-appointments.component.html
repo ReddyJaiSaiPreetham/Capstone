@@ -1,102 +1,251 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
+<!-- ===================== NAVBAR ===================== -->
+<nav class="ham-navbar">
+  <div class="ham-navbar-inner">
 
-    <!-- ✅ Fix route link: keep consistent with your router config -->
-    <a routerLink="/receptionist-schedule-appointments" class="nav-link active">
-      Schedule Appointment
-    </a>
+    <!-- Brand -->
+    <div class="ham-brand">
+      <div class="ham-brand-icon">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="navShieldGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0ea5e9"/>
+              <stop offset="100%" stop-color="#38bdf8"/>
+            </linearGradient>
+            <linearGradient id="navGlowGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+              <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+            </linearGradient>
+          </defs>
+          <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z"
+                fill="url(#navGlowGrad)" stroke="url(#navShieldGrad)" stroke-width="1.4"/>
+          <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22"
+                    stroke="url(#navShieldGrad)" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="ham-brand-text">
+        <span class="ham-brand-name">Medicare</span>
+        <span class="ham-brand-sub">Hospital</span>
+      </div>
+    </div>
 
-    <a routerLink="/receptionist-appointments" class="nav-link">
-      View Appointments
-    </a>
-     <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
-  </div>
+    <!-- Nav Links -->
+    <div class="ham-nav-links">
+      <a routerLink="/receptionist-schedule-appointments" class="ham-nav-link ham-active">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.4"/>
+          <path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M7 11h2M11 11h2M7 14h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        Schedule Appointment
+      </a>
+      <a routerLink="/receptionist-appointments" class="ham-nav-link">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M4 6h12M4 10h8M4 14h6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        View Appointments
+      </a>
+    </div>
+
+    <!-- Logout -->
+    <div class="ham-nav-right">
+      <a routerLink="/login" class="ham-logout-btn">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M7 3H4a1 1 0 00-1 1v12a1 1 0 001 1h3M13 14l3-4-3-4M16 10H7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+
   </div>
 </nav>
 
-<div class="container mt-4">
+<!-- ===================== PAGE WRAPPER ===================== -->
+<div class="sched-page">
 
-  <h3>Schedule Appointment (Receptionist - Slot Based)</h3>
+  <!-- Background orbs -->
+  <div class="sched-orb sched-orb-1"></div>
+  <div class="sched-orb sched-orb-2"></div>
+  <div class="sched-orb sched-orb-3"></div>
+  <div class="sched-grid-overlay"></div>
 
-  <div *ngIf="responseMessage" class="alert alert-success">
-    {{ responseMessage }}
-  </div>
+  <div class="sched-container">
 
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
-  </div>
-
-  <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-
-    <div class="mb-3">
-      <label class="form-label">Patient</label>
-      <select class="form-control" formControlName="patientId">
-        <option value="">-- Select Patient --</option>
-        <option *ngFor="let p of patientList" [value]="p.id">
-          {{ p.username }}
-        </option>
-      </select>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Doctor</label>
-      <select class="form-control" formControlName="doctorId">
-        <option value="">-- Select Doctor --</option>
-        <option *ngFor="let d of doctorList" [value]="d.id">
-          {{ d.username }} ({{ d.specialty }})
-        </option>
-      </select>
-    </div>
-
-    <!-- ✅ Date Picker (10 days window) -->
-    <div class="mb-3">
-      <label class="form-label">Select Date</label>
-      <input
-        type="date"
-        class="form-control"
-        [(ngModel)]="selectedDate"
-        [ngModelOptions]="{ standalone: true }"
-        [min]="minDate"
-        [max]="maxDate"
-        (change)="onDateChange()"
-      />
-      <small class="text-muted">Slots available only for next 10 days</small>
-    </div>
-
-    <!-- ✅ Slots -->
-    <div class="mb-3">
-      <label class="form-label">Available Slots</label>
-
-      <div *ngIf="loadingSlots" class="text-muted">Loading available slots...</div>
-
-      <div *ngIf="!loadingSlots && availableSlots.length === 0" class="text-danger">
-        No available slots for this date.
+    <!-- Page Header -->
+    <div class="sched-page-header">
+      <div class="sched-page-header-icon">
+        <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+          <rect x="3" y="4" width="18" height="17" rx="2.5" stroke="#38bdf8" stroke-width="1.6"/>
+          <path d="M3 9h18M8 2v4M16 2v4" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M8 13h2M12 13h2M8 16.5h2" stroke="#38bdf8" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
       </div>
-
-      <div class="slot-grid" *ngIf="!loadingSlots && availableSlots.length > 0">
-        <button
-          type="button"
-          *ngFor="let slot of availableSlots"
-          class="slot-btn"
-          [class.selected]="selectedSlotTime === slot.time"
-          (click)="selectSlot(slot)">
-          {{ slot.display }}
-        </button>
+      <div>
+        <h2 class="sched-page-title">Schedule Appointment</h2>
+        <p class="sched-page-sub">Receptionist · Slot Based Booking</p>
       </div>
-
-      <!-- Hidden control to validate form -->
-      <input type="hidden" formControlName="time">
-      <small class="text-danger" *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
-        Please select a slot
-      </small>
     </div>
 
-    <button type="submit" class="btn btn-primary" [disabled]="itemForm.invalid">
-      Schedule Appointment
-    </button>
+    <!-- Alerts -->
+    <div *ngIf="responseMessage" class="sched-alert sched-alert-success">
+      <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="flex-shrink:0">
+        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      {{ responseMessage }}
+    </div>
 
-  </form>
+    <div *ngIf="errorMessage" class="sched-alert sched-alert-danger">
+      <svg viewBox="0 0 20 20" fill="none" width="16" height="16" style="flex-shrink:0">
+        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6v4M10 14h.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      {{ errorMessage }}
+    </div>
 
+    <!-- Form Card -->
+    <div class="sched-card">
+
+      <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+
+        <div class="sched-form-grid">
+
+          <!-- Patient -->
+          <div class="sched-field">
+            <label class="sched-label">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                <circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2.5 13.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Patient
+            </label>
+            <div class="sched-select-wrap">
+              <select class="sched-select" formControlName="patientId">
+                <option value="">— Select Patient —</option>
+                <option *ngFor="let p of patientList" [value]="p.id">{{ p.username }}</option>
+              </select>
+              <svg class="sched-select-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Doctor -->
+          <div class="sched-field">
+            <label class="sched-label">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                <circle cx="8" cy="4.5" r="2" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M3 13c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M10.5 7.5v3M9 9h3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Doctor
+            </label>
+            <div class="sched-select-wrap">
+              <select class="sched-select" formControlName="doctorId">
+                <option value="">— Select Doctor —</option>
+                <option *ngFor="let d of doctorList" [value]="d.id">{{ d.username }} ({{ d.specialty }})</option>
+              </select>
+              <svg class="sched-select-arrow" viewBox="0 0 16 16" fill="none" width="14" height="14">
+                <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="sched-field sched-field-full">
+            <label class="sched-label">
+              <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M2 7h12M5.5 1.5v2M10.5 1.5v2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Select Date
+            </label>
+            <div class="sched-input-wrap">
+              <input
+                type="date"
+                class="sched-input"
+                [(ngModel)]="selectedDate"
+                [ngModelOptions]="{ standalone: true }"
+                [min]="minDate"
+                [max]="maxDate"
+                (change)="onDateChange()"
+              />
+            </div>
+            <small class="sched-hint">
+              <svg viewBox="0 0 16 16" fill="none" width="11" height="11">
+                <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M8 5v3.5L10 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Slots available only for next 10 days
+            </small>
+          </div>
+
+        </div>
+
+        <!-- Slots Section -->
+        <div class="sched-slots-section">
+
+          <div class="sched-slots-header">
+            <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+              <circle cx="10" cy="10" r="7" stroke="#38bdf8" stroke-width="1.4"/>
+              <path d="M10 6v4.5L13 12" stroke="#38bdf8" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <span>Available Slots</span>
+          </div>
+
+          <!-- Loading -->
+          <div *ngIf="loadingSlots" class="sched-slots-loading">
+            <div class="sched-spinner"></div>
+            Loading available slots…
+          </div>
+
+          <!-- Empty -->
+          <div *ngIf="!loadingSlots && availableSlots.length === 0" class="sched-slots-empty">
+            <svg viewBox="0 0 20 20" fill="none" width="28" height="28">
+              <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M10 6v4M10 14h.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <span>No available slots for this date.</span>
+          </div>
+
+          <!-- Slot Grid -->
+          <div class="sched-slot-grid" *ngIf="!loadingSlots && availableSlots.length > 0">
+            <button
+              type="button"
+              *ngFor="let slot of availableSlots"
+              class="sched-slot-btn"
+              [class.sched-slot-selected]="selectedSlotTime === slot.time"
+              (click)="selectSlot(slot)">
+              <svg viewBox="0 0 16 16" fill="none" width="12" height="12">
+                <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M8 5v3.2L10 9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              {{ slot.display }}
+            </button>
+          </div>
+
+          <input type="hidden" formControlName="time">
+          <small class="sched-error-text" *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
+            Please select a time slot
+          </small>
+
+        </div>
+
+        <!-- Submit -->
+        <div class="sched-submit-row">
+          <button type="submit" class="sched-submit-btn" [disabled]="itemForm.invalid">
+            <svg viewBox="0 0 20 20" fill="none" width="17" height="17">
+              <rect x="3" y="4" width="14" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M3 8h14M7 2v4M13 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M7 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Schedule Appointment
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
 </div>
+

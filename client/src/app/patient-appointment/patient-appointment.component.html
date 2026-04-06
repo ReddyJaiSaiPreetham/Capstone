@@ -10,12 +10,30 @@
   <nav class="navbar">
     <div class="nav-left">
       <div class="brand-mark">
-        <svg viewBox="0 0 32 32" fill="none" width="32" height="32">
-          <rect width="32" height="32" rx="9" fill="white" fill-opacity="0.12"></rect>
-          <path d="M16 8v16M8 16h16" stroke="white" stroke-width="2.8" stroke-linecap="round"></path>
-        </svg>
-        <span class="brand-name">HAM System</span>
-      </div>
+  <div class="brand-icon">
+    <svg viewBox="0 0 44 44" fill="none" width="36" height="36">
+      <defs>
+        <linearGradient id="patNavShield" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0ea5e9"/>
+          <stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
+        <linearGradient id="patNavGlow" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+          <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+        </linearGradient>
+      </defs>
+      <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z"
+            fill="url(#patNavGlow)" stroke="url(#patNavShield)" stroke-width="1.4"/>
+      <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22"
+                stroke="url(#patNavShield)" stroke-width="1.8"
+                stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  </div>
+  <div class="brand-text-wrap">
+    <span class="brand-name">Medicare</span>
+    <span class="brand-sub">Hospital</span>
+  </div>
+</div>
 
       <div class="nav-links">
         <a routerLink="/schedule-appointment" class="nav-link">
@@ -305,3 +323,4 @@
 
   </div>
 </div>
+

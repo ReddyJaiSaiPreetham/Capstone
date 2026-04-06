@@ -1,340 +1,387 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
+<!-- =============================================
+   TEMPLATE
+   ============================================= -->
 
-    <a routerLink="/receptionist-schedule-appointments" class="nav-link">
-      Schedule Appointment
-    </a>
+<!-- NAVBAR -->
+<nav class="top-nav">
+  <div class="nav-container">
 
-    <a routerLink="/receptionist-appointments" class="nav-link active">
-      View Appointments
-    </a>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0ea5e9"/>
+              <stop offset="100%" stop-color="#38bdf8"/>
+            </linearGradient>
+            <linearGradient id="glowGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+              <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+            </linearGradient>
+          </defs>
+          <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z"
+                fill="url(#glowGrad)" stroke="url(#shieldGrad)" stroke-width="1.4"/>
+          <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22"
+                    stroke="url(#shieldGrad)" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text-group">
+        <span class="logo-name">Medicare</span>
+        <span class="logo-sub">Hos</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/receptionist-schedule-appointments" class="nav-link">Schedule Appointment</a>
+      <a routerLink="/receptionist-appointments"          class="nav-link active">View Appointments</a>
+    </div>
+
+    <div class="nav-actions">
+      <a routerLink="/login" class="btn-logout">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M13 3h4v14h-4M9 14l4-4-4-4M3 10h10"
+                stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+
+    <button class="nav-mobile-menu" (click)="toggleMobileMenu()">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+        <path d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
 
-  <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+  <div class="nav-mobile-panel">
+    <a routerLink="/receptionist-schedule-appointments">Schedule Appointment</a>
+    <a routerLink="/receptionist-appointments">View Appointments</a>
+    <div class="mobile-actions">
+      <a routerLink="/login" class="btn-logout">Logout</a>
+    </div>
   </div>
 </nav>
 
-<div class="container mt-4">
-  <h2 class="text-center mb-4">Receptionist Appointments</h2>
 
-  <!-- ✅ SEARCH -->
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search by patient/doctor name or email"
-        [(ngModel)]="searchText"
-        (ngModelChange)="onSearchChange()">
-    </div>
-  </div>
+<!-- PAGE BODY -->
+<div class="page-wrapper">
+  <div class="page-inner">
 
-  <!-- ✅ TODAY (header always visible; button on right) -->
-  <div class="card mb-3">
-    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-      <span class="fw-bold">Today</span>
-
-      <button class="btn btn-light btn-sm fw-bold" type="button" (click)="toggleToday()">
-        {{ showToday ? 'Hide' : 'Show' }}
-      </button>
+    <!-- Page header -->
+    <div class="page-title-group">
+      <div class="section-label">Receptionist</div>
+      <h2 class="page-title">Receptionist <em>Appointments</em></h2>
     </div>
 
-    <div class="card-body p-0" *ngIf="showToday">
-      <div class="p-3 text-muted" *ngIf="todayAppointments.length === 0">
-        No appointments today.
+    <!-- Search -->
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none" width="16" height="16">
+          <circle cx="9" cy="9" r="6" stroke="#38bdf8" stroke-width="1.5"/>
+          <path d="M13.5 13.5l3 3" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by patient / doctor name or email…"
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange()"
+        />
+      </div>
+    </div>
+
+    <!-- ── TODAY ── -->
+    <div class="appt-card">
+      <div class="appt-card-header header-today">
+        <span class="header-title">
+          <span class="header-dot dot-today"></span>
+          Today
+        </span>
+        <button class="toggle-btn" type="button" (click)="toggleToday()">
+          {{ showToday ? 'Hide' : 'Show' }}
+        </button>
       </div>
 
-      <table class="table table-bordered table-striped m-0" *ngIf="todayAppointments.length">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Patient</th>
-            <th>Doctor</th>
-            <th>Time</th>
-            <th class="text-end">Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let item of todayAppointments">
-            <td>{{ item.id }}</td>
-
-            <td>
-              <strong>{{ item.patient?.username }}</strong><br>
-              <small>{{ item.patient?.email }}</small>
-            </td>
-
-            <td>
-              <strong>{{ item.doctor?.username }}</strong><br>
-              <small>{{ item.doctor?.email }}</small>
-            </td>
-
-            <td>{{ formatTime(item.appointmentTime) }}</td>
-
-            <td class="text-end">
-              <button class="btn btn-primary btn-sm me-2" (click)="editAppointment(item)">Edit</button>
-              <button class="btn btn-danger btn-sm" (click)="deleteAppointment(item.id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ✅ UPCOMING (header always visible; button on right) -->
-  <div class="card mb-3">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-      <span class="fw-bold">Upcoming</span>
-
-      <button class="btn btn-light btn-sm fw-bold" type="button" (click)="toggleUpcoming()">
-        {{ showUpcoming ? 'Hide' : 'Show' }}
-      </button>
-    </div>
-
-    <div class="card-body p-0" *ngIf="showUpcoming">
-      <div class="p-3 text-muted" *ngIf="upcomingGrouped.size === 0">
-        No upcoming appointments.
-      </div>
-
-      <div *ngFor="let entry of upcomingGrouped | keyvalue" class="day-group">
-        <div class="day-title">{{ entry.key }}</div>
-
-        <table class="table table-bordered table-striped m-0">
-          <thead class="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Time</th>
+      <div *ngIf="showToday">
+        <div class="empty-inline" *ngIf="todayAppointments.length === 0">
+          No appointments today.
+        </div>
+        <div class="table-wrap" *ngIf="todayAppointments.length">
+          <table class="data-table">
+            <thead><tr>
+              <th>ID</th><th>Patient</th><th>Doctor</th><th>Time</th>
               <th class="text-end">Action</th>
-            </tr>
-          </thead>
+            </tr></thead>
+            <tbody>
+              <tr *ngFor="let item of todayAppointments">
+                <td class="col-id">{{ item.id }}</td>
+                <td>
+                  <span class="username">{{ item.patient?.username }}</span><br>
+                  <span class="col-muted">{{ item.patient?.email }}</span>
+                </td>
+                <td>
+                  <span class="username">{{ item.doctor?.username }}</span><br>
+                  <span class="col-muted">{{ item.doctor?.email }}</span>
+                </td>
+                <td class="col-muted">{{ formatTime(item.appointmentTime) }}</td>
+                <td class="text-end">
+                  <button class="action-btn action-edit"   (click)="editAppointment(item)">Edit</button>
+                  <button class="action-btn action-delete" (click)="deleteAppointment(item.id)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
+    <!-- ── UPCOMING ── -->
+    <div class="appt-card">
+      <div class="appt-card-header header-upcoming">
+        <span class="header-title">
+          <span class="header-dot dot-upcoming"></span>
+          Upcoming
+        </span>
+        <button class="toggle-btn" type="button" (click)="toggleUpcoming()">
+          {{ showUpcoming ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+
+      <div *ngIf="showUpcoming">
+        <div class="empty-inline" *ngIf="upcomingGrouped.size === 0">
+          No upcoming appointments.
+        </div>
+
+        <div *ngFor="let entry of upcomingGrouped | keyvalue" class="day-group">
+          <div class="day-title">{{ entry.key }}</div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>ID</th><th>Patient</th><th>Doctor</th><th>Time</th>
+                <th class="text-end">Action</th>
+              </tr></thead>
+              <tbody>
+                <tr *ngFor="let item of entry.value">
+                  <td class="col-id">{{ item.id }}</td>
+                  <td>
+                    <span class="username">{{ item.patient?.username }}</span><br>
+                    <span class="col-muted">{{ item.patient?.email }}</span>
+                  </td>
+                  <td>
+                    <span class="username">{{ item.doctor?.username }}</span><br>
+                    <span class="col-muted">{{ item.doctor?.email }}</span>
+                  </td>
+                  <td class="col-muted">{{ formatTime(item.appointmentTime) }}</td>
+                  <td class="text-end">
+                    <button class="action-btn action-edit"   (click)="editAppointment(item)">Edit</button>
+                    <button class="action-btn action-delete" (click)="deleteAppointment(item.id)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PAST ── -->
+    <div class="appt-card">
+      <div class="appt-card-header header-past">
+        <span class="header-title">
+          <span class="header-dot dot-past"></span>
+          Past
+        </span>
+        <button class="toggle-btn" type="button" (click)="togglePast()">
+          {{ showPast ? 'Hide' : 'Show' }}
+        </button>
+      </div>
+
+      <div *ngIf="showPast">
+        <div class="empty-inline" *ngIf="pastGrouped.size === 0">
+          No past appointments.
+        </div>
+
+        <div *ngFor="let entry of pastGrouped | keyvalue" class="day-group day-group-past">
+          <div class="day-title">
+            {{ entry.key }}
+            <span class="past-tag">PAST</span>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>ID</th><th>Patient</th><th>Doctor</th><th>Time</th>
+                <th class="text-end">Action</th>
+              </tr></thead>
+              <tbody>
+                <tr *ngFor="let item of entry.value">
+                  <td class="col-id">{{ item.id }}</td>
+                  <td>
+                    <span class="username">{{ item.patient?.username }}</span><br>
+                    <span class="col-muted">{{ item.patient?.email }}</span>
+                  </td>
+                  <td>
+                    <span class="username">{{ item.doctor?.username }}</span><br>
+                    <span class="col-muted">{{ item.doctor?.email }}</span>
+                  </td>
+                  <td class="col-muted">{{ formatTime(item.appointmentTime) }}</td>
+                  <td class="text-end">
+                    <button class="action-btn action-edit"   (click)="editAppointment(item)">Edit</button>
+                    <button class="action-btn action-delete" (click)="deleteAppointment(item.id)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ALL APPOINTMENTS ── -->
+    <div class="appt-card">
+      <div class="appt-card-header header-all">
+        <span class="header-title">
+          <span class="header-dot dot-all"></span>
+          All Appointments
+        </span>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr>
+            <th>ID</th><th>Patient</th><th>Doctor</th><th>Appointment Time</th>
+            <th class="text-end">Action</th>
+          </tr></thead>
           <tbody>
-            <tr *ngFor="let item of entry.value">
-              <td>{{ item.id }}</td>
-
+            <tr *ngFor="let item of paginatedAppointments">
+              <td class="col-id">{{ item.id }}</td>
               <td>
-                <strong>{{ item.patient?.username }}</strong><br>
-                <small>{{ item.patient?.email }}</small>
+                <span class="username">{{ item.patient?.username }}</span><br>
+                <span class="col-muted">{{ item.patient?.email }}</span>
               </td>
-
               <td>
-                <strong>{{ item.doctor?.username }}</strong><br>
-                <small>{{ item.doctor?.email }}</small>
+                <span class="username">{{ item.doctor?.username }}</span><br>
+                <span class="col-muted">{{ item.doctor?.email }}</span>
               </td>
-
-              <td>{{ formatTime(item.appointmentTime) }}</td>
-
+              <td class="col-muted">{{ formatTime(item.appointmentTime) }}</td>
               <td class="text-end">
-                <button class="btn btn-primary btn-sm me-2" (click)="editAppointment(item)">Edit</button>
-                <button class="btn btn-danger btn-sm" (click)="deleteAppointment(item.id)">Delete</button>
+                <button class="action-btn action-edit"   (click)="editAppointment(item)">Edit</button>
+                <button class="action-btn action-delete" (click)="deleteAppointment(item.id)">Delete</button>
               </td>
+            </tr>
+            <tr *ngIf="filteredAppointments.length === 0">
+              <td colspan="5" class="empty-inline" style="text-align:center;">No appointments found.</td>
             </tr>
           </tbody>
         </table>
       </div>
-
     </div>
-  </div>
 
-  <!-- ✅ PAST (header always visible; button on right) -->
-  <div class="card mb-3">
-    <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-      <span class="fw-bold">Past</span>
+    <!-- ── PAGINATION ── -->
+    <div class="pagination-row" *ngIf="totalPages > 1">
+      <button class="page-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+        <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Prev
+      </button>
 
-      <button class="btn btn-light btn-sm fw-bold" type="button" (click)="togglePast()">
-        {{ showPast ? 'Hide' : 'Show' }}
+      <button
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        class="page-btn page-num"
+        [class.page-active]="currentPage === i + 1"
+        (click)="goToPage(i + 1)">
+        {{ i + 1 }}
+      </button>
+
+      <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+        <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+          <path d="M7 5l5 5-5 5" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </button>
     </div>
 
-    <div class="card-body p-0" *ngIf="showPast">
-      <div class="p-3 text-muted" *ngIf="pastGrouped.size === 0">
-        No past appointments.
+    <!-- ── RESCHEDULE FORM ── -->
+    <div *ngIf="isAdded" class="appt-card mt-form">
+      <div class="appt-card-header header-today">
+        <span class="header-title">
+          <span class="header-dot dot-today"></span>
+          Reschedule Appointment (Slot Based)
+        </span>
       </div>
 
-      <div *ngFor="let entry of pastGrouped | keyvalue" class="day-group past">
-        <div class="day-title">
-          {{ entry.key }}
-          <span class="past-tag">PAST</span>
+      <div class="form-body">
+        <div class="form-doctor-info" *ngIf="selectedAppointment">
+          <span><strong>Doctor:</strong> {{ selectedAppointment?.doctor?.username }}</span>
+          <span class="info-divider">|</span>
+          <span><strong>Patient:</strong> {{ selectedAppointment?.patient?.username }}</span>
         </div>
 
-        <table class="table table-bordered table-striped m-0">
-          <thead class="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Patient</th>
-              <th>Doctor</th>
-              <th>Time</th>
-              <th class="text-end">Action</th>
-            </tr>
-          </thead>
+        <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+          <input type="hidden" formControlName="id">
 
-          <tbody>
-            <tr *ngFor="let item of entry.value">
-              <td>{{ item.id }}</td>
-
-              <td>
-                <strong>{{ item.patient?.username }}</strong><br>
-                <small>{{ item.patient?.email }}</small>
-              </td>
-
-              <td>
-                <strong>{{ item.doctor?.username }}</strong><br>
-                <small>{{ item.doctor?.email }}</small>
-              </td>
-
-              <td>{{ formatTime(item.appointmentTime) }}</td>
-
-              <td class="text-end">
-                <button class="btn btn-primary btn-sm me-2" (click)="editAppointment(item)">Edit</button>
-                <button class="btn btn-danger btn-sm" (click)="deleteAppointment(item.id)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ✅ ALL APPOINTMENTS (with pagination) -->
-  <div class="card mt-3">
-    <div class="card-header table-dark text-white fw-bold">
-      All Appointments
-    </div>
-
-    <div class="card-body p-0">
-      <table class="table table-bordered table-striped m-0">
-        <thead class="table-dark">
-          <tr>
-            <th>ID</th>
-            <th>Patient</th>
-            <th>Doctor</th>
-            <th>Appointment Time</th>
-            <th class="text-end">Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let item of paginatedAppointments">
-            <td>{{ item.id }}</td>
-
-            <td>
-              <strong>{{ item.patient?.username }}</strong><br>
-              <small>{{ item.patient?.email }}</small>
-            </td>
-
-            <td>
-              <strong>{{ item.doctor?.username }}</strong><br>
-              <small>{{ item.doctor?.email }}</small>
-            </td>
-
-            <td>{{ formatTime(item.appointmentTime) }}</td>
-
-            <td class="text-end">
-              <button class="btn btn-primary btn-sm me-2" (click)="editAppointment(item)">Edit</button>
-              <button class="btn btn-danger btn-sm" (click)="deleteAppointment(item.id)">Delete</button>
-            </td>
-          </tr>
-
-          <tr *ngIf="filteredAppointments.length === 0">
-            <td colspan="5" class="text-center">No appointments found</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ✅ PAGINATION -->
-  <nav *ngIf="totalPages > 1" class="mt-3">
-    <ul class="pagination justify-content-center">
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <button class="page-link" (click)="previousPage()">Previous</button>
-      </li>
-
-      <li *ngFor="let page of [].constructor(totalPages); let i = index"
-          class="page-item"
-          [class.active]="currentPage === i + 1">
-        <button class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</button>
-      </li>
-
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <button class="page-link" (click)="nextPage()">Next</button>
-      </li>
-    </ul>
-  </nav>
-
-  <!-- ✅ RESCHEDULE FORM (SLOT BASED) -->
-  <div *ngIf="isAdded" class="card mt-4">
-    <div class="card-header bg-primary text-white">
-      Reschedule Appointment (Slot Based)
-    </div>
-
-    <div class="card-body">
-      <div class="mb-2" *ngIf="selectedAppointment">
-        <strong>Doctor:</strong> {{ selectedAppointment?.doctor?.username }} &nbsp; | &nbsp;
-        <strong>Patient:</strong> {{ selectedAppointment?.patient?.username }}
-      </div>
-
-      <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-        <input type="hidden" formControlName="id">
-
-        <div class="mb-3">
-          <label class="form-label">Select Date</label>
-          <input
-            type="date"
-            class="form-control"
-            [(ngModel)]="selectedDate"
-            [ngModelOptions]="{ standalone: true }"
-            [min]="minDate"
-            [max]="maxDate"
-            (change)="onRescheduleDateChange()">
-          <small class="text-muted">Slots available only for next 10 days</small>
-        </div>
-
-        <div *ngIf="loadingSlots" class="text-muted mb-2">
-          Loading available slots...
-        </div>
-
-        <div *ngIf="!loadingSlots" class="mb-3">
-          <label class="form-label">Available Slots</label>
-
-          <div *ngIf="availableSlots.length === 0" class="text-danger">
-            No available slots for this date.
+          <div class="form-group">
+            <label class="form-label">Select Date</label>
+            <input
+              type="date"
+              class="form-input"
+              [(ngModel)]="selectedDate"
+              [ngModelOptions]="{ standalone: true }"
+              [min]="minDate"
+              [max]="maxDate"
+              (change)="onRescheduleDateChange()"
+            />
+            <small class="form-hint">Slots available only for next 10 days</small>
           </div>
 
-          <div class="slot-grid" *ngIf="availableSlots.length > 0">
-            <button
-              type="button"
-              *ngFor="let slot of availableSlots"
-              class="slot-btn"
-              [class.selected]="selectedSlotTime === slot.time"
-              (click)="selectSlot(slot)">
-              {{ slot.display }}
-            </button>
+          <div *ngIf="loadingSlots" class="state-msg">
+            <span class="spinner"></span> Loading available slots…
           </div>
 
-          <input type="hidden" formControlName="time">
-          <small class="text-danger" *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
-            Please select a slot
-          </small>
-        </div>
+          <div *ngIf="!loadingSlots" class="form-group">
+            <label class="form-label">Available Slots</label>
+            <div *ngIf="availableSlots.length === 0" class="no-slots">
+              No available slots for this date.
+            </div>
+            <div class="slot-grid" *ngIf="availableSlots.length > 0">
+              <button
+                type="button"
+                *ngFor="let slot of availableSlots"
+                class="slot-btn"
+                [class.selected]="selectedSlotTime === slot.time"
+                (click)="selectSlot(slot)">
+                {{ slot.display }}
+              </button>
+            </div>
+            <input type="hidden" formControlName="time">
+            <small class="form-error"
+                   *ngIf="itemForm.get('time')?.touched && itemForm.get('time')?.invalid">
+              Please select a slot
+            </small>
+          </div>
 
-        <button type="submit" class="btn btn-success" [disabled]="itemForm.invalid">
-          Update
-        </button>
-
-        <button type="button" class="btn btn-secondary ms-2" (click)="cancelReschedule()">
-          Cancel
-        </button>
-      </form>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="itemForm.invalid">Update</button>
+            <button type="button" class="btn-cancel" (click)="cancelReschedule()">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="responseMessage" class="alert alert-info mt-3">
-    {{ responseMessage }}
+    <!-- Response message -->
+    <div *ngIf="responseMessage" class="alert-bar alert-info-bar">
+      <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6v4M10 13v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      {{ responseMessage }}
+    </div>
+
   </div>
 </div>
+

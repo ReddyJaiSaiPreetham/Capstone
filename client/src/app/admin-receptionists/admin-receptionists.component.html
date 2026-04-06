@@ -1,87 +1,196 @@
-<nav class="navbar">
-  <div class="navbar-left">
-    <span class="brand">HAM System</span>
+<!-- =============================================
+   TEMPLATE
+   ============================================= -->
 
-    <a routerLink="/admin-doctors" class="nav-link">Admin - Doctors</a>
-    <a routerLink="/admin-receptionists" class="nav-link active">Admin - Receptionists</a>
-    <a routerLink="/admin-users" class="nav-link">Admin - Patients</a>
-     <div class="navbar-right">
-    <a routerLink="/login" class="nav-link logout">Logout</a>
+<!-- NAVBAR -->
+<nav class="top-nav">
+  <div class="nav-container">
+
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shieldGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#0ea5e9"/>
+              <stop offset="100%" stop-color="#38bdf8"/>
+            </linearGradient>
+            <linearGradient id="glowGrad" x1="0" y1="0" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="rgba(14,165,233,0.18)"/>
+              <stop offset="100%" stop-color="rgba(56,189,248,0.08)"/>
+            </linearGradient>
+          </defs>
+          <path d="M22 3L6 9.5V22c0 8.5 6.5 16 16 19 9.5-3 16-10.5 16-19V9.5L22 3Z"
+                fill="url(#glowGrad)" stroke="url(#shieldGrad)" stroke-width="1.4"/>
+          <polyline points="9,22 13,22 15,16 17,28 19,20 21,24 23,18 25,26 27,22 35,22"
+                    stroke="url(#shieldGrad)" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="logo-text-group">
+        <span class="logo-name">Medicare</span>
+        <span class="logo-sub">Admin Panel</span>
+      </div>
+    </div>
+
+    <div class="nav-links">
+      <a routerLink="/admin-doctors"       class="nav-link">Doctors</a>
+      <a routerLink="/admin-receptionists" class="nav-link active">Receptionists</a>
+      <a routerLink="/admin-users"         class="nav-link">Patients</a>
+    </div>
+
+    <div class="nav-actions">
+      <a routerLink="/login" class="btn-logout">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M13 3h4v14h-4M9 14l4-4-4-4M3 10h10"
+                stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Logout
+      </a>
+    </div>
+
+    <button class="nav-mobile-menu" (click)="toggleMobileMenu()">
+      <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+        <path d="M4 6h16M4 12h16M4 18h16"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
+
+  <div class="nav-mobile-panel">
+    <a routerLink="/admin-doctors">Doctors</a>
+    <a routerLink="/admin-receptionists">Receptionists</a>
+    <a routerLink="/admin-users">Patients</a>
+    <div class="mobile-actions">
+      <a routerLink="/login" class="btn-logout">Logout</a>
+    </div>
   </div>
 </nav>
 
-<div class="container">
-  <div class="page-top">
-    <h3 class="title">Admin: Manage Receptionists</h3>
-    <button class="btn btn-outline-primary" (click)="loadReceptionists()">Refresh</button>
-  </div>
 
-  <div class="search-row">
-    <input
-      type="text"
-      class="form-control"
-      placeholder="Search receptionist by name/email/status..."
-      [(ngModel)]="searchText"
-      (input)="applyFilter()"
-    />
-    <div class="small text-muted">
-      Total: <strong>{{ filtered.length }}</strong>
+<!-- PAGE BODY -->
+<div class="page-wrapper">
+  <div class="page-inner">
+
+    <!-- Page header -->
+    <div class="page-top">
+      <div class="page-title-group">
+        <div class="section-label">Management</div>
+        <h2 class="page-title">Manage <em>Receptionists</em></h2>
+      </div>
+      <button class="btn-primary" (click)="loadReceptionists()">
+        <svg viewBox="0 0 20 20" fill="none" width="15" height="15">
+          <path d="M4 4v5h5M16 16v-5h-5M4.5 14.5A7 7 0 1 0 5.6 6"
+                stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Refresh
+      </button>
     </div>
-  </div>
 
-  <div *ngIf="loading" class="text-muted">Loading receptionists...</div>
-
-  <div *ngIf="message" class="alert" [ngClass]="isError ? 'alert-danger' : 'alert-success'">
-    {{ message }}
-  </div>
-
-  <div class="table-wrap" *ngIf="!loading">
-    <table class="table admin-table" *ngIf="filtered.length > 0">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Username</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th class="text-end">Action</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr *ngFor="let r of paginated">
-          <td>{{ r.id }}</td>
-          <td><strong>{{ r.username }}</strong></td>
-          <td>{{ r.email }}</td>
-          <td>{{ r.role }}</td>
-          <td>
-            <span class="status-badge" [ngClass]="badgeClass(r.active)">
-              {{ statusLabel(r.active) }}
-            </span>
-          </td>
-          <td class="text-end">
-            <button
-              class="btn btn-sm"
-              [ngClass]="r.active ? 'btn-danger' : 'btn-success'"
-              (click)="toggleActive(r)">
-              {{ r.active ? 'Deactivate' : 'Activate' }}
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div *ngIf="filtered.length === 0" class="empty-box">
-      No receptionists found.
+    <!-- Search row -->
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 20 20" fill="none" width="16" height="16">
+          <circle cx="9" cy="9" r="6" stroke="#38bdf8" stroke-width="1.5"/>
+          <path d="M13.5 13.5l3 3" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search by name, email or status…"
+          [(ngModel)]="searchText"
+          (input)="applyFilter()"
+        />
+      </div>
+      <div class="result-count">
+        Total: <strong>{{ filtered.length }}</strong>
+      </div>
     </div>
-  </div>
 
-  <!-- pagination -->
-  <div class="pagination-row" *ngIf="filtered.length > pageSize">
-    <button class="btn btn-sm btn-secondary" (click)="prev()" [disabled]="currentPage === 1">Prev</button>
-    <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
-    <button class="btn btn-sm btn-secondary" (click)="next()" [disabled]="currentPage === totalPages">Next</button>
+    <!-- Loading -->
+    <div *ngIf="loading" class="state-msg">
+      <span class="spinner"></span> Loading receptionists…
+    </div>
+
+    <!-- Alert -->
+    <div *ngIf="message" class="alert-bar"
+         [ngClass]="isError ? 'alert-error' : 'alert-success'">
+      <svg viewBox="0 0 20 20" fill="none" width="16" height="16">
+        <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 6v4M10 13v1" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round"/>
+      </svg>
+      {{ message }}
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" *ngIf="!loading">
+      <table class="data-table" *ngIf="filtered.length > 0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of paginated">
+            <td class="col-id">{{ r.id }}</td>
+            <td><span class="username">{{ r.username }}</span></td>
+            <td class="col-muted">{{ r.email }}</td>
+            <td class="col-muted">{{ r.role }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="badgeClass(r.active)">
+                {{ statusLabel(r.active) }}
+              </span>
+            </td>
+            <td class="text-end">
+              <button
+                class="action-btn"
+                [ngClass]="r.active ? 'action-deactivate' : 'action-activate'"
+                (click)="toggleActive(r)"
+              >
+                {{ r.active ? 'Deactivate' : 'Activate' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="filtered.length === 0" class="empty-box">
+        <svg viewBox="0 0 48 48" fill="none" width="40" height="40">
+          <circle cx="24" cy="24" r="20" stroke="rgba(56,189,248,0.3)" stroke-width="1.5"/>
+          <path d="M16 24h16M24 16v16" stroke="rgba(56,189,248,0.3)"
+                stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>No receptionists found.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-row" *ngIf="filtered.length > pageSize">
+      <button class="page-btn" (click)="prev()" [disabled]="currentPage === 1">
+        <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+          <path d="M13 5l-5 5 5 5" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Prev
+      </button>
+      <span class="page-info">Page {{ currentPage }} / {{ totalPages }}</span>
+      <button class="page-btn" (click)="next()" [disabled]="currentPage === totalPages">
+        Next
+        <svg viewBox="0 0 20 20" fill="none" width="14" height="14">
+          <path d="M7 5l5 5-5 5" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
   </div>
 </div>
-``
+
+

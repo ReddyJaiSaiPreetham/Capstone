@@ -69,5 +69,10 @@ export class AdminUsersComponent implements OnInit {
   next(): void {
     if (this.currentPage < this.totalPages) this.currentPage++;
   }
+  
+  isMobileMenuOpen: boolean = false;
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 }
-``

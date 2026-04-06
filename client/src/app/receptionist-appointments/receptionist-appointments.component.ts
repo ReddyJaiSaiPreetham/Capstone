@@ -353,4 +353,10 @@ export class ReceptionistAppointmentsComponent implements OnInit {
       }
     });
   }
+
+  isMobileMenuOpen: boolean = false;
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 }

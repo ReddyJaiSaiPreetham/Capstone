@@ -126,4 +126,10 @@ export class AdminReceptionistsComponent implements OnInit {
   statusLabel(active: boolean): string {
     return active ? 'ACTIVE' : 'INACTIVE';
   }
+
+  isMobileMenuOpen: boolean = false;
+
+    toggleMobileMenu(): void {
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
 }

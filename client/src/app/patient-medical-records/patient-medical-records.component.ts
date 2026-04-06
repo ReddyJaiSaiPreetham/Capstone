@@ -108,4 +108,16 @@ export class PatientMedicalRecordsComponent implements OnInit {
 
     return `${d}-${m}-${y} ${displayHour}:${mm} ${ampm}`;
   }
+
+  isMobileMenuOpen: boolean = false;
+
+    toggleMobileMenu(): void {
+      this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    }
+
+  
+closeMobileMenu(): void {
+    this.isMobileMenuOpen = false;
+  }
+
 }

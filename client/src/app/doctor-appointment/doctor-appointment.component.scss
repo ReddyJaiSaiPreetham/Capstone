@@ -114,17 +114,36 @@
   gap: 28px;
 }
 
-.brand-mark {
+.brand-mark { display: flex; align-items: center; gap: 10px; }
+
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  svg { width: 100%; height: 100%; }
+}
+
+.brand-text {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  line-height: 1;
+  gap: 1px;
 }
 
 .brand-name {
-  font-size: 17px;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.3px;
+}
+
+.brand-sub {
+  font-size: 9px;
+  font-weight: 400;
+  color: #38bdf8;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
 }
 
 .nav-links {

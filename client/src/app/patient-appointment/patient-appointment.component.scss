@@ -75,11 +75,12 @@
 .brand-mark { display: flex; align-items: center; gap: 10px; }
 .brand-name {
   font-family: 'Sora', sans-serif;
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   color: #fff;
   letter-spacing: -0.3px;
 }
+
 
 .nav-links { display: flex; align-items: center; gap: 4px; }
 
@@ -356,4 +357,15 @@
   .dash-body { padding: 20px 16px 48px; }
   .brand-name { font-size: 15px; }
   .nav-links { display: none; } /* optional - keep if you want minimal navbar on mobile */
+}
+
+.brand-icon  { width: 36px; height: 36px; flex-shrink: 0; }
+.brand-text-wrap { display: flex; flex-direction: column; line-height: 1; gap: 2px; }
+
+.brand-sub {
+  font-size: 9px;
+  font-weight: 400;
+  color: #38bdf8;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
