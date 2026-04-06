@@ -125,8 +125,9 @@ public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTi
     if (newSlot.getStatus() == SlotStatus.BLOCKED) throw new RuntimeException("Doctor blocked this slot");
     if (newSlot.getStatus() == SlotStatus.BOOKED) throw new RuntimeException("Slot already booked");
 
-    if (appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)) {
-        throw new RuntimeException("Slot already booked");
+    if (appointmentRepository.existsByDoctorAndAppointmentTimeAndIdNot(
+        doctor, newTime, appointment.getId())) {
+    throw new RuntimeException("Slot already booked");
     }
 
     // ✅ Free old slot (if exists)
@@ -216,39 +217,31 @@ public Appointment rescheduleAppointment(Long appointmentId, LocalDateTime newTi
         return appointmentRepository.save(appointment);
     }
 
-    /* ===================== DOCTOR RESCHEDULE (STRICT RULES) ===================== */
+    /* ===================== DOCTOR RESCHEDULE (SLOT AWARE) ===================== */
+@Transactional
+public Appointment doctorRescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
 
-    public Appointment doctorRescheduleAppointment(Long appointmentId, LocalDateTime newTime) {
+    Appointment appointment = appointmentRepository.findById(appointmentId)
+            .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
-
-        // ❌ Cannot change completed appointments
-        if ("COMPLETED".equalsIgnoreCase(appointment.getCompletionstatus())) {
-            throw new RuntimeException("Completed appointments cannot be rescheduled");
-        }
-
-        validateNotNullTime(newTime, "New appointment time is required");
-        validateNotPast(newTime, "Appointment time cannot be in the past");
-
-        // ✅ Enforce 5-hour rule based on CURRENT appointment time
-        if (appointment.getAppointmentTime() != null) {
-            long hoursLeft = Duration.between(LocalDateTime.now(), appointment.getAppointmentTime()).toHours();
-            if (hoursLeft < 5) {
-                throw new RuntimeException("Rescheduling is allowed only at least 5 hours before appointment time");
-            }
-        }
-
-        Doctor doctor = appointment.getDoctor();
-        if (doctor != null
-                && appointmentRepository.existsByDoctorAndAppointmentTime(doctor, newTime)
-                && !newTime.equals(appointment.getAppointmentTime())) {
-            throw new RuntimeException("This time slot is already booked for this doctor");
-        }
-
-        appointment.setAppointmentTime(newTime);
-        appointment.setStatus("RESCHEDULED");
-
-        return appointmentRepository.save(appointment);
+    // ❌ Cannot reschedule completed appointments
+    if ("COMPLETED".equalsIgnoreCase(appointment.getCompletionstatus())) {
+        throw new RuntimeException("Completed appointments cannot be rescheduled");
     }
+
+    // ✅ 5-hour rule
+    if (appointment.getAppointmentTime() != null) {
+        long hoursLeft = Duration
+                .between(LocalDateTime.now(), appointment.getAppointmentTime())
+                .toHours();
+
+        if (hoursLeft < 2) {
+            throw new RuntimeException(
+                    "Rescheduling allowed only at least 5 hours before appointment time");
+        }
+    }
+
+    // ✅ Delegate to SLOT-AWARE reschedule
+    return rescheduleAppointment(appointmentId, newTime);
+}
 }

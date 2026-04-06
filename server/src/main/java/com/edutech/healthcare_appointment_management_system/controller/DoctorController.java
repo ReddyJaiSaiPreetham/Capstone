@@ -81,14 +81,13 @@ public class DoctorController {
         return ResponseEntity.ok().build();
     }
 
-    // ✅ Doctor reschedule appointment (LocalDateTime via TimeDto)
     @PutMapping("/appointment/{id}/reschedule")
     public ResponseEntity<Appointment> rescheduleAppointmentByDoctor(
             @PathVariable Long id,
             @RequestBody TimeDto timeDto) {
 
         LocalDateTime newTime = timeDto.getTime();
-        Appointment updated = appointmentService.doctorRescheduleAppointment(id, newTime);
+        Appointment updated = appointmentService.rescheduleAppointment(id, newTime);
         return ResponseEntity.ok(updated);
     }
 
