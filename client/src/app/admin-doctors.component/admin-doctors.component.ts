@@ -130,7 +130,7 @@ export class AdminDoctorsComponent implements OnInit {
   }
 
   badgeClass(active: boolean): string {
-    return active ? 'badge-active' : 'badge-inactive';
+    return active ? 'badge-inactive' : 'badge-inactive';
   }
 
   statusLabel(active: boolean): string {
