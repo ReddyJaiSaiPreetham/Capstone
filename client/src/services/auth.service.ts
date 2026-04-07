@@ -48,14 +48,16 @@ export class AuthService {
     return !!localStorage.getItem('token');
   }
 
-  //  Strong logout: clear everything related to session
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('username'); // if you store it anywhere
+  localStorage.removeItem('token');
+  localStorage.removeItem('role');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('username');
 
-    this.token = null;
-    this.isLoggedInFlag = false;
-  }
+  // Optional: clear any cached session-only data
+  sessionStorage.clear();
+
+  // Replace browser state
+  history.replaceState(null, '', '/login');
+}
 }

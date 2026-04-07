@@ -42,6 +42,12 @@ export class DoctorAppointmentComponent implements OnInit {
   constructor(public httpService: HttpService, private router: Router) {}
 
   ngOnInit(): void {
+    
+  if (!localStorage.getItem('token')) {
+      this.router.navigateByUrl('/login', { replaceUrl: true });
+      return;
+    }
+
     this.setRescheduleDateRange();
     this.loadAppointments();
   }

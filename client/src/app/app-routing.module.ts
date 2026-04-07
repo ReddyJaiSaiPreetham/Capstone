@@ -16,26 +16,27 @@ import { DoctorMedicalRecordComponent } from './doctor-medical-record/doctor-med
 import { AdminDoctorsComponent } from './admin-doctors.component/admin-doctors.component';
 import { AdminReceptionistsComponent } from './admin-receptionists/admin-receptionists.component';
 import { AdminUsersComponent } from './admin-users.component/admin-users.component';
+import { AuthGuard } from './guards/auth.guard';
 
 
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registration', component: RegistrationComponent },
-  { path: 'dashboard', component: DashbaordComponent }, 
-  { path: 'patient-appointment', component: PatientAppointmentComponent }, 
-  { path: 'schedule-appointment', component: ScheduleAppointmentComponent }, 
-  { path: 'doctor-appointment', component: DoctorAppointmentComponent }, 
-  { path: 'doctor-availability', component: DoctorAvailabilityComponent },
-  { path: 'receptionist-appointments', component: ReceptionistAppointmentsComponent },
-  { path: 'receptionist-schedule-appointments', component: ReceptionistScheduleAppointmentsComponent },
-  { path: 'home' , component: HomeComponent},
-  { path: 'patient-medical-records', component: PatientMedicalRecordsComponent },
-  { path: 'doctor-medical-record', component: DoctorMedicalRecordComponent },
-  { path: 'doctor-medical-record/:recordId', component: DoctorMedicalRecordComponent },
-  { path: 'admin-doctors', component: AdminDoctorsComponent },
-  { path: 'admin-receptionists', component: AdminReceptionistsComponent },
-  { path: 'admin-users', component: AdminUsersComponent },
+  { path: 'dashboard', component: DashbaordComponent, canActivate: [AuthGuard] }, 
+  { path: 'patient-appointment', component: PatientAppointmentComponent, canActivate: [AuthGuard] }, 
+  { path: 'schedule-appointment', component: ScheduleAppointmentComponent, canActivate: [AuthGuard] }, 
+  { path: 'doctor-appointment', component: DoctorAppointmentComponent , canActivate: [AuthGuard]}, 
+  { path: 'doctor-availability', component: DoctorAvailabilityComponent , canActivate: [AuthGuard]},
+  { path: 'receptionist-appointments', component: ReceptionistAppointmentsComponent , canActivate: [AuthGuard]},
+  { path: 'receptionist-schedule-appointments', component: ReceptionistScheduleAppointmentsComponent , canActivate: [AuthGuard]},
+  { path: 'home' , component: HomeComponent, canActivate: [AuthGuard]},
+  { path: 'patient-medical-records', component: PatientMedicalRecordsComponent, canActivate: [AuthGuard] },
+  { path: 'doctor-medical-record', component: DoctorMedicalRecordComponent, canActivate: [AuthGuard] },
+  { path: 'doctor-medical-record/:recordId', component: DoctorMedicalRecordComponent, canActivate: [AuthGuard] },
+  { path: 'admin-doctors', component: AdminDoctorsComponent , canActivate: [AuthGuard]},
+  { path: 'admin-receptionists', component: AdminReceptionistsComponent, canActivate: [AuthGuard] },
+  { path: 'admin-users', component: AdminUsersComponent , canActivate: [AuthGuard]},
   //{ path: 'admin-users', component: AdminUsersComponent },
 // optional:
 

@@ -43,6 +43,7 @@ export class DoctorAvailabilityComponent implements OnInit {
   constructor(public httpService: HttpService) {}
 
   ngOnInit(): void {
+    
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.showMsg(true, 'Doctor not logged in');
