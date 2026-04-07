@@ -3,6 +3,8 @@ package com.edutech.healthcare_appointment_management_system.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 public class LoginRequest {
 
@@ -11,7 +13,7 @@ public class LoginRequest {
     private String username;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters", max = 1000)
+    @Size(min = 6, max = 1000, message = "Password must be at least 6 characters")
     private String password;
 
     @NotBlank(message = "Captcha is required")
@@ -30,27 +32,12 @@ public class LoginRequest {
 
     public LoginRequest() {}
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public String getPassword() {
-        return password;
-    }
-    
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getCaptcha() {
-        return captcha;
-    }
-
-    public void setCaptcha(String captcha) {
-        this.captcha = captcha;
-    }
+    public String getCaptcha() { return captcha; }
+    public void setCaptcha(String captcha) { this.captcha = captcha; }
 }
