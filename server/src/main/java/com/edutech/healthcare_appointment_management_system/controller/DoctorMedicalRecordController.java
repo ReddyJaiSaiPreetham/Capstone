@@ -15,11 +15,6 @@ public class DoctorMedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
 
-    /**
-     * ✅ Doctor creates a medical record + prescription items
-     * Request Body: MedicalRecord { diagnosis, treatment, prescriptionItems[] }
-     * Params: patientId, doctorId
-     */
     @PostMapping
     public ResponseEntity<?> createMedicalRecord(
             @RequestParam Long patientId,
@@ -34,10 +29,7 @@ public class DoctorMedicalRecordController {
         }
     }
 
-    /**
-     * ✅ Doctor edits an existing medical record (replaces medicines list)
-     * Params: doctorId (for authorization check in service)
-     */
+
     @PutMapping("/{recordId}")
     public ResponseEntity<?> updateMedicalRecord(
             @PathVariable Long recordId,
@@ -52,10 +44,6 @@ public class DoctorMedicalRecordController {
         }
     }
 
-    /**
-     * ✅ Doctor views a single medical record (optional)
-     * (If you want strict doctor-only access, we can validate doctorId ownership in service later.)
-     */
     @GetMapping("/{recordId}")
     public ResponseEntity<?> getRecordById(@PathVariable Long recordId) {
         try {
@@ -66,9 +54,7 @@ public class DoctorMedicalRecordController {
         }
     }
 
-    /**
-     * ✅ Doctor views all records created by doctor (optional)
-     */
+
     @GetMapping
     public ResponseEntity<?> getRecordsByDoctor(@RequestParam Long doctorId) {
         try {

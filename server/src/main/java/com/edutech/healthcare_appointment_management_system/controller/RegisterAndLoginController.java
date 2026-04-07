@@ -25,7 +25,6 @@ import com.edutech.healthcare_appointment_management_system.service.EmailOtpServ
 @RequestMapping
 public class RegisterAndLoginController {
 
-    // ✅ HARDCODED ADMIN CREDENTIALS (NO DB ACCOUNT NEEDED)
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "Admin@123";
 
@@ -75,7 +74,6 @@ public ResponseEntity<LoginResponse> login(
         HttpServletRequest httpRequest) {
 
     try {
-        // ✅ 1) CAPTCHA VALIDATION FIRST
         String sessionId = httpRequest.getSession().getId();
         boolean isCaptchaValid = captchaService.validateCaptcha(sessionId, request.getCaptcha());
 
@@ -83,11 +81,9 @@ public ResponseEntity<LoginResponse> login(
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        // ✅ 2) HARDCODED ADMIN LOGIN (BYPASS DB PASSWORD, BUT VERIFY DB ROLE)
         if (ADMIN_USERNAME.equals(request.getUsername())
                 && ADMIN_PASSWORD.equals(request.getPassword())) {
 
-            // check admin exists in DB and is role ADMIN
             User dbAdmin = userService.getUserByUsername(ADMIN_USERNAME);
 
             if (!"ADMIN".equals(dbAdmin.getRole())) {
@@ -108,7 +104,6 @@ public ResponseEntity<LoginResponse> login(
             return ResponseEntity.ok(response);
         }
 
-        // ✅ 3) NORMAL USER AUTHENTICATION (DB users)
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -116,7 +111,6 @@ public ResponseEntity<LoginResponse> login(
                 )
         );
 
-        // ✅ 4) FETCH USER + GENERATE JWT
         User user = userService.getUserByUsername(request.getUsername());
 
         LoginResponse response = new LoginResponse(

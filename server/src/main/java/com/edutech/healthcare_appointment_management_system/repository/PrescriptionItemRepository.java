@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface PrescriptionItemRepository extends JpaRepository<PrescriptionItem, Long> {
 
-    // ✅ Get all medicines for a medical record
     List<PrescriptionItem> findByMedicalRecordId(Long medicalRecordId);
 }

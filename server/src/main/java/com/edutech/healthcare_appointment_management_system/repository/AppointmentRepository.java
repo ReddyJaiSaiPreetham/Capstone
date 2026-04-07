@@ -19,12 +19,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByDoctorId(Long doctorId);
 
     List<Appointment> findByStatus(String status);
-
-    // ✅ Updated: Date → LocalDateTime
     
  boolean existsByDoctorAndAppointmentTime(Doctor doctor, LocalDateTime appointmentTime);
 
-    // ✅ Used while rescheduling (exclude same appointment)
     boolean existsByDoctorAndAppointmentTimeAndIdNot(
             Doctor doctor,
             LocalDateTime appointmentTime,
@@ -32,7 +29,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     );
 
 
-    // ✅ Updated: Date → LocalDateTime
     List<Appointment> findByDoctorAndAppointmentTimeBetween(
             Doctor doctor,
             LocalDateTime startTime,

@@ -11,15 +11,15 @@ public class PrescriptionItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String medicineName;  // e.g., "Paracetamol"
-    private String dosage;        // e.g., "500mg"
-    private String frequency;     // e.g., "1-0-1"
-    private Integer days;         // e.g., 5
+    private String medicineName;  
+    private String dosage;
+    private String frequency;   
+    private Integer days;         
 
-    private String instructions;  // optional: "After food"
+    private String instructions;  
 
     @ManyToOne
-    @JsonIgnore  // prevents infinite JSON loop (MedicalRecord -> items -> record -> items...)
+    @JsonIgnore 
     private MedicalRecord medicalRecord;
 
     public PrescriptionItem() {}

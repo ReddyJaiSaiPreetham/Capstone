@@ -33,7 +33,6 @@ public class DoctorController {
     @Autowired
     private UserService userService;
 
-    // ✅ Update doctor availability (kept same behavior)
     @PostMapping("/availability")
     public ResponseEntity<Doctor> updateAvailability(
             @RequestParam Long doctorId,
@@ -43,7 +42,6 @@ public class DoctorController {
         return new ResponseEntity<>(updatedDoctor, HttpStatus.OK);
     }
 
-    // ✅ Get doctor appointments by doctorId (used by your Angular UI)
     @GetMapping("/appointments")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(
             @RequestParam Long doctorId) {
@@ -53,7 +51,6 @@ public class DoctorController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
-    // ✅ Get doctor appointments using JWT principal (optional / cleaner API)
     @GetMapping("/my-appointments")
     public ResponseEntity<List<Appointment>> getDoctorAppointmentsByPrincipal(Principal principal) {
 
@@ -62,7 +59,6 @@ public class DoctorController {
         return ResponseEntity.ok(appointments);
     }
 
-    // ✅ Mark appointment as completed
     @PutMapping("/appointment/{id}/complete")
     public ResponseEntity<Appointment> completeAppointment(@PathVariable Long id) {
 
@@ -70,7 +66,6 @@ public class DoctorController {
         return ResponseEntity.ok(updated);
     }
 
-    // ✅ Update completion status (PENDING/COMPLETED)
     @PutMapping("/appointment/{id}/completion-status")
     public ResponseEntity<?> updateCompletionStatus(
             @PathVariable Long id,
@@ -91,33 +86,22 @@ public class DoctorController {
         return ResponseEntity.ok(updated);
     }
 
-    /* =========================================================
-       ✅ SLOT BASED AVAILABILITY APIs (NEW)
-       Frontend calls:
-       POST /api/doctor/{doctorId}/generate-slots
-       GET  /api/doctor/{doctorId}/slots?date=YYYY-MM-DD
-       PUT  /api/doctor/{doctorId}/slot?available=true/false   body: { "time": "YYYY-MM-DDTHH:mm:ss" }
-       ========================================================= */
-
-    // ✅ Generate time slots (9AM–9PM) for next 10 days
     @PostMapping("/{doctorId}/generate-slots")
     public ResponseEntity<?> generateSlots(@PathVariable Long doctorId) {
         doctorService.generateSlotsForNext10Days(doctorId);
         return ResponseEntity.ok().build();
     }
 
-    // ✅ Get all slots for a specific date
     @GetMapping("/{doctorId}/slots")
     public ResponseEntity<List<DoctorAvailabilitySlot>> getSlots(
             @PathVariable Long doctorId,
             @RequestParam String date) {
 
-        LocalDate localDate = LocalDate.parse(date); // "YYYY-MM-DD"
+        LocalDate localDate = LocalDate.parse(date); 
         List<DoctorAvailabilitySlot> slots = doctorService.getSlotsForDoctorOnDate(doctorId, localDate);
         return ResponseEntity.ok(slots);
     }
 
-    // ✅ Block / Unblock a specific slot
     @PutMapping("/{doctorId}/slot")
     public ResponseEntity<DoctorAvailabilitySlot> updateSlot(
             @PathVariable Long doctorId,

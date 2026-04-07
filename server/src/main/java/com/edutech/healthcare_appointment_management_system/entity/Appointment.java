@@ -57,7 +57,6 @@ public class Appointment {
         return appointmentTime;
     }
 
-    // ✅ FIXED: setter must accept LocalDateTime
     public void setAppointmentTime(LocalDateTime appointmentTime) {
         this.appointmentTime = appointmentTime;
     }

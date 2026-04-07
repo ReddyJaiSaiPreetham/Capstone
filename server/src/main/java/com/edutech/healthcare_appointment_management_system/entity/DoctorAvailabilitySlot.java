@@ -21,12 +21,10 @@ public class DoctorAvailabilitySlot {
     @Column(name = "slot_start", nullable = false)
     private LocalDateTime slotStart;
 
-    // ✅ NEW: status instead of boolean
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SlotStatus status = SlotStatus.AVAILABLE;
 
-    // ✅ NEW: booking details (for doctor visibility)
     private Long bookedAppointmentId;
     private Long bookedPatientId;
     private String bookedPatientName;

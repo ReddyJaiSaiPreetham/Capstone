@@ -45,16 +45,13 @@ public class PatientController {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    // ✅ FIX: Interpret slotStart as IST when filtering past slots
     private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
 
-    // ✅ GET ONLY ACTIVE DOCTORS (so inactive doctors won't show)
     @GetMapping("/doctors")
     public ResponseEntity<List<Doctor>> getDoctors() {
         return ResponseEntity.ok(doctorRepository.findByActiveTrue());
     }
 
-    // ✅ SCHEDULE APPOINTMENT (return JSON safely)
     @PostMapping("/appointment")
     public ResponseEntity<Map<String, String>> scheduleAppointment(
             @RequestParam Long patientId,
@@ -64,7 +61,6 @@ public class PatientController {
         Patient patient = patientService.getPatientById(patientId);
         Doctor doctor = doctorService.getDoctorById(doctorId);
 
-        // booking enforcement for inactive doctor is in service (already added by you)
         appointmentService.scheduleAppointment(patient, doctor, timeDto.getTime());
 
         Map<String, String> resp = new java.util.HashMap<>();
@@ -72,14 +68,12 @@ public class PatientController {
         return ResponseEntity.ok(resp);
     }
 
-    // ✅ GET PATIENT APPOINTMENTS
     @GetMapping("/appointments")
     public List<Appointment> getPatientAppointments(@RequestParam Long patientId) {
         Patient patient = patientService.getPatientById(patientId);
         return appointmentService.getAppointmentsByPatient(patient);
     }
 
-    // ✅ GET AVAILABLE SLOTS (IST display + ISO booking time)
     @GetMapping("/doctor/{doctorId}/available-slots")
     public ResponseEntity<List<Map<String, String>>> getAvailableSlots(
             @PathVariable Long doctorId,
@@ -88,7 +82,6 @@ public class PatientController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // ✅ If inactive doctor -> return empty list (avoid 500)
         if (!doctor.isActive()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
@@ -105,7 +98,6 @@ public class PatientController {
                         doctor, start, end, SlotStatus.AVAILABLE
                 );
 
-        // ✅ FIX: hide past times correctly (even if server is UTC)
         Instant nowInstant = Instant.now();
 
         List<Map<String, String>> result = enabledSlots.stream()

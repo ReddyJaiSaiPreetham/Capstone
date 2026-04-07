@@ -21,7 +21,6 @@ public interface DoctorAvailabilitySlotRepository extends JpaRepository<DoctorAv
             LocalDateTime end
     );
 
-    // ✅ Status-based: AVAILABLE / BLOCKED / BOOKED
     List<DoctorAvailabilitySlot> findByDoctorAndSlotStartBetweenAndStatus(
             Doctor doctor,
             LocalDateTime start,

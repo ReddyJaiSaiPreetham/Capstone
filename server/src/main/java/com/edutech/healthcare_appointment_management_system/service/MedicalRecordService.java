@@ -20,7 +20,7 @@ public class MedicalRecordService {
     private MedicalRecordRepository medicalRecordRepository;
 
     @Autowired(required = false)
-    private PrescriptionItemRepository prescriptionItemRepository; // optional, not mandatory
+    private PrescriptionItemRepository prescriptionItemRepository; 
 
     @Autowired
     private PatientService patientService;
@@ -28,9 +28,7 @@ public class MedicalRecordService {
     @Autowired
     private DoctorService doctorService;
 
-    /* =========================================================
-       ✅ CREATE Medical Record + Prescription Items (Doctor)
-       ========================================================= */
+
     @Transactional
     public MedicalRecord createMedicalRecord(Long patientId, Long doctorId, MedicalRecord incoming) {
 
@@ -45,25 +43,20 @@ public class MedicalRecordService {
         record.setPatient(patient);
         record.setDoctor(doctor);
 
-        // allow only safe fields
         record.setDiagnosis(incoming.getDiagnosis());
         record.setTreatment(incoming.getTreatment());
 
-        // attach prescription list safely
         if (incoming.getPrescriptionItems() != null) {
             for (PrescriptionItem item : incoming.getPrescriptionItems()) {
                 validatePrescriptionItem(item);
-                record.addPrescriptionItem(cleanItem(item)); // ensures backref is set
+                record.addPrescriptionItem(cleanItem(item)); 
             }
         }
 
         return medicalRecordRepository.save(record);
     }
 
-    /* =========================================================
-       ✅ UPDATE Medical Record (Doctor can edit only their record)
-       - We replace the prescription list fully (simple & safe)
-       ========================================================= */
+
     @Transactional
     public MedicalRecord updateMedicalRecord(Long recordId, Long doctorId, MedicalRecord incoming) {
 
@@ -74,17 +67,14 @@ public class MedicalRecordService {
             throw new RuntimeException("Record has no doctor mapping");
         }
 
-        // ✅ Doctor authorization: only the doctor who created it can edit
         if (!existing.getDoctor().getId().equals(doctorId)) {
             throw new RuntimeException("You are not allowed to edit this prescription");
         }
 
-        // update safe fields
         existing.setDiagnosis(incoming.getDiagnosis());
         existing.setTreatment(incoming.getTreatment());
 
-        // ✅ Replace medicines list
-        existing.getPrescriptionItems().clear(); // orphanRemoval will delete old ones
+        existing.getPrescriptionItems().clear(); 
 
         if (incoming.getPrescriptionItems() != null) {
             for (PrescriptionItem item : incoming.getPrescriptionItems()) {
@@ -96,30 +86,22 @@ public class MedicalRecordService {
         return medicalRecordRepository.save(existing);
     }
 
-    /* =========================================================
-       ✅ PATIENT: View their medical records (timeline)
-       ========================================================= */
+  
     public List<MedicalRecord> getMedicalRecordsByPatient(Long patientId) {
         return medicalRecordRepository.findByPatientIdOrderByRecordDateDesc(patientId);
     }
 
-    /* =========================================================
-       ✅ DOCTOR: View records created by doctor (optional)
-       ========================================================= */
     public List<MedicalRecord> getMedicalRecordsByDoctor(Long doctorId) {
         return medicalRecordRepository.findByDoctorIdOrderByRecordDateDesc(doctorId);
     }
 
-    /* =========================================================
-       ✅ GET single record (for view details)
-       - You should enforce role checks at controller layer
-       ========================================================= */
+ 
     public MedicalRecord getMedicalRecordById(Long recordId) {
         return medicalRecordRepository.findById(recordId)
                 .orElseThrow(() -> new RuntimeException("Medical record not found"));
     }
 
-    /* ===================== Helpers ===================== */
+   
 
     private void validatePrescriptionItem(PrescriptionItem item) {
         if (item == null) throw new RuntimeException("Prescription item is required");
@@ -137,7 +119,6 @@ public class MedicalRecordService {
         }
     }
 
-    // ✅ Create a clean item (avoid client sending id/medicalRecord etc.)
     private PrescriptionItem cleanItem(PrescriptionItem item) {
         PrescriptionItem clean = new PrescriptionItem();
         clean.setMedicineName(item.getMedicineName());

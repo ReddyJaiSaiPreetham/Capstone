@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
-    // Optional helper if you use username lookup anywhere
     Optional<Doctor> findByUsername(String username);
 
     List<Doctor> findByAvailability(String availability);

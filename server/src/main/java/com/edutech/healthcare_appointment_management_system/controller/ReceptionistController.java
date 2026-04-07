@@ -41,28 +41,23 @@ public class ReceptionistController {
     @Autowired
     private DoctorAvailabilitySlotRepository doctorAvailabilitySlotRepository;
 
-    // ✅ FIX: Interpret slotStart as IST when filtering past slots
     private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
 
-    // ✅ FETCH ALL APPOINTMENTS
     @GetMapping("/appointments")
     public List<Appointment> getAllAppointments() {
         return appointmentService.getAllAppointments();
     }
 
-    // ✅ FETCH ALL PATIENTS
     @GetMapping("/patients")
     public List<Patient> getAllPatients() {
         return patientRepository.findAll();
     }
 
-    // ✅ FETCH ONLY ACTIVE DOCTORS (so inactive doctors won't show)
     @GetMapping("/doctors")
     public ResponseEntity<List<Doctor>> getDoctors() {
         return ResponseEntity.ok(doctorRepository.findByActiveTrue());
     }
 
-    // ✅ SCHEDULE APPOINTMENT (slot-based)
     @PostMapping("/appointment")
     public Appointment scheduleAppointment(
             @RequestParam Long patientId,
@@ -75,11 +70,9 @@ public class ReceptionistController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // booking enforcement for inactive doctor is in service (already added by you)
         return appointmentService.scheduleAppointment(patient, doctor, timeDto.getTime());
     }
 
-    // ✅ RESCHEDULE APPOINTMENT (slot-based time)
     @PutMapping("/appointment-reschedule/{appointmentId}")
     public Appointment rescheduleAppointment(
             @PathVariable Long appointmentId,
@@ -88,19 +81,13 @@ public class ReceptionistController {
         return appointmentService.rescheduleAppointment(appointmentId, timeDto.getTime());
     }
 
-    // ✅ DELETE APPOINTMENT (slot freed in service)
     @DeleteMapping("/appointment/{id}")
     public ResponseEntity<?> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointmentByReceptionist(id);
         return ResponseEntity.ok().build();
     }
 
-    /* =========================================================
-       ✅ SLOT APIs FOR RECEPTIONIST
-       ========================================================= */
-
-    // ✅ 1) Receptionist: Get AVAILABLE slots (for booking/reschedule UI)
-    // URL: GET /api/receptionist/doctor/{doctorId}/available-slots?date=YYYY-MM-DD
+   
     @GetMapping("/doctor/{doctorId}/available-slots")
     public ResponseEntity<List<Map<String, String>>> getDoctorAvailableSlots(
             @PathVariable Long doctorId,
@@ -110,7 +97,6 @@ public class ReceptionistController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // ✅ If inactive doctor -> return empty list (avoid 500)
         if (!doctor.isActive()) {
             return ResponseEntity.ok(Collections.emptyList());
         }
@@ -122,16 +108,13 @@ public class ReceptionistController {
         DateTimeFormatter isoFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("hh:mm a");
 
-        // ✅ only AVAILABLE slots
         List<DoctorAvailabilitySlot> slots =
                 doctorAvailabilitySlotRepository.findByDoctorAndSlotStartBetweenAndStatus(
                         doctor, start, end, SlotStatus.AVAILABLE
                 );
 
-        // ✅ FIX: hide past times correctly (even if server is UTC)
         Instant nowInstant = Instant.now();
 
-        // ✅ EXTRA SAFETY: remove slots that are already booked in appointments table
         List<Map<String, String>> result = slots.stream()
                 .map(DoctorAvailabilitySlot::getSlotStart)
                 .filter(slotStart -> slotStart.atZone(IST).toInstant().isAfter(nowInstant))
@@ -147,8 +130,6 @@ public class ReceptionistController {
         return ResponseEntity.ok(result);
     }
 
-    // ✅ 2) Receptionist: Get ALL slots (AVAILABLE/BLOCKED/BOOKED) to see why locked (optional)
-    // URL: GET /api/receptionist/doctor/{doctorId}/slots?date=YYYY-MM-DD
     @GetMapping("/doctor/{doctorId}/slots")
     public ResponseEntity<List<DoctorAvailabilitySlot>> getDoctorAllSlots(
             @PathVariable Long doctorId,
@@ -157,7 +138,6 @@ public class ReceptionistController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        // ✅ If inactive -> return empty list (optional but recommended)
         if (!doctor.isActive()) {
             return ResponseEntity.ok(Collections.emptyList());
         }

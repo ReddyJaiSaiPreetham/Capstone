@@ -20,9 +20,9 @@ public class User {
    private String password;
 
    @Column(nullable = false)
-   private String role;  // PATIENT / DOCTOR / RECEPTIONIST / ADMIN
+   private String role;  
 
-   // ✅ NEW: Soft-delete / deactivate support
+  
    @Column(nullable = false)
    private boolean active = true;
 

@@ -19,9 +19,9 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final DoctorAvailabilitySlotRepository slotRepository;
 
-    private static final int START_HOUR = 9;      // 9 AM
-    private static final int END_HOUR = 21;       // 9 PM (last slot start = 20:00)
-    private static final int MAX_DAYS_AHEAD = 10; // booking window
+    private static final int START_HOUR = 9;      
+    private static final int END_HOUR = 21;    
+    private static final int MAX_DAYS_AHEAD = 10; 
 
     @Autowired
     public DoctorService(DoctorRepository doctorRepository,
@@ -30,7 +30,7 @@ public class DoctorService {
         this.slotRepository = slotRepository;
     }
 
-    /* ================= EXISTING METHODS ================= */
+
 
     public Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
@@ -47,10 +47,7 @@ public class DoctorService {
         return doctorRepository.save(doctor);
     }
 
-    /* ================= SLOT BASED FEATURES ================= */
-
-    // ✅ Generate slots for next 10 days (including today)
-    // Default status: AVAILABLE
+ 
     public void generateSlotsForNext10Days(Long doctorId) {
 
         Doctor doctor = getDoctorById(doctorId);
@@ -59,7 +56,6 @@ public class DoctorService {
         for (int d = 0; d <= MAX_DAYS_AHEAD; d++) {
             LocalDate date = today.plusDays(d);
 
-            // slotStart: 09:00..20:00 (20:00-21:00 is last slot)
             for (int hour = START_HOUR; hour < END_HOUR; hour++) {
                 LocalDateTime slotStart = date.atTime(hour, 0);
 
@@ -68,14 +64,13 @@ public class DoctorService {
                             DoctorAvailabilitySlot slot = new DoctorAvailabilitySlot();
                             slot.setDoctor(doctor);
                             slot.setSlotStart(slotStart);
-                            slot.setStatus(SlotStatus.AVAILABLE); // ✅ STATUS BASED
+                            slot.setStatus(SlotStatus.AVAILABLE);
                             return slotRepository.save(slot);
                         });
             }
         }
     }
 
-    // ✅ Fetch all slots for a date (Doctor view wants AVAILABLE/BLOCKED/BOOKED)
     public List<DoctorAvailabilitySlot> getSlotsForDoctorOnDate(Long doctorId, LocalDate date) {
 
         Doctor doctor = getDoctorById(doctorId);
@@ -86,9 +81,7 @@ public class DoctorService {
         return slotRepository.findByDoctorAndSlotStartBetween(doctor, start, end);
     }
 
-    // ✅ Enable/Disable a slot (Doctor can toggle ONLY if not BOOKED)
-    // available=true  -> AVAILABLE
-    // available=false -> BLOCKED
+
     public DoctorAvailabilitySlot setSlotAvailability(Long doctorId, LocalDateTime slotStart, boolean available) {
 
         Doctor doctor = getDoctorById(doctorId);
@@ -96,7 +89,7 @@ public class DoctorService {
         DoctorAvailabilitySlot slot = slotRepository.findByDoctorAndSlotStart(doctor, slotStart)
                 .orElseThrow(() -> new RuntimeException("Slot not found. Generate slots first."));
 
-        // 🔒 If patient booked it, doctor cannot modify
+        
         if (slot.getStatus() == SlotStatus.BOOKED) {
             throw new RuntimeException("Booked slot cannot be modified");
         }

@@ -15,7 +15,6 @@ public class MedicalRecord {
 
    private String diagnosis;
 
-   // ✅ You can keep treatment as doctor notes / overall advice
    private String treatment;
 
    private LocalDateTime recordDate;
@@ -26,13 +25,11 @@ public class MedicalRecord {
    @ManyToOne
    private Doctor doctor;
 
-   // ✅ NEW: One record has many prescription medicines
    @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
    private List<PrescriptionItem> prescriptionItems = new ArrayList<>();
 
    public MedicalRecord() {}
 
-   // ✅ auto set recordDate when creating/updating
    @PrePersist
    public void onCreate() {
       this.recordDate = LocalDateTime.now();
@@ -43,7 +40,6 @@ public class MedicalRecord {
       this.recordDate = LocalDateTime.now();
    }
 
-   // -------- getters & setters --------
 
    public Long getId() {
       return id;
@@ -101,7 +97,6 @@ public class MedicalRecord {
       this.prescriptionItems = prescriptionItems;
    }
 
-   // ✅ helper methods to maintain relationship properly
    public void addPrescriptionItem(PrescriptionItem item) {
       prescriptionItems.add(item);
       item.setMedicalRecord(this);

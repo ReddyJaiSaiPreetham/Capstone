@@ -92,22 +92,41 @@ export class PatientMedicalRecordsComponent implements OnInit {
     });
   }
 
-  // nice display formatting
-  formatDateTime(dt: string): string {
-    if (!dt) return '';
-    const clean = dt.substring(0, 19).replace('T', ' ');
-    const [datePart, timePart] = clean.split(' ');
-    if (!datePart || !timePart) return dt;
+  // ✅ nice display formatting + timezone-safe (IST)
+formatDateTime(dt: string): string {
+  if (!dt) return '';
 
-    const [y, m, d] = datePart.split('-');
-    const [hh, mm] = timePart.split(':');
+  // Take only "yyyy-MM-ddTHH:mm:ss"
+  const base = dt.substring(0, 19);
 
-    const hour = parseInt(hh, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  // If backend didn't send timezone, treat it as UTC (append Z)
+  // This fixes the exact "17:09 shows 11:39" issue.
+  const hasTZ = /[zZ]|([+\-]\d{2}:\d{2})$/.test(dt);
+  const iso = hasTZ ? dt : `${base}Z`;
 
-    return `${d}-${m}-${y} ${displayHour}:${mm} ${ampm}`;
-  }
+  const d = new Date(iso);
+
+  // Format as IST (Asia/Kolkata)
+  const parts = new Intl.DateTimeFormat('en-IN', {
+    timeZone: 'Asia/Kolkata',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  }).formatToParts(d);
+
+  const get = (type: string) => parts.find(p => p.type === type)?.value ?? '';
+  const dd = get('day');
+  const mm = get('month');
+  const yy = get('year');
+  const hh = get('hour');
+  const min = get('minute');
+  const ap = get('dayPeriod').toUpperCase();
+
+  return `${dd}-${mm}-${yy} ${hh}:${min} ${ap}`;
+}
 
   isMobileMenuOpen: boolean = false;
 

@@ -17,31 +17,26 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    // ✅ OPTIONAL: Get all users
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(adminService.getAllUsers());
     }
 
-    // ✅ Get all doctors (active + inactive)
     @GetMapping("/doctors")
     public ResponseEntity<List<User>> getAllDoctors() {
         return ResponseEntity.ok(adminService.getUsersByRole("DOCTOR"));
     }
 
-    // ✅ Get all receptionists (active + inactive)
     @GetMapping("/receptionists")
     public ResponseEntity<List<User>> getAllReceptionists() {
         return ResponseEntity.ok(adminService.getUsersByRole("RECEPTIONIST"));
     }
 
-    // ✅ Get all patients (active + inactive)
     @GetMapping("/patients")
     public ResponseEntity<List<User>> getAllPatients() {
         return ResponseEntity.ok(adminService.getUsersByRole("PATIENT"));
     }
 
-    // ✅ Activate any user
     @PutMapping("/users/{id}/activate")
     public ResponseEntity<?> activateUser(@PathVariable Long id) {
         try {
@@ -55,8 +50,7 @@ public class AdminController {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
-
-    // ✅ Deactivate any user
+    
     @PutMapping("/users/{id}/deactivate")
     public ResponseEntity<?> deactivateUser(@PathVariable Long id) {
         try {

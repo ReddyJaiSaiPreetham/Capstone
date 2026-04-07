@@ -31,12 +31,12 @@ public class EmailOtpService {
     private static final int OTP_EXP_MIN = 5;
     private static final int MAX_ATTEMPTS = 5;
 
-    // ✅ Convenience: registration OTP
+
     public void sendRegistrationOtp(String email) {
         sendOtp(email, "REGISTRATION");
     }
 
-    // ✅ REQUIRED by your controller + service calls
+ 
     public void sendOtp(String email, String purpose) {
         if (email == null || email.trim().isEmpty()) {
             throw new RuntimeException("Email is required");
@@ -58,16 +58,13 @@ public class EmailOtpService {
 
         emailOtpRepository.save(rec);
 
-        // ✅ Send branded HTML email (welcome + logo + OTP)
         sendOtpEmailHtml(email, otp, purpose, OTP_EXP_MIN);
     }
 
-    // ✅ Convenience: verify registration OTP
     public void verifyRegistrationOtpOrThrow(String email, String otp) {
         verifyOtpOrThrow(email, "REGISTRATION", otp);
     }
 
-    // ✅ Generic verifier
     public void verifyOtpOrThrow(String email, String purpose, String otp) {
         if (email == null || otp == null) throw new RuntimeException("Email and OTP are required");
 
@@ -90,7 +87,7 @@ public class EmailOtpService {
         emailOtpRepository.save(rec);
     }
 
-    // ===================== Email HTML =====================
+
 
     private void sendOtpEmailHtml(String toEmail, String otp, String purpose, int validMinutes) {
         try {
@@ -156,7 +153,6 @@ public class EmailOtpService {
         }
     }
 
-    // ===================== Utils =====================
 
     private String generate6DigitOtp() {
         int val = 100000 + new Random().nextInt(900000);

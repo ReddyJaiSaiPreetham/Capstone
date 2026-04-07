@@ -46,7 +46,6 @@ protected void configure(HttpSecurity http) throws Exception {
                 .authorizeRequests()
 
 
-        // ✅ PUBLIC APIs
         .antMatchers(
                 "/api/user/login",
                 "/api/patient/register",
@@ -56,7 +55,6 @@ protected void configure(HttpSecurity http) throws Exception {
                 "/api/otp/**"
         ).permitAll()
 
-        // ✅ PATIENT APIs
         .antMatchers(
                 "/api/patient/doctors",
                 "/api/patient/appointments",
@@ -65,7 +63,6 @@ protected void configure(HttpSecurity http) throws Exception {
                 "/api/patient/medicalrecords"
         ).hasAuthority("PATIENT")
 
-     // ✅ DOCTOR APIs (strict)
 .antMatchers(HttpMethod.GET, "/api/doctor/**").hasAuthority("DOCTOR")
 
 .antMatchers(HttpMethod.POST,
@@ -78,7 +75,6 @@ protected void configure(HttpSecurity http) throws Exception {
         "/api/doctor/*/slot"
 ).hasAuthority("DOCTOR")
 
-                // ✅ RECEPTIONIST APIs
         .antMatchers(
                 "/api/receptionist/appointments",
                 "/api/receptionist/patients",

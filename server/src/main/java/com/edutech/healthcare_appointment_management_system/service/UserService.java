@@ -27,7 +27,6 @@ public class UserService implements UserDetailsService {
     public User registerUser(User user) {
         String uname = user.getUsername() == null ? "" : user.getUsername().trim().toLowerCase();
 
-        // ✅ reserve admin usernames
         if (uname.equals("admin") || uname.equals("admin1")) {
             throw new RuntimeException("This username is reserved. Please choose another.");
         }
@@ -35,13 +34,8 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("Username already exists!");
         }
 
-        // if (userRepository.existsByEmail(user.getEmail())) {
-        //     throw new RuntimeException("Email already exists!");
-        // }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        // ✅ Ensure new users are active by default
         user.setActive(true);
 
         return userRepository.save(user);
@@ -60,7 +54,6 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found: " + username));
 
-        // ✅ CRITICAL: Block login if Admin deactivated account
         if (!user.isActive()) {
             throw new RuntimeException("Account is deactivated. Please contact admin.");
         }
@@ -75,7 +68,6 @@ public class UserService implements UserDetailsService {
     public User updateUsername(String oldUsername, String newUsername) {
         User user = getUserByUsername(oldUsername);
 
-        // ✅ Optional: prevent duplicate username
         if (!oldUsername.equalsIgnoreCase(newUsername) && userRepository.existsByUsername(newUsername)) {
             throw new RuntimeException("Username already exists!");
         }

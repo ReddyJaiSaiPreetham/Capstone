@@ -14,7 +14,6 @@ public class OtpController {
     @Autowired
     private EmailOtpService emailOtpService;
 
-    // POST /api/otp/send?email=abc@gmail.com&purpose=REGISTRATION
     @PostMapping("/send")
     public ResponseEntity<?> sendOtp(@RequestParam String email,
                                      @RequestParam(defaultValue = "REGISTRATION") String purpose) {

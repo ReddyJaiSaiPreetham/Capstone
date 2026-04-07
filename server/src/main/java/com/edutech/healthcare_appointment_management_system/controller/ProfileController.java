@@ -16,19 +16,13 @@ public class ProfileController {
     @Autowired
     private UserService userService;
 
-    /**
-     * ✅ Get logged-in user's profile
-     * Uses username from JWT token (secure)
-     */
     @GetMapping
     public User getProfile(Authentication authentication) {
         String username = authentication.getName();
         return userService.getUserByUsername(username);
     }
 
-    /**
-     * ✅ Update username of logged-in user
-     */
+ 
     @PutMapping("/username")
     public User updateUsername(
             Authentication authentication,
