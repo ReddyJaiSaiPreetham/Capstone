@@ -30,7 +30,7 @@ const routes: Routes = [
   { path: 'doctor-availability', component: DoctorAvailabilityComponent , canActivate: [AuthGuard]},
   { path: 'receptionist-appointments', component: ReceptionistAppointmentsComponent , canActivate: [AuthGuard]},
   { path: 'receptionist-schedule-appointments', component: ReceptionistScheduleAppointmentsComponent , canActivate: [AuthGuard]},
-  { path: 'home' , component: HomeComponent, canActivate: [AuthGuard]},
+  { path: 'home' , component: HomeComponent},
   { path: 'patient-medical-records', component: PatientMedicalRecordsComponent, canActivate: [AuthGuard] },
   { path: 'doctor-medical-record', component: DoctorMedicalRecordComponent, canActivate: [AuthGuard] },
   { path: 'doctor-medical-record/:recordId', component: DoctorMedicalRecordComponent, canActivate: [AuthGuard] },

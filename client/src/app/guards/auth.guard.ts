@@ -10,7 +10,7 @@ export class AuthGuard implements CanActivate {
 
     // If no token -> block navigation
     if (!token) {
-      return this.router.createUrlTree(['/login']);
+      return this.router.createUrlTree(['/home']);
     }
 
     // Optional: If you have token-expiry check, apply it here
