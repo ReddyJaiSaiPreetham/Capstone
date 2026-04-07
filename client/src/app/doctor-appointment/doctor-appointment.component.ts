@@ -44,7 +44,7 @@ export class DoctorAppointmentComponent implements OnInit {
   ngOnInit(): void {
     
   if (!localStorage.getItem('token')) {
-      this.router.navigateByUrl('/login', { replaceUrl: true });
+      this.router.navigateByUrl('login', { replaceUrl: true });
       return;
     }
 

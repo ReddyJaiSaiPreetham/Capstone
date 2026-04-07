@@ -26,7 +26,7 @@ export class DashbaordComponent implements OnInit {
 
     
     if (!this.authService.getLoginStatus) {
-      this.router.navigate(['/login'], { replaceUrl: true });
+      this.router.navigate(['login'], { replaceUrl: true });
       return;
     }
 
@@ -75,6 +75,6 @@ export class DashbaordComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.showProfile = false;
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.router.navigate(['login'], { replaceUrl: true });
   }
 }

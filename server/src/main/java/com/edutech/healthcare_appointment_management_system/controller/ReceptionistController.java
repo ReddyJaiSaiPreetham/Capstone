@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -38,6 +41,9 @@ public class ReceptionistController {
     @Autowired
     private DoctorAvailabilitySlotRepository doctorAvailabilitySlotRepository;
 
+    // ✅ FIX: Interpret slotStart as IST when filtering past slots
+    private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
+
     // ✅ FETCH ALL APPOINTMENTS
     @GetMapping("/appointments")
     public List<Appointment> getAllAppointments() {
@@ -50,10 +56,10 @@ public class ReceptionistController {
         return patientRepository.findAll();
     }
 
-    // ✅ FETCH ALL DOCTORS
+    // ✅ FETCH ONLY ACTIVE DOCTORS (so inactive doctors won't show)
     @GetMapping("/doctors")
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+    public ResponseEntity<List<Doctor>> getDoctors() {
+        return ResponseEntity.ok(doctorRepository.findByActiveTrue());
     }
 
     // ✅ SCHEDULE APPOINTMENT (slot-based)
@@ -69,6 +75,7 @@ public class ReceptionistController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
+        // booking enforcement for inactive doctor is in service (already added by you)
         return appointmentService.scheduleAppointment(patient, doctor, timeDto.getTime());
     }
 
@@ -81,55 +88,64 @@ public class ReceptionistController {
         return appointmentService.rescheduleAppointment(appointmentId, timeDto.getTime());
     }
 
-    // ✅ DELETE APPOINTMENT
+    // ✅ DELETE APPOINTMENT (slot freed in service)
     @DeleteMapping("/appointment/{id}")
     public ResponseEntity<?> deleteAppointment(@PathVariable Long id) {
-        appointmentRepository.deleteById(id);
+        appointmentService.deleteAppointmentByReceptionist(id);
         return ResponseEntity.ok().build();
     }
 
     /* =========================================================
-       ✅ NEW SLOT APIs FOR RECEPTIONIST
+       ✅ SLOT APIs FOR RECEPTIONIST
        ========================================================= */
 
     // ✅ 1) Receptionist: Get AVAILABLE slots (for booking/reschedule UI)
     // URL: GET /api/receptionist/doctor/{doctorId}/available-slots?date=YYYY-MM-DD
-   // GET /api/receptionist/doctor/{doctorId}/available-slots?date=YYYY-MM-DD
-@GetMapping("/doctor/{doctorId}/available-slots")
-public ResponseEntity<List<Map<String, String>>> getDoctorAvailableSlots(
-        @PathVariable Long doctorId,
-        @RequestParam String date
-) {
-    Doctor doctor = doctorRepository.findById(doctorId)
-            .orElseThrow(() -> new RuntimeException("Doctor not found"));
+    @GetMapping("/doctor/{doctorId}/available-slots")
+    public ResponseEntity<List<Map<String, String>>> getDoctorAvailableSlots(
+            @PathVariable Long doctorId,
+            @RequestParam String date
+    ) {
 
-    LocalDate localDate = LocalDate.parse(date);
-    LocalDateTime start = localDate.atTime(9, 0);
-    LocalDateTime end = localDate.atTime(21, 0);
+        Doctor doctor = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-    DateTimeFormatter isoFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("hh:mm a");
+        // ✅ If inactive doctor -> return empty list (avoid 500)
+        if (!doctor.isActive()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
 
-    // ✅ only AVAILABLE slots
-    List<DoctorAvailabilitySlot> slots =
-            doctorAvailabilitySlotRepository.findByDoctorAndSlotStartBetweenAndStatus(
-                    doctor, start, end, SlotStatus.AVAILABLE
-            );
+        LocalDate localDate = LocalDate.parse(date);
+        LocalDateTime start = localDate.atTime(9, 0);
+        LocalDateTime end = localDate.atTime(21, 0);
 
-    // ✅ EXTRA SAFETY: remove slots that are already booked in appointments table
-    List<Map<String, String>> result = slots.stream()
-            .map(DoctorAvailabilitySlot::getSlotStart)
-            .filter(slotStart -> !appointmentRepository.existsByDoctorAndAppointmentTime(doctor, slotStart))
-            .map(slotStart -> {
-                Map<String, String> m = new java.util.HashMap<>();
-                m.put("time", slotStart.format(isoFmt));
-                m.put("display", slotStart.format(displayFmt));
-                return m;
-            })
-            .collect(Collectors.toList());
+        DateTimeFormatter isoFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter displayFmt = DateTimeFormatter.ofPattern("hh:mm a");
 
-    return ResponseEntity.ok(result);
-}
+        // ✅ only AVAILABLE slots
+        List<DoctorAvailabilitySlot> slots =
+                doctorAvailabilitySlotRepository.findByDoctorAndSlotStartBetweenAndStatus(
+                        doctor, start, end, SlotStatus.AVAILABLE
+                );
+
+        // ✅ FIX: hide past times correctly (even if server is UTC)
+        Instant nowInstant = Instant.now();
+
+        // ✅ EXTRA SAFETY: remove slots that are already booked in appointments table
+        List<Map<String, String>> result = slots.stream()
+                .map(DoctorAvailabilitySlot::getSlotStart)
+                .filter(slotStart -> slotStart.atZone(IST).toInstant().isAfter(nowInstant))
+                .filter(slotStart -> !appointmentRepository.existsByDoctorAndAppointmentTime(doctor, slotStart))
+                .map(slotStart -> {
+                    Map<String, String> m = new java.util.HashMap<>();
+                    m.put("time", slotStart.format(isoFmt));
+                    m.put("display", slotStart.format(displayFmt));
+                    return m;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(result);
+    }
 
     // ✅ 2) Receptionist: Get ALL slots (AVAILABLE/BLOCKED/BOOKED) to see why locked (optional)
     // URL: GET /api/receptionist/doctor/{doctorId}/slots?date=YYYY-MM-DD
@@ -141,8 +157,12 @@ public ResponseEntity<List<Map<String, String>>> getDoctorAvailableSlots(
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        LocalDate localDate = LocalDate.parse(date);
+        // ✅ If inactive -> return empty list (optional but recommended)
+        if (!doctor.isActive()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
 
+        LocalDate localDate = LocalDate.parse(date);
         LocalDateTime start = localDate.atTime(9, 0);
         LocalDateTime end = localDate.atTime(21, 0);
 

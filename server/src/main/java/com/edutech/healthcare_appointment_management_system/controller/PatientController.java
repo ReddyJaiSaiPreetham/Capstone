@@ -5,15 +5,20 @@ import com.edutech.healthcare_appointment_management_system.entity.*;
 import com.edutech.healthcare_appointment_management_system.repository.AppointmentRepository;
 import com.edutech.healthcare_appointment_management_system.repository.DoctorAvailabilitySlotRepository;
 import com.edutech.healthcare_appointment_management_system.repository.DoctorRepository;
-import com.edutech.healthcare_appointment_management_system.service.*;
+import com.edutech.healthcare_appointment_management_system.service.AppointmentService;
+import com.edutech.healthcare_appointment_management_system.service.DoctorService;
+import com.edutech.healthcare_appointment_management_system.service.PatientService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,10 +45,13 @@ public class PatientController {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    // ✅ GET ALL DOCTORS
+    // ✅ FIX: Interpret slotStart as IST when filtering past slots
+    private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
+
+    // ✅ GET ONLY ACTIVE DOCTORS (so inactive doctors won't show)
     @GetMapping("/doctors")
-    public List<Doctor> getDoctors() {
-        return doctorService.getAllDoctors();
+    public ResponseEntity<List<Doctor>> getDoctors() {
+        return ResponseEntity.ok(doctorRepository.findByActiveTrue());
     }
 
     // ✅ SCHEDULE APPOINTMENT (return JSON safely)
@@ -56,6 +64,7 @@ public class PatientController {
         Patient patient = patientService.getPatientById(patientId);
         Doctor doctor = doctorService.getDoctorById(doctorId);
 
+        // booking enforcement for inactive doctor is in service (already added by you)
         appointmentService.scheduleAppointment(patient, doctor, timeDto.getTime());
 
         Map<String, String> resp = new java.util.HashMap<>();
@@ -79,8 +88,12 @@ public class PatientController {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
-        LocalDate localDate = LocalDate.parse(date);
+        // ✅ If inactive doctor -> return empty list (avoid 500)
+        if (!doctor.isActive()) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
 
+        LocalDate localDate = LocalDate.parse(date);
         LocalDateTime start = localDate.atTime(9, 0);
         LocalDateTime end = localDate.atTime(21, 0);
 
@@ -92,8 +105,12 @@ public class PatientController {
                         doctor, start, end, SlotStatus.AVAILABLE
                 );
 
+        // ✅ FIX: hide past times correctly (even if server is UTC)
+        Instant nowInstant = Instant.now();
+
         List<Map<String, String>> result = enabledSlots.stream()
                 .map(DoctorAvailabilitySlot::getSlotStart)
+                .filter(slotStart -> slotStart.atZone(IST).toInstant().isAfter(nowInstant))
                 .filter(slotStart -> !appointmentRepository.existsByDoctorAndAppointmentTime(doctor, slotStart))
                 .map(slotStart -> {
                     Map<String, String> m = new java.util.HashMap<>();

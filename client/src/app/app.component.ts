@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
       if ((event as any).persisted) {
         const url = this.router.url || '/';
         if (!this.authService.getLoginStatus && this.isProtectedUrl(url)) {
-          this.router.navigate(['/login'], { replaceUrl: true });
+          this.router.navigate(['login'], { replaceUrl: true });
         }
       }
     });
@@ -103,7 +103,7 @@ export class AppComponent implements OnInit {
     this.showProfile = false;
     document.body.classList.remove('profile-open');
 
-    this.router.navigate(['/login'], { replaceUrl: true });
+    this.router.navigate(['login'], { replaceUrl: true });
   }
 
   toggleProfile(): void {

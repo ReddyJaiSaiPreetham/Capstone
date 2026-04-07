@@ -58,6 +58,6 @@ export class AuthService {
   sessionStorage.clear();
 
   // Replace browser state
-  history.replaceState(null, '', '/login');
+  history.replaceState(null, '', 'login');
 }
 }

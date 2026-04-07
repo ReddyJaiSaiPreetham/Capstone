@@ -29,7 +29,7 @@ constructor(
   this.router.events
     .pipe(filter(e => e instanceof NavigationStart))
     .subscribe((e: any) => {
-      if (e.navigationTrigger === 'popstate' && e.url === '/login') {
+      if (e.navigationTrigger === 'popstate' && e.url === 'login') {
         
         this.authService.logout();
         this.router.navigate(['/home'], { replaceUrl: true });

@@ -90,7 +90,7 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   }
 
   fetchSlots(): void {
-    this.responseMessage = '';
+    // this.responseMessage = '';
     this.errorMessage = '';
 
     const doctorId = this.itemForm.value.doctorId;
