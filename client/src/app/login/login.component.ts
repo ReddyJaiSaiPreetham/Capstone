@@ -25,12 +25,12 @@ constructor(
   private authService: AuthService
 ) {
 
-  // ✅ If login page is reached using Back/Forward, send user to Home and remove login from history
+ 
   this.router.events
     .pipe(filter(e => e instanceof NavigationStart))
     .subscribe((e: any) => {
       if (e.navigationTrigger === 'popstate' && e.url === '/login') {
-        // user pressed back/forward and landed on login
+        
         this.authService.logout();
         this.router.navigate(['/home'], { replaceUrl: true });
       }
@@ -82,11 +82,9 @@ constructor(
 
   onLogin(): void {
 
-    console.log('Form validity:', this.itemForm.valid);
-    console.log('Form value:', this.itemForm.value);
 
     if (this.itemForm.invalid) {
-      this.itemForm.markAllAsTouched(); // ✅ SHOW ERRORS
+      this.itemForm.markAllAsTouched(); 
       return;
     }
 
@@ -98,7 +96,7 @@ constructor(
         this.authService.saveUserId(res.userId.toString());
 
         this.router.navigate(['/dashboard'], {replaceUrl: true});
-       // setTimeout(() => window.location.reload(), 300);
+       
       },
       error => {
         this.showError = true;

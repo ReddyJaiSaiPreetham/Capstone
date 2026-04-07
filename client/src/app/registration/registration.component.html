@@ -1,15 +1,10 @@
 <div class="reg-page">
 
-  <!-- Animated background orbs -->
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
   <div class="orb orb-3"></div>
   <div class="grid-overlay"></div>
 
-  <!-- =============================================
-       SUCCESS / ERROR POPUP MODAL
-       Uses popupTitle (dynamic) instead of hardcoded string
-       ============================================= -->
   <div class="popup-backdrop" *ngIf="showMessage" (click)="showMessage = false"></div>
   <div class="popup-modal" *ngIf="showMessage" [ngClass]="isError ? 'popup-error' : 'popup-success'">
     <div class="popup-icon-wrap">
@@ -25,7 +20,6 @@
       </div>
     </div>
 
-    <!-- ✅ Dynamic title from popupTitle property -->
     <h3 class="popup-title">{{ popupTitle }}</h3>
     <p class="popup-msg">{{ responseMessage }}</p>
 

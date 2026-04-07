@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpService } from '../../services/http.service'; // adjust path if needed
+import { HttpService } from '../../services/http.service';
 
 @Component({
   selector: 'app-admin-doctors',

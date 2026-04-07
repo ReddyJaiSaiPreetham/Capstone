@@ -1,8 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
-// =============================================
-// TOKENS
-// =============================================
 $bg:          #060d1f;
 $bg-card:     rgba(255,255,255,0.04);
 $border:      rgba(255,255,255,0.1);
@@ -16,9 +13,6 @@ $font-body:   'DM Sans', sans-serif;
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-// =============================================
-// HOST / BODY
-// =============================================
 :host {
   display: block;
   width: 100%;
@@ -156,9 +150,7 @@ $font-body:   'DM Sans', sans-serif;
   flex-shrink: 0;
 }
 
-// =============================================
-// PROFILE TRIGGER + DROPDOWN
-// =============================================
+
 .nav-profile {
   position: relative;
   z-index: 110;
@@ -483,9 +475,6 @@ $font-body:   'DM Sans', sans-serif;
   @media (max-width: 900px) { width: 100%; }
 }
 
-// =============================================
-// HERO CARD
-// =============================================
 .hero-card {
   background: $bg-card;
   border: 1px solid $border;
@@ -572,9 +561,7 @@ $font-body:   'DM Sans', sans-serif;
   .pill-dot { background: $blue-light; box-shadow: 0 0 6px $blue-light; }
 }
 
-// =============================================
-// ACTION BUTTONS
-// =============================================
+
 .hero-actions {
   display: flex;
   flex-direction: column;
@@ -622,14 +609,6 @@ $font-body:   'DM Sans', sans-serif;
   }
 }
 
-// =============================================
-// ALL ROLES — unified Medicare blue (no per-role overrides)
-// accent, buttons, pills all use the same $blue / $blue-light
-// =============================================
-
-// =============================================
-// RESPONSIVE
-// =============================================
 @media (max-width: 640px) {
   .dash-nav { padding: 0 16px; }
   .nav-username { display: none; }

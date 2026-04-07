@@ -4,15 +4,15 @@ import { HttpService } from '../../services/http.service';
 type SlotStatus = 'AVAILABLE' | 'BLOCKED' | 'BOOKED';
 
 interface ApiSlot {
-  slotStart: string;               // "2026-04-03T09:00:00"
-  status: SlotStatus;              // AVAILABLE/BLOCKED/BOOKED
+  slotStart: string;             
+  status: SlotStatus;              
   bookedPatientName?: string | null;
   bookedAppointmentId?: number | null;
 }
 
 interface UiSlot {
-  label: string;                   // "09:00 AM"
-  time: string;                    // "YYYY-MM-DDTHH:mm:ss"
+  label: string;                 
+  time: string;                   
   status: SlotStatus;
   bookedPatientName?: string | null;
   bookedAppointmentId?: number | null;
@@ -51,7 +51,7 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.doctorId = parseInt(userId, 10);
 
-    // date range: today -> today+10
+    
     const today = new Date();
     this.minDate = this.toDateOnly(today);
 
@@ -61,10 +61,8 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.selectedDate = this.minDate;
 
-    // Build UI slots first (so UI always shows)
     this.buildSlots();
 
-    // Generate slots in DB then fetch for selected date
     this.generateSlotsAndLoad();
   }
 
@@ -94,7 +92,7 @@ export class DoctorAvailabilityComponent implements OnInit {
       this.slots.push({
         label: this.formatLabel(hour),
         time: `${this.selectedDate}T${hh}:00:00`,
-        status: 'BLOCKED' // default until backend response
+        status: 'BLOCKED' 
       });
     }
   }
@@ -104,7 +102,7 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.httpService.generateDoctorSlots(this.doctorId).subscribe({
       next: () => this.loadSlotsForDate(),
-      error: () => this.loadSlotsForDate() // if already generated, still load
+      error: () => this.loadSlotsForDate() 
     });
   }
 
@@ -121,12 +119,10 @@ export class DoctorAvailabilityComponent implements OnInit {
         const map = new Map<string, ApiSlot>();
 
         (apiSlots || []).forEach(s => {
-          // Ensure key matches format "YYYY-MM-DDTHH:mm:ss"
           const key = (s.slotStart || '').length > 19 ? s.slotStart.substring(0, 19) : s.slotStart;
           map.set(key, s);
         });
 
-        // Merge backend statuses into UI slots
         this.slots = this.slots.map(ui => {
           const found = map.get(ui.time);
           if (!found) return ui;

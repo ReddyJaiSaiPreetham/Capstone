@@ -7,9 +7,6 @@
   padding: 0;
 }
 
-/* =============================================
-   NAVBAR
-   ============================================= */
 .ham-navbar {
   position: sticky;
   top: 0;
@@ -129,9 +126,6 @@
   background: rgba(248, 113, 113, 0.07);
 }
 
-/* =============================================
-   PAGE WRAPPER
-   ============================================= */
 .sched-page {
   min-height: calc(100vh - 62px);
   background: #060d1f;
@@ -194,9 +188,6 @@
   pointer-events: none;
 }
 
-/* =============================================
-   CONTAINER
-   ============================================= */
 .sched-container {
   position: relative;
   z-index: 2;
@@ -204,9 +195,6 @@
   margin: 0 auto;
 }
 
-/* =============================================
-   PAGE HEADER
-   ============================================= */
 .sched-page-header {
   display: flex;
   align-items: center;
@@ -242,9 +230,6 @@
   margin-top: 3px;
 }
 
-/* =============================================
-   ALERTS
-   ============================================= */
 .sched-alert {
   display: flex;
   align-items: center;
@@ -268,9 +253,6 @@
   color: #fca5a5;
 }
 
-/* =============================================
-   FORM CARD
-   ============================================= */
 .sched-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.09);
@@ -286,9 +268,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* =============================================
-   FORM GRID
-   ============================================= */
 .sched-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -306,9 +285,6 @@
   grid-column: 1 / -1;
 }
 
-/* =============================================
-   LABELS
-   ============================================= */
 .sched-label {
   display: inline-flex;
   align-items: center;
@@ -320,9 +296,6 @@
   margin-bottom: 8px;
 }
 
-/* =============================================
-   SELECT
-   ============================================= */
 .sched-select-wrap {
   position: relative;
 }
@@ -368,9 +341,6 @@
   pointer-events: none;
 }
 
-/* =============================================
-   DATE INPUT
-   ============================================= */
 .sched-input-wrap {
   position: relative;
 }
@@ -409,9 +379,6 @@
   color: rgba(255, 255, 255, 0.3);
 }
 
-/* =============================================
-   SLOTS SECTION
-   ============================================= */
 .sched-slots-section {
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding-top: 24px;
@@ -510,9 +477,6 @@
   color: #f87171;
 }
 
-/* =============================================
-   SUBMIT ROW
-   ============================================= */
 .sched-submit-row {
   display: flex;
   justify-content: flex-end;
@@ -553,9 +517,6 @@
   box-shadow: none;
 }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
 @media (max-width: 480px) {
   .sched-card {
     padding: 24px 18px;

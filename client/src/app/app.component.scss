@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   background: rgba(255, 255, 255, 0.95);
-  z-index: 2000;          /* higher than dashboard */
+  z-index: 2000;       
   display: flex;
   justify-content: center;
   align-items: center;
@@ -29,5 +29,5 @@
 .logo img {
   width: 34px;
   height: 34px;
-  filter: brightness(0) invert(1); /* makes icon white */
+  filter: brightness(0) invert(1); 
 }

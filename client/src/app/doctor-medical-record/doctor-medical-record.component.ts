@@ -104,7 +104,6 @@ export class DoctorMedicalRecordComponent implements OnInit {
           treatment: record?.treatment || ''
         });
 
-        // reset medicines array and load from backend
         this.prescriptionItems.clear();
 
         const items = record?.prescriptionItems || [];
@@ -114,7 +113,6 @@ export class DoctorMedicalRecordComponent implements OnInit {
           this.addMedicine();
         }
 
-        // If patientId not supplied in query, try to get from record
         if (!this.patientId && record?.patient?.id) {
           this.patientId = record.patient.id;
         }
@@ -130,7 +128,7 @@ export class DoctorMedicalRecordComponent implements OnInit {
     });
   }
 
-  /* ===================== SAVE (CREATE/UPDATE) ===================== */
+  
 
   submit(): void {
     this.successMessage = '';
@@ -153,7 +151,7 @@ export class DoctorMedicalRecordComponent implements OnInit {
 
     const body = this.recordForm.value;
 
-    // extra safety: ensure prescriptionItems exists
+   
     if (!body.prescriptionItems || body.prescriptionItems.length === 0) {
       this.errorMessage = 'Please add at least one medicine';
       return;
@@ -168,7 +166,7 @@ export class DoctorMedicalRecordComponent implements OnInit {
           this.loading = false;
           this.successMessage = 'Prescription created successfully ✅';
 
-          // if backend returns saved record, capture id and switch to edit mode
+      
           if (res?.id) this.recordId = res.id;
 
           setTimeout(() => this.successMessage = '', 2500);
@@ -206,7 +204,6 @@ export class DoctorMedicalRecordComponent implements OnInit {
   /* ===================== NAV ===================== */
 
   goBack(): void {
-    // navigate back to doctor appointment page (adjust if route differs)
     this.router.navigate(['/doctor-appointment']);
   }
 }

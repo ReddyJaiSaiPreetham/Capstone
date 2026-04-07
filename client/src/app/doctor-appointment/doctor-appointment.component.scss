@@ -1,6 +1,4 @@
-/* =============================================
-   BASE + ROOT
-   ============================================= */
+
 :host {
   display: block;
   min-height: 100vh;
@@ -22,9 +20,7 @@
   overflow-x: hidden;
 }
 
-/* =============================================
-   ANIMATED ORBS + GRID OVERLAY
-   ============================================= */
+
 .orb {
   position: fixed;
   border-radius: 50%;
@@ -88,9 +84,6 @@
   z-index: 0;
 }
 
-/* =============================================
-   NAVBAR
-   ============================================= */
 .navbar {
   position: sticky;
   top: 0;
@@ -246,9 +239,6 @@
   color: #fecaca;
 }
 
-/* =============================================
-   DASH BODY
-   ============================================= */
 .dash-body {
   position: relative;
   z-index: 1;
@@ -376,9 +366,6 @@
   margin-bottom: 18px;
 }
 
-/* =============================================
-   STAT CARDS
-   ============================================= */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -436,9 +423,8 @@
   letter-spacing: 0.4px;
 }
 
-/* =============================================
-   SECTION HEADERS
-   ============================================= */
+
+
 .section-header {
   display: flex;
   align-items: center;
@@ -505,9 +491,8 @@
   color: #fff;
 }
 
-/* =============================================
-   EMPTY STATE
-   ============================================= */
+
+
 .empty-state {
   padding: 26px 18px;
   border-radius: 16px;
@@ -518,9 +503,8 @@
   margin-bottom: 16px;
 }
 
-/* =============================================
-   APPOINTMENT CARDS
-   ============================================= */
+
+
 .appt-cards {
   display: flex;
   flex-direction: column;
@@ -789,9 +773,8 @@
   border: 1px dashed rgba(255, 255, 255, 0.12);
 }
 
-/* =============================================
-   RESCHEDULE PANEL (DATE + SLOTS GRID)
-   ============================================= */
+
+
 .reschedule-panel {
   margin-top: 10px;
   border-radius: 16px;
@@ -825,7 +808,7 @@
   font-style: italic;
 }
 
-/* IMPORTANT: grid layout so it lines properly */
+
 .reschedule-body {
   display: grid;
   grid-template-columns: 280px 1fr;
@@ -938,9 +921,8 @@
   color: #fff;
 }
 
-/* =============================================
-   UPCOMING / PAST DAY LABELS
-   ============================================= */
+
+
 .day-group {
   margin-top: 18px;
 }
@@ -970,9 +952,8 @@
   border-radius: 999px;
 }
 
-/* =============================================
-   LOADING BAR
-   ============================================= */
+
+
 .loading-bar {
   display: flex;
   align-items: center;
@@ -999,9 +980,8 @@
   50%      { opacity: 0.4; transform: scale(0.7); }
 }
 
-/* =============================================
-   RESPONSIVE
-   ============================================= */
+
+
 @media (max-width: 900px) {
   .appt-card {
     flex-direction: column;

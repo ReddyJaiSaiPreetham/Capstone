@@ -30,8 +30,8 @@ export class DoctorAppointmentComponent implements OnInit {
   minRescheduleDate: string = '';
   maxRescheduleDate: string = '';
 
-  availableSlotsAll: SlotDto[] = [];   // normalized slots
-  rawSlotsCount: number = 0;           // raw slots count from API
+  availableSlotsAll: SlotDto[] = [];  
+  rawSlotsCount: number = 0;           
   selectedSlotTime: string = '';
   loadingSlots: boolean = false;
 
@@ -355,11 +355,10 @@ export class DoctorAppointmentComponent implements OnInit {
       return { time: t, display: this.formatSlotDisplay(t), available: true, raw: s };
     }
 
-    // Common known keys
+   
     let time =
       s?.time || s?.slotTime || s?.startTime || s?.dateTime || s?.appointmentTime || s?.value || '';
 
-    // If not found, try scanning values (works even if backend key is different)
     if (!time) {
       time = this.findAnyIsoDateTime(s) || '';
     }
@@ -370,7 +369,7 @@ export class DoctorAppointmentComponent implements OnInit {
     const display =
       s?.display || s?.label || s?.slotLabel || this.formatSlotDisplay(t);
 
-    // If backend does not provide availability flag, assume available=true (doctor slots list usually is availability list)
+    
     const hasFlag =
       ('available' in (s || {})) || ('isAvailable' in (s || {})) || ('status' in (s || {})) || ('booked' in (s || {}));
 
@@ -386,11 +385,9 @@ export class DoctorAppointmentComponent implements OnInit {
     return { time: t, display, available: !!available, raw: s };
   }
 
-  // Search for any ISO datetime string in object values (recursive)
   private findAnyIsoDateTime(obj: any): string | null {
     if (!obj) return null;
 
-    // direct string match
     if (typeof obj === 'string') {
       if (/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}/.test(obj)) return obj;
       return null;

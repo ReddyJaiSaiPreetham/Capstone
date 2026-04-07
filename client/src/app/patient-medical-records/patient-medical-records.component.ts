@@ -38,7 +38,7 @@ export class PatientMedicalRecordsComponent implements OnInit {
     this.httpService.getPatientMedicalRecords(patientId).subscribe({
       next: (data: any[]) => {
         this.records = Array.isArray(data) ? data : [];
-        // sort latest first (if recordDate exists)
+       
         this.records.sort((a, b) => {
           const da = a?.recordDate ? new Date(a.recordDate).getTime() : 0;
           const db = b?.recordDate ? new Date(b.recordDate).getTime() : 0;

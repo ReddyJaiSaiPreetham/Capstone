@@ -10,45 +10,45 @@ export class AuthService {
 
   constructor() {}
 
-  // ✅ Save token received from login
+  // Save token received from login
   saveToken(token: string): void {
     this.token = token;
     this.isLoggedInFlag = true;
     localStorage.setItem('token', token);
   }
 
-  // ✅ Save role
+  // Save role
   SetRole(role: any): void {
     localStorage.setItem('role', role);
   }
 
-  // ✅ Get role
+  // Get role
   get getRole(): string | null {
     return localStorage.getItem('role');
   }
 
-  // ✅ Save userId
+  // Save userId
   saveUserId(userid: string): void {
     localStorage.setItem('userId', userid);
   }
 
-  // ✅ Read token
+  // Read token
   getToken(): string | null {
     this.token = localStorage.getItem('token');
     return this.token;
   }
 
-  // ✅ Existing getter (works)
+  // Existing getter (works)
   get getLoginStatus(): boolean {
     return !!localStorage.getItem('token');
   }
 
-  // ✅ NEW: Simple method (useful in app.component.ts)
+  // NEW: Simple method (useful in app.component.ts)
   isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
 
-  // ✅ Strong logout: clear everything related to session
+  //  Strong logout: clear everything related to session
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('role');

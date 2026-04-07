@@ -16,7 +16,6 @@ export class PatientAppointmentComponent implements OnInit {
 
 appointmentList: any[] = [];
 
-// ✅ Categorized lists
 
 todayAppointments: any[] = [];
 
@@ -24,11 +23,9 @@ upcomingAppointments: any[] = [];
 
 pastAppointments: any[] = [];
 
-// ✅ Pagination config
 
 pageSize = 5;
 
-// ✅ Pagination current pages (separate for each table)
 
 todayPage = 1;
 
@@ -56,7 +53,6 @@ this.httpService.getAppointmentByPatient(userId).subscribe((data: any) => {
 
 this.appointmentList = Array.isArray(data) ? data : [];
 
-// ✅ Split into Today / Upcoming / Past
 
 this.splitAppointments();
 
@@ -66,23 +62,20 @@ this.splitAppointments();
 
 }
 
-// ✅ Robust date parser for "YYYY-MM-DD HH:mm:ss" OR "YYYY-MM-DDTHH:mm:ss"
 
 private parseAppointmentDate(time: string): Date {
 
 if (!time) return new Date(0);
 
-const clean = time.substring(0, 19).replace(' ', 'T'); // normalize
+const clean = time.substring(0, 19).replace(' ', 'T'); 
 
 const dt = new Date(clean);
 
-// fallback if parsing fails
 
 return isNaN(dt.getTime()) ? new Date(0) : dt;
 
 }
 
-// ✅ Sort helper (works on any list)
 
 private sortAppointmentsByTime(list: any[], order: 'asc' | 'desc' = 'asc'): any[] {
 
@@ -98,17 +91,14 @@ return order === 'asc' ? t1 - t2 : t2 - t1;
 
 }
 
-// ✅ Split logic: Today includes all appointments of today (even past times)
 
 private splitAppointments(): void {
 
 const now = new Date();
 
-// Start of today: 00:00:00
 
 const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
 
-// Start of tomorrow: 00:00:00
 
 const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
 
@@ -122,7 +112,6 @@ for (const appt of this.appointmentList) {
 
 const apptDate = this.parseAppointmentDate(appt?.appointmentTime);
 
-// ✅ PAST = strictly before today
 
 if (apptDate < startOfToday) {
 
@@ -132,7 +121,6 @@ continue;
 
 }
 
-// ✅ TODAY = within today's date (00:00:00 to < tomorrow 00:00:00)
 
 if (apptDate >= startOfToday && apptDate < startOfTomorrow) {
 
@@ -142,7 +130,6 @@ continue;
 
 }
 
-// ✅ UPCOMING = tomorrow onwards
 
 if (apptDate >= startOfTomorrow) {
 
@@ -154,15 +141,13 @@ continue;
 
 }
 
-// ✅ Sort them (date+time)
 
 this.todayAppointments = this.sortAppointmentsByTime(today, 'asc');
 
 this.upcomingAppointments = this.sortAppointmentsByTime(upcoming, 'asc');
 
-this.pastAppointments = this.sortAppointmentsByTime(past, 'desc'); // recent past first
+this.pastAppointments = this.sortAppointmentsByTime(past, 'desc'); 
 
-// ✅ Reset pagination when new data loads
 
 this.todayPage = 1;
 
@@ -172,9 +157,7 @@ this.pastPage = 1;
 
 }
 
-// ===================== ✅ PAGINATION HELPERS =====================
 
-// ✅ Get paginated data for each section
 
 get paginatedTodayAppointments(): any[] {
 
@@ -194,7 +177,7 @@ return this.paginate(this.pastAppointments, this.pastPage);
 
 }
 
-// ✅ Total pages for each section
+
 
 get todayTotalPages(): number {
 
@@ -228,7 +211,6 @@ return Math.ceil(list.length / this.pageSize) || 1;
 
 }
 
-// ✅ Change page safely
 
 changePage(section: 'today' | 'upcoming' | 'past', newPage: number): void {
 
@@ -248,7 +230,6 @@ this.pastPage = Math.min(Math.max(newPage, 1), this.pastTotalPages);
 
 }
 
-// ===================== ✅ TIME FORMATTER =====================
 
 formatAppointmentTime(time: string): string {
 

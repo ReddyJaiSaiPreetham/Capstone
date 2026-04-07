@@ -16,7 +16,7 @@ export class HttpService {
     private authService: AuthService
   ) { }
 
-  /* ===================== COMMON HEADERS ===================== */
+  
   private getAuthHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
@@ -24,30 +24,23 @@ export class HttpService {
     });
   }
 
-  /**
-   * ✅ Convert frontend datetime to backend LocalDateTime string
-   * Accepts:
-   *  - "2026-04-03T14:51" -> "2026-04-03T14:51:00"
-   *  - "2026-04-03T14:51:00" -> unchanged
-   *  - "2026-04-03 14:51:00" -> "2026-04-03T14:51:00"
-   *  - "2026-04-03T14:51:00.000+00:00" -> "2026-04-03T14:51:00"
-   */
+  
   private toLocalDateTimeString(value: any): string {
     if (!value) return value;
 
-    // If accidentally passed object {time, display}, extract time
+    
     const raw = typeof value === 'string' ? value : value?.time;
     if (!raw) return value;
 
-    // Convert space to 'T' if needed
+    
     let v = raw.includes(' ') ? raw.replace(' ', 'T') : raw;
 
-    // If it's like "yyyy-MM-ddTHH:mm" append seconds
+   
     if (v.length === 16) {
       v = v + ':00';
     }
 
-    // If it includes milliseconds/zone, trim to seconds
+  
     if (v.length > 19) {
       v = v.substring(0, 19);
     }
@@ -190,9 +183,9 @@ export class HttpService {
     );
   }
 
-  /* ✅✅ NEW: RECEPTIONIST SLOT APIs (ADD THESE) ✅✅ */
 
-  // ✅ 1) Receptionist: Get AVAILABLE slots for booking UI (returns [{time, display}])
+
+  
   getReceptionistAvailableSlots(doctorId: number, date: string): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(
@@ -201,7 +194,7 @@ export class HttpService {
     );
   }
 
-  // ✅ 2) Receptionist: Get ALL slots to view why locked (AVAILABLE/BLOCKED/BOOKED)
+  
   getReceptionistDoctorSlots(doctorId: number, date: string): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(
@@ -239,7 +232,7 @@ export class HttpService {
     );
   }
 
-  // ✅ Patient: get available slots for a doctor + date
+  
   getAvailableSlotsForDoctor(doctorId: number, date: string): Observable<any[]> {
     const headers = this.getAuthHeaders();
     return this.http.get<any[]>(
@@ -248,7 +241,7 @@ export class HttpService {
     );
   }
 
-  // ✅ Patient: schedule using slot (safeTime handles string or {time, display})
+  
   scheduleAppointmentWithSlot(patientId: number, doctorId: number, slotTime: any): Observable<any> {
     const headers = this.getAuthHeaders();
     const safeTime = this.toLocalDateTimeString(slotTime);
@@ -379,7 +372,6 @@ registerReceptionist(details: any, otp: string): Observable<any> {
   }
   /* ===================== MEDICAL RECORDS (PRESCRIPTION) ===================== */
 
-// ✅ Doctor creates a medical record (diagnosis, treatment, prescriptionItems[])
 createMedicalRecord(patientId: number, doctorId: number, recordBody: any): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.post(
@@ -389,7 +381,6 @@ createMedicalRecord(patientId: number, doctorId: number, recordBody: any): Obser
   );
 }
 
-// ✅ Doctor updates an existing medical record
 updateMedicalRecord(recordId: number, doctorId: number, recordBody: any): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.put(
@@ -399,7 +390,7 @@ updateMedicalRecord(recordId: number, doctorId: number, recordBody: any): Observ
   );
 }
 
-// ✅ Doctor fetch record by ID (useful for edit screen)
+// Doctor fetch record by ID (useful for edit screen)
 getMedicalRecordByIdForDoctor(recordId: number): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.get(
@@ -408,7 +399,7 @@ getMedicalRecordByIdForDoctor(recordId: number): Observable<any> {
   );
 }
 
-// ✅ Patient gets all medical records (timeline list)
+// Patient gets all medical records (timeline list)
 getPatientMedicalRecords(patientId: number): Observable<any[]> {
   const headers = this.getAuthHeaders();
   return this.http.get<any[]>(
@@ -417,7 +408,7 @@ getPatientMedicalRecords(patientId: number): Observable<any[]> {
   );
 }
 
-// ✅ Patient gets single medical record details
+//  Patient gets single medical record details
 getPatientMedicalRecordById(recordId: number): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.get(
@@ -426,7 +417,7 @@ getPatientMedicalRecordById(recordId: number): Observable<any> {
   );
 }
 
-// ✅ Patient downloads prescription PDF (IMPORTANT: responseType = blob)
+//  Patient downloads prescription PDF (IMPORTANT: responseType = blob)
 downloadPrescriptionPdf(recordId: number): Observable<Blob> {
   const headers = this.getAuthHeaders();
   return this.http.get(
@@ -438,7 +429,7 @@ downloadPrescriptionPdf(recordId: number): Observable<Blob> {
 
 /* ===================== ADMIN ===================== */
 
-// ✅ Admin: get all users (optional)
+//  Admin: get all users (optional)
 getAllUsersForAdmin(): Observable<any[]> {
   const headers = this.getAuthHeaders();
   return this.http.get<any[]>(
@@ -447,7 +438,7 @@ getAllUsersForAdmin(): Observable<any[]> {
   );
 }
 
-// ✅ Admin: get all doctors
+//  Admin: get all doctors
 getDoctorsForAdmin(): Observable<any[]> {
   const headers = this.getAuthHeaders();
   return this.http.get<any[]>(
@@ -456,7 +447,7 @@ getDoctorsForAdmin(): Observable<any[]> {
   );
 }
 
-// ✅ Admin: get all receptionists
+//  Admin: get all receptionists
 getReceptionistsForAdmin(): Observable<any[]> {
   const headers = this.getAuthHeaders();
   return this.http.get<any[]>(
@@ -465,7 +456,7 @@ getReceptionistsForAdmin(): Observable<any[]> {
   );
 }
 
-// ✅ Admin: get all patients (optional)
+//  Admin: get all patients (optional)
 getPatientsForAdmin(): Observable<any[]> {
   const headers = this.getAuthHeaders();
   return this.http.get<any[]>(
@@ -474,7 +465,7 @@ getPatientsForAdmin(): Observable<any[]> {
   );
 }
 
-// ✅ Admin: activate user
+//  Admin: activate user
 activateUserByAdmin(userId: number): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.put(
@@ -484,7 +475,7 @@ activateUserByAdmin(userId: number): Observable<any> {
   );
 }
 
-// ✅ Admin: deactivate user
+//  Admin: deactivate user
 deactivateUserByAdmin(userId: number): Observable<any> {
   const headers = this.getAuthHeaders();
   return this.http.put(

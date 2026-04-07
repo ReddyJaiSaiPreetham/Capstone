@@ -19,12 +19,12 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   responseMessage: string = '';
   errorMessage: string = '';
 
-  // ✅ Date range: today -> +10 days
+  
   selectedDate: string = '';
   minDate: string = '';
   maxDate: string = '';
 
-  // ✅ Slots
+
   availableSlots: SlotDto[] = [];
   selectedSlotTime: string = '';
   loadingSlots: boolean = false;
@@ -36,7 +36,7 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     this.itemForm = this.formBuilder.group({
       patientId: ['', Validators.required],
       doctorId: ['', Validators.required],
-      time: ['', Validators.required] // filled when slot is selected
+      time: ['', Validators.required] 
     });
   }
 
@@ -45,7 +45,7 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     this.loadPatients();
     this.loadDoctors();
 
-    // when doctor changes -> fetch slots
+   
     this.itemForm.get('doctorId')?.valueChanges.subscribe(() => {
       this.selectedSlotTime = '';
       this.itemForm.patchValue({ time: '' });
@@ -53,7 +53,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
-  /* ===================== DATE RANGE ===================== */
   private setDateRange(): void {
     const today = new Date();
     this.minDate = this.toDateOnly(today);
@@ -70,7 +69,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   }
 
-  /* ===================== LOAD DROPDOWNS ===================== */
   loadPatients(): void {
     this.httpService.getAllPatients().subscribe({
       next: (data: any[]) => this.patientList = Array.isArray(data) ? data : [],
@@ -85,7 +83,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
     });
   }
 
-  /* ===================== SLOTS ===================== */
   onDateChange(): void {
     this.selectedSlotTime = '';
     this.itemForm.patchValue({ time: '' });
@@ -107,7 +104,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
 
     this.httpService.getReceptionistAvailableSlots(+doctorId, this.selectedDate).subscribe({
       next: (slots: any) => {
-        // Expected: [{time:"YYYY-MM-DDTHH:mm:ss", display:"hh:mm a"}]
         this.availableSlots = Array.isArray(slots) ? slots : [];
         this.loadingSlots = false;
       },
@@ -129,12 +125,10 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
   selectSlot(slot: SlotDto): void {
     this.selectedSlotTime = slot.time;
 
-    // set form control so form becomes valid
     this.itemForm.patchValue({ time: slot.time });
     this.itemForm.get('time')?.markAsTouched();
   }
 
-  /* ===================== SUBMIT ===================== */
   onSubmit(): void {
     this.responseMessage = '';
     this.errorMessage = '';
@@ -145,8 +139,6 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
       return;
     }
 
-    // ✅ slot.time already has seconds in backend response
-    // still safe: http.service.ts will normalize
     const payload = {
       patientId: this.itemForm.value.patientId,
       doctorId: this.itemForm.value.doctorId,
@@ -157,12 +149,10 @@ export class ReceptionistScheduleAppointmentsComponent implements OnInit {
       next: () => {
         this.responseMessage = 'Appointment scheduled successfully ✅';
 
-        // reset only booking fields but keep lists
         this.itemForm.reset();
         this.selectedSlotTime = '';
         this.availableSlots = [];
 
-        // keep date default today
         this.selectedDate = this.minDate;
       },
       error: (err) => {

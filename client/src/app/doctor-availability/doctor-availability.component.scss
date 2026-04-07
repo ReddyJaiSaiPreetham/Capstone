@@ -96,9 +96,8 @@
 .loading-pulse { width: 10px; height: 10px; border-radius: 50%; background: #38bdf8; animation: pulse 1s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
 
-/* =============================================
-   SLOT GRID
-   ============================================= */
+
+
 .slot-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));

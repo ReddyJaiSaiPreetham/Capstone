@@ -17,7 +17,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
   responseMessage: string = '';
   isError: boolean = false;
 
-  // ✅ NEW: separate title so OTP success ≠ "Account Created!"
   popupTitle: string = '';
 
   // OTP state
@@ -110,7 +109,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     this.subs.push(sub);
   }
 
-  // ✅ Send OTP
+  //  Send OTP
   sendOtp(): void {
     this.showMessage = false;
     this.responseMessage = '';
@@ -144,7 +143,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
         otpCtrl?.setValidators([Validators.required, Validators.pattern('^[0-9]{6}$')]);
         otpCtrl?.updateValueAndValidity();
 
-        // ✅ OTP success — correct title "OTP Sent!"
+        // OTP success — correct title "OTP Sent!"
         this.showSuccess('OTP Sent!', res?.message || 'OTP sent to your email. Check your inbox or spam.');
 
         this.startOtpCountdown(300);
@@ -186,7 +185,7 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  // ✅ UPDATED: takes title as first param
+  // UPDATED: takes title as first param
   private showSuccess(title: string, msg: string): void {
     this.showMessage = true;
     this.isError = false;
@@ -261,7 +260,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
     if (data.role === 'PATIENT') {
       this.bookService.registerPatient(data, otp).subscribe({
         next: () => {
-          // ✅ Registration success — correct title "Account Created!"
           this.showSuccess('Account Created!', 'Patient registered successfully. You can now sign in.');
           this.itemForm.reset();
           this.resetOtpState();

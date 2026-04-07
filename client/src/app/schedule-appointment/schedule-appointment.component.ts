@@ -11,15 +11,15 @@ type SlotDto = { time: string; display: string };
 export class ScheduleAppointmentComponent implements OnInit {
 
   doctorList: any[] = [];
-  filteredDoctorList: any[] = [];   // table will use this
-  searchText: string = '';          // single search input
+  filteredDoctorList: any[] = [];   
+  searchText: string = '';         
 
   // Pagination
   currentPage: number = 1;
-  pageSize: number = 6;           // you can change to 10
+  pageSize: number = 6;           
   totalPages: number = 0;
 
-  // This will contain only the doctors shown in the table for current page
+
   pagedDoctorList: any[] = [];
 
 
@@ -29,9 +29,8 @@ export class ScheduleAppointmentComponent implements OnInit {
   minDate: string = '';
   maxDate: string = '';
 
-  // :white_check_mark: Backend returns slot objects: [{time, display}]
   availableSlots: SlotDto[] = [];
-  // :white_check_mark: Store ONLY ISO time string for booking
+
   selectedSlotTime: string = '';
 
   successMessage: string = '';
@@ -47,7 +46,6 @@ export class ScheduleAppointmentComponent implements OnInit {
     this.getDoctors();
   }
 
-  /* ================== DATE RANGE (10 DAYS) ================== */
   private setDateRange(): void {
     const today = new Date();
     this.minDate = this.toDateOnly(today);
@@ -64,7 +62,7 @@ export class ScheduleAppointmentComponent implements OnInit {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   }
 
-  /* ================== DOCTORS ================== */
+
 
   getDoctors(): void {
   this.httpService.getDoctors().subscribe({
@@ -72,8 +70,8 @@ export class ScheduleAppointmentComponent implements OnInit {
       this.doctorList = Array.isArray(data) ? data : [];
       this.filteredDoctorList = [...this.doctorList];
 
-      this.currentPage = 1;       // reset
-      this.updatePagination();    // update paged list
+      this.currentPage = 1;       
+      this.updatePagination();  
     },
     error: () => {
       this.doctorList = [];
@@ -85,7 +83,7 @@ export class ScheduleAppointmentComponent implements OnInit {
   });
 }
 
-/* ================== FILTER FUNCTION DOCTOR ================== */
+
   filterDoctors(): void {
   const q = this.searchText.trim().toLowerCase();
 
@@ -99,17 +97,15 @@ export class ScheduleAppointmentComponent implements OnInit {
     });
   }
 
-  this.currentPage = 1;      // reset to page 1 after search
-  this.updatePagination();   // show first page results
+  this.currentPage = 1;     
+  this.updatePagination();  
 }
 
-/* ================== FILTER FUNCTION DOCTOR ================== */
 
 updatePagination(): void {
   const list = this.filteredDoctorList || [];
   this.totalPages = Math.ceil(list.length / this.pageSize) || 1;
 
-  // :white_check_mark: ensure current page is within range
   if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
   if (this.currentPage < 1) this.currentPage = 1;
 
@@ -139,7 +135,6 @@ prevPage(): void {
 }
 
 
-  /* ================== SELECT DOCTOR ================== */
   addAppointment(doctor: any): void {
     this.successMessage = '';
     this.errorMessage = '';
@@ -162,7 +157,6 @@ prevPage(): void {
   this.loadingSlots = true;
   this.errorMessage = '';
 
-  // :white_check_mark: Clear success ONLY when user changes doctor/date (not after booking)
   if (clearSuccess) {
     this.successMessage = '';
   }
@@ -181,13 +175,10 @@ prevPage(): void {
   });
 }
 
-  /* ================== SLOT SELECT ================== */
   selectSlot(slot: SlotDto): void {
-    // :white_check_mark: store only ISO string, not whole object
     this.selectedSlotTime = slot.time;
   }
 
-  /* ================== BOOK SLOT ================== */
   bookSlot(): void {
     this.successMessage = '';
     this.errorMessage = '';
@@ -210,7 +201,6 @@ prevPage(): void {
       return;
     }
 
-    // :white_check_mark: Ensure seconds exist: "YYYY-MM-DDTHH:mm:ss"
     const slotForBackend =
       this.selectedSlotTime.length === 16 ? this.selectedSlotTime + ':00' : this.selectedSlotTime;
 
@@ -218,12 +208,12 @@ prevPage(): void {
       .scheduleAppointmentWithSlot(patientId, this.selectedDoctor.id, slotForBackend)
       .subscribe({
         next: (res: any) => {
-          // backend returns {message:"Appointment Scheduled"} OR plain string
+         
           this.successMessage = (res?.message || res || 'Appointment Scheduled') + ' ✅'
 
 ;
           this.selectedSlotTime = '';
-          this.fetchAvailableSlots(); // remove booked slot
+          this.fetchAvailableSlots(); 
         },
         error: (err) => {
           console.error('Booking failed:', err);
@@ -248,9 +238,9 @@ prevPage(): void {
     this.errorMessage = '';
   }
 
-  /* ================== Helper (fallback display for old string slots) ================== */
+ 
   private formatToIST(slot: string): string {
-    // slot like "2026-04-03T11:00" or "2026-04-03T11:00:00"
+    
     const cleaned = slot.replace(' ', 'T');
     const parts = cleaned.split('T');
     if (parts.length !== 2) return slot;

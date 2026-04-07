@@ -17,7 +17,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   appointmentList: any[] = [];
   filteredAppointments: any[] = [];
 
-  isAdded: boolean = false; // reschedule form visible
+  isAdded: boolean = false; 
 
   searchText: string = '';
 
@@ -25,7 +25,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   itemsPerPage: number = 10;
   totalPages: number = 1;
 
-  // ✅ Slot reschedule state
   selectedAppointment: any = null;
   selectedDate: string = '';
   minDate: string = '';
@@ -34,12 +33,11 @@ export class ReceptionistAppointmentsComponent implements OnInit {
   selectedSlotTime: string = '';
   loadingSlots: boolean = false;
 
-  // ✅ NEW: Today / Upcoming / Past sections
   todayAppointments: any[] = [];
   upcomingGrouped: Map<string, any[]> = new Map();
   pastGrouped: Map<string, any[]> = new Map();
 
-  // ✅ Default hidden
+
   showToday: boolean = true;
   showUpcoming: boolean = false;
   showPast: boolean = false;
@@ -59,7 +57,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.getAppointments();
   }
 
-  /* ===================== DATE RANGE (today -> +10 days) ===================== */
+
   private setDateRange(): void {
     const today = new Date();
     this.minDate = this.toDateOnly(today);
@@ -76,17 +74,14 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   }
 
-  /* ===================== LOAD APPOINTMENTS ===================== */
   getAppointments(): void {
     this.httpService.getAllAppointments().subscribe((data: any[]) => {
       this.appointmentList = Array.isArray(data) ? data : [];
-      this.applySearch(); // ✅ builds filtered + today/upcoming/past
+      this.applySearch(); 
     });
   }
 
-  /* ===================== SEARCH (AUTO SHOW SECTIONS) ===================== */
   onSearchChange(): void {
-    // When user searches, automatically show all sections
     const hasSearch = (this.searchText || '').trim().length > 0;
     if (hasSearch) {
       this.showToday = true;
@@ -111,7 +106,7 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.totalPages = Math.max(1, Math.ceil(this.filteredAppointments.length / this.itemsPerPage));
     if (this.currentPage > this.totalPages) this.currentPage = this.totalPages;
 
-    // ✅ Build Today/Upcoming/Past based on filtered list
+   
     this.splitAppointments(this.filteredAppointments);
   }
 
@@ -134,7 +129,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     if (this.currentPage < this.totalPages) this.currentPage++;
   }
 
-  /* ===================== TODAY / UPCOMING / PAST SPLIT ===================== */
   private splitAppointments(list: any[]): void {
     const now = new Date();
 
@@ -308,7 +302,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     this.availableSlots = [];
   }
 
-  /* ===================== DISPLAY TIME ===================== */
   formatTime(time: string): string {
     if (!time) return '';
     const d = this.parseLocal(time);
@@ -339,7 +332,6 @@ export class ReceptionistAppointmentsComponent implements OnInit {
     return new Date(y, m - 1, d, hh, mm, ss);
   }
 
-  /* ===================== DELETE ===================== */
   deleteAppointment(id: number): void {
     if (!confirm('Are you sure you want to delete this appointment?')) return;
 

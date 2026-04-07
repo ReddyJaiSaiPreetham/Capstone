@@ -14,7 +14,6 @@ export class DashbaordComponent implements OnInit {
   username: string = '';
   greeting: string = '';
 
-  // Profile dropdown state
   showProfile: boolean = false;
 
   constructor(
@@ -25,7 +24,7 @@ export class DashbaordComponent implements OnInit {
 
   ngOnInit(): void {
 
-    // Strong protection: if token missing, never allow dashboard
+    
     if (!this.authService.getLoginStatus) {
       this.router.navigate(['/login'], { replaceUrl: true });
       return;
