@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
-
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
@@ -89,69 +90,89 @@ public class EmailOtpService {
 
 
 
-    private void sendOtpEmailHtml(String toEmail, String otp, String purpose, int validMinutes) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, StandardCharsets.UTF_8.name());
+      
+ 
+private void sendOtpEmailHtml(String toEmail, String otp, String purpose, int validMinutes) {
+    try {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, StandardCharsets.UTF_8.name());
 
-            helper.setTo(toEmail);
-            helper.setSubject("Medicare Hospitals - Email Verification OTP");
+        helper.setTo(toEmail);
+        helper.setSubject("Medicare Hospitals - Email Verification OTP");
 
-            if (fromEmail != null && !fromEmail.isEmpty()) {
-                helper.setFrom(fromEmail);
-            }
+        if (fromEmail != null && !fromEmail.isEmpty()) {
+            helper.setFrom(fromEmail);
+        }
 
-            String html =
-                "<div style='font-family:Arial,sans-serif;background:#f6f9ff;padding:18px;'>" +
-                  "<div style='max-width:560px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e6eefc;'>" +
+        // ✅ check logo existence
+        Resource logo = new ClassPathResource("static/medicare-logo.png");
+        boolean hasLogo = logo.exists();
+        System.out.println("Logo exists? " + hasLogo);
 
-                    "<div style='background:linear-gradient(135deg,#2563eb,#22c55e);padding:18px;color:#fff;'>" +
-                      "<div style='display:flex;align-items:center;gap:12px;'>" +
-                        "<div style='width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;'>" +
-                          "<svg width='26' height='26' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'>" +
-                            "<path d='M10 2h4a2 2 0 0 1 2 2v4h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-4H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h4V4a2 2 0 0 1 2-2z' fill='white'/>" +
-                          "</svg>" +
-                        "</div>" +
-                        "<div>" +
-                          "<div style='font-size:18px;font-weight:800;letter-spacing:0.3px;'>Medicare Hospitals</div>" +
-                          "<div style='font-size:12px;opacity:0.9;'>Healthcare Appointment Management</div>" +
-                        "</div>" +
-                      "</div>" +
+        // ✅ if logo missing, show a simple fallback icon block
+        String logoBlock = hasLogo
+                ? "<img src='cid:medicareLogo' width='42' height='42' style='display:block;' alt='Medicare Logo'/>"
+                : "<div style='width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-weight:900;'>M</div>";
+
+        String html =
+            "<div style='font-family:Arial,sans-serif;background:#f6f9ff;padding:18px;'>" +
+              "<div style='max-width:560px;margin:auto;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e6eefc;'>" +
+
+                "<div style='background:linear-gradient(135deg,#2563eb,#22c55e);padding:18px;color:#fff;'>" +
+                  "<div style='display:flex;align-items:center;gap:12px;'>" +
+
+                    "<div style='width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;overflow:hidden;'>" +
+                      logoBlock +
                     "</div>" +
 
-                    "<div style='padding:18px;color:#0f172a;'>" +
-                      "<h2 style='margin:0 0 8px;font-size:18px;'>Welcome!</h2>" +
-                      "<p style='margin:0 0 12px;font-size:14px;line-height:1.6;color:#334155;'>" +
-                        "Thank you for registering. Use the OTP below to verify your email." +
-                      "</p>" +
-
-                      "<div style='background:#eef6ff;border:1px solid #dbeafe;border-radius:12px;padding:14px;text-align:center;'>" +
-                        "<div style='font-size:12px;color:#475569;font-weight:700;'>Your OTP</div>" +
-                        "<div style='font-size:28px;font-weight:900;letter-spacing:6px;color:#1d4ed8;margin-top:6px;'>" +
-                          otp +
-                        "</div>" +
-                        "<div style='font-size:12px;color:#475569;margin-top:6px;'>Valid for <b>" + validMinutes + " minutes</b></div>" +
-                      "</div>" +
-
-                      "<p style='margin:12px 0 0;font-size:12.5px;color:#64748b;line-height:1.6;'>" +
-                        "If you did not request this OTP, ignore this email. Do not share OTP with anyone." +
-                      "</p>" +
-                    "</div>" +
-
-                    "<div style='padding:12px 18px;background:#f8fafc;border-top:1px solid #eef2f7;font-size:12px;color:#64748b;'>" +
-                      "© " + java.time.Year.now() + " Medicare Hospitals • Automated message" +
+                    "<div>" +
+                      "<div style='font-size:18px;font-weight:800;letter-spacing:0.3px;'>Medicare Hospitals</div>" +
+                      "<div style='font-size:12px;opacity:0.9;'>Healthcare Appointment Management</div>" +
                     "</div>" +
 
                   "</div>" +
-                "</div>";
+                "</div>" +
 
-            helper.setText(html, true);
-            mailSender.send(mimeMessage);
+                "<div style='padding:18px;color:#0f172a;'>" +
+                  "<h2 style='margin:0 0 8px;font-size:18px;'>Welcome!</h2>" +
+                  "<p style='margin:0 0 12px;font-size:14px;line-height:1.6;color:#334155;'>" +
+                    "Thank you for registering. Use the OTP below to verify your email." +
+                  "</p>" +
 
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send OTP email: " + e.getMessage());
+                  "<div style='background:#eef6ff;border:1px solid #dbeafe;border-radius:12px;padding:14px;text-align:center;'>" +
+                    "<div style='font-size:12px;color:#475569;font-weight:700;'>Your OTP</div>" +
+                    "<div style='font-size:28px;font-weight:900;letter-spacing:6px;color:#1d4ed8;margin-top:6px;'>" +
+                      otp +
+                    "</div>" +
+                    "<div style='font-size:12px;color:#475569;margin-top:6px;'>Valid for <b>" + validMinutes + " minutes</b></div>" +
+                  "</div>" +
+
+                  "<p style='margin:12px 0 0;font-size:12.5px;color:#64748b;line-height:1.6;'>" +
+                    "If you did not request this OTP, ignore this email. Do not share OTP with anyone." +
+                  "</p>" +
+                "</div>" +
+
+                "<div style='padding:12px 18px;background:#f8fafc;border-top:1px solid #eef2f7;font-size:12px;color:#64748b;'>" +
+                  "© " + java.time.Year.now() + " Medicare Hospitals • Automated message" +
+                "</div>" +
+
+              "</div>" +
+            "</div>";
+
+        helper.setText(html, true);
+
+        // ✅ attach only if exists
+        if (hasLogo) {
+            helper.addInline("medicareLogo", logo, "image/png");
         }
+
+        mailSender.send(mimeMessage);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to send OTP email: " + e.getMessage(), e);
     }
+}
+
 
 
     private String generate6DigitOtp() {
