@@ -107,7 +107,6 @@ private void sendOtpEmailHtml(String toEmail, String otp, String purpose, int va
         // ✅ check logo existence
         Resource logo = new ClassPathResource("static/medicare-logo.png");
         boolean hasLogo = logo.exists();
-        System.out.println("Logo exists? " + hasLogo);
 
         // ✅ if logo missing, show a simple fallback icon block
         String logoBlock = hasLogo
@@ -161,7 +160,6 @@ private void sendOtpEmailHtml(String toEmail, String otp, String purpose, int va
 
         helper.setText(html, true);
 
-        // ✅ attach only if exists
         if (hasLogo) {
             helper.addInline("medicareLogo", logo, "image/png");
         }
