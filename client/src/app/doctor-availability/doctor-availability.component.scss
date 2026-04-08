@@ -258,3 +258,77 @@
   .nav-doctor-badge { display: none; }
   .dash-body { padding: 20px 16px 48px; }
 }
+
+/* ✅ Availability dropdown wrapper */
+.availability-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ✅ Dropdown container (white, visible on glass/dark bg) */
+.availability-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: rgba(255, 255, 255, 0.96);   /* solid white */
+  border: 1px solid rgba(15, 23, 42, 0.16); /* visible border */
+  border-radius: 12px;
+
+  padding: 8px 12px;
+  min-height: 42px;
+
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.14); /* lift from bg */
+  transition: all 0.25s ease;
+}
+
+/* ✅ Hover / focus highlight */
+.availability-group:hover,
+.availability-group:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.22);
+}
+
+/* ✅ Icon style (optional if you keep SVG icon) */
+.availability-icon {
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* ✅ Select dropdown styling */
+.availability-select {
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+
+  min-width: 170px;
+  cursor: pointer;
+
+  appearance: none;        /* remove default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* ✅ Custom arrow (looks clean) */
+.availability-group::after {
+  content: "▾";
+  font-size: 14px;
+  color: #475569;
+  margin-left: 6px;
+}
+
+/* ✅ Disabled state */
+.availability-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ✅ Optional: show red when doctor selects Unavailable */
+.availability-select.unavailable {
+  color: #dc2626;
+}

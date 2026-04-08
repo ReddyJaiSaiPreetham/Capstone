@@ -48,7 +48,6 @@ export class HttpService {
     return v;
   }
 
-  /* ===================== DOCTOR ===================== */
 
   updateDoctorAvailability(doctorId: any, availability: any): Observable<any> {
     const headers = this.getAuthHeaders();
@@ -96,7 +95,6 @@ export class HttpService {
     );
   }
 
-  /* ===================== DOCTOR SLOTS ===================== */
 
   generateDoctorSlots(doctorId: number): Observable<any> {
     const headers = this.getAuthHeaders();
@@ -126,7 +124,6 @@ export class HttpService {
     );
   }
 
-  /* ===================== RECEPTIONIST ===================== */
 
   getAllAppointments(): Observable<any> {
     const headers = this.getAuthHeaders();
@@ -152,7 +149,6 @@ export class HttpService {
     );
   }
 
-  // ✅ Receptionist: slot-based schedule appointment
   ScheduleAppointmentByReceptionist(details: any): Observable<any> {
     const headers = this.getAuthHeaders();
     const fixedTime = this.toLocalDateTimeString(details.time);
@@ -203,7 +199,6 @@ export class HttpService {
     );
   }
 
-  /* ===================== PATIENT ===================== */
 
   getDoctors(): Observable<any> {
     const headers = this.getAuthHeaders();
@@ -270,60 +265,6 @@ export class HttpService {
       { headers, withCredentials: true }
     );
   }
-
-//   // registerPatient(details: any): Observable<any> {
-//   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   //   return this.http.post(
-//   //     `${this.serverName}/api/patient/register`,
-//   //     details,
-//   //     { headers }
-//   //   );
-//   // }
-
-//   registerPatient(details: any, otp: string): Observable<any> {
-//   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   return this.http.post(
-//     `${this.serverName}/api/patient/register?otp=${encodeURIComponent(otp)}`,
-//     details,
-//     { headers }
-//   );
-// }
-
-//   // registerDoctors(details: any): Observable<any> {
-//   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   //   return this.http.post(
-//   //     `${this.serverName}/api/doctors/register`,
-//   //     details,
-//   //     { headers }
-//   //   );
-//   // }
-
-//   registerDoctors(details: any, otp: string): Observable<any> {
-//   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   return this.http.post(
-//     `${this.serverName}/api/doctors/register?otp=${encodeURIComponent(otp)}`,
-//     details,
-//     { headers }
-//   );
-// }
-
-//   // registerReceptionist(details: any): Observable<any> {
-//   //   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   //   return this.http.post(
-//   //     `${this.serverName}/api/receptionist/register`,
-//   //     details,
-//   //     { headers }
-//   //   );
-//   // }
-
-//   registerReceptionist(details: any, otp: string): Observable<any> {
-//   const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-//   return this.http.post(
-//     `${this.serverName}/api/receptionist/register?otp=${encodeURIComponent(otp)}`,
-//     details,
-//     { headers }
-//   );
-// }
 
 
 registerPatient(details: any, otp: string): Observable<any> {

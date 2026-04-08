@@ -40,10 +40,13 @@ export class DoctorAvailabilityComponent implements OnInit {
 
   isPageLoading = false;
 
+  // ✅ NEW: availability dropdown state
+  availabilityStatus: 'Yes' | 'No' = 'Yes';
+  isAvailabilityUpdating = false;
+
   constructor(public httpService: HttpService) {}
 
   ngOnInit(): void {
-    
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.showMsg(true, 'Doctor not logged in');
@@ -52,7 +55,6 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.doctorId = parseInt(userId, 10);
 
-    
     const today = new Date();
     this.minDate = this.toDateOnly(today);
 
@@ -64,6 +66,7 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.buildSlots();
 
+    // ✅ NEW: load slots + keep availability default
     this.generateSlotsAndLoad();
   }
 
@@ -93,7 +96,7 @@ export class DoctorAvailabilityComponent implements OnInit {
       this.slots.push({
         label: this.formatLabel(hour),
         time: `${this.selectedDate}T${hh}:00:00`,
-        status: 'BLOCKED' 
+        status: 'BLOCKED'
       });
     }
   }
@@ -103,7 +106,7 @@ export class DoctorAvailabilityComponent implements OnInit {
 
     this.httpService.generateDoctorSlots(this.doctorId).subscribe({
       next: () => this.loadSlotsForDate(),
-      error: () => this.loadSlotsForDate() 
+      error: () => this.loadSlotsForDate()
     });
   }
 
@@ -168,6 +171,28 @@ export class DoctorAvailabilityComponent implements OnInit {
         console.error('Slot update error:', err);
         slot.loading = false;
         this.showMsg(true, 'Failed to update slot');
+      }
+    });
+  }
+
+  // ✅ NEW: Dropdown change handler -> updates doctor availability (Yes/No)
+  onAvailabilityChange(): void {
+    this.isAvailabilityUpdating = true;
+
+    this.httpService.updateDoctorAvailability(this.doctorId, this.availabilityStatus).subscribe({
+      next: () => {
+        this.isAvailabilityUpdating = false;
+
+        if (this.availabilityStatus === 'Yes') {
+          this.showMsg(false, 'Doctor status updated: Available');
+        } else {
+          this.showMsg(false, 'Doctor status updated: Unavailable');
+        }
+      },
+      error: (err) => {
+        console.error('Availability update error:', err);
+        this.isAvailabilityUpdating = false;
+        this.showMsg(true, 'Failed to update availability');
       }
     });
   }
