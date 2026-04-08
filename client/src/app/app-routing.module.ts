@@ -37,14 +37,7 @@ const routes: Routes = [
   { path: 'admin-doctors', component: AdminDoctorsComponent , canActivate: [AuthGuard]},
   { path: 'admin-receptionists', component: AdminReceptionistsComponent, canActivate: [AuthGuard] },
   { path: 'admin-users', component: AdminUsersComponent , canActivate: [AuthGuard]},
-  //{ path: 'admin-users', component: AdminUsersComponent },
-// optional:
 
-  // { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  // { path: '**', redirectTo: '/dashboard', pathMatch: 'full' },
-
-  // { path: '', redirectTo: '/login', pathMatch: 'full' },
-  // { path: '**', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/home', pathMatch: 'full' },
 ];

@@ -25,21 +25,28 @@ public class UserService implements UserDetailsService {
     }
 
     public User registerUser(User user) {
-        String uname = user.getUsername() == null ? "" : user.getUsername().trim().toLowerCase();
 
-        if (uname.equals("admin") || uname.equals("admin1")) {
-            throw new RuntimeException("This username is reserved. Please choose another.");
-        }
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("Username already exists!");
-        }
+    String uname = user.getUsername() == null ? "" : user.getUsername().trim().toLowerCase();
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-        user.setActive(true);
-
-        return userRepository.save(user);
+    if (uname.equals("admin") || uname.equals("admin1")) {
+        throw new RuntimeException("This username is reserved. Please choose another.");
     }
+
+    if (userRepository.existsByUsername(user.getUsername())) {
+        throw new RuntimeException("Username already exists!");
+    }
+
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+    if ("DOCTOR".equalsIgnoreCase(user.getRole())
+            || "RECEPTIONIST".equalsIgnoreCase(user.getRole())) {
+        user.setActive(false);   
+    } else {
+        user.setActive(true);    
+    }
+
+    return userRepository.save(user);
+}
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)

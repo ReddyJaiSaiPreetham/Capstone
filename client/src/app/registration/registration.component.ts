@@ -19,7 +19,6 @@ export class RegistrationComponent implements OnInit, OnDestroy {
 
   popupTitle: string = '';
 
-  // OTP state
   otpSent: boolean = false;
   otpRequested: boolean = false;
   sendingOtp: boolean = false;
